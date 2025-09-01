@@ -150,7 +150,7 @@
             margin-top: 15px; text-align: left; font-size: 1.1em; line-height: 1.6;
             color: #333; overflow-y: auto; width: 100%;
             padding-right: 10px; flex-grow: 1; min-height: 0;
-            box-sizing: border-box; /* <-- Вот это исправление */
+            box-sizing: border-box;
         }
         .page-buttons-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 15px; flex-shrink: 0; }
         .page-btn { color: white; border: none; border-radius: 8px; padding: 10px 20px; font-size: 1em; cursor: pointer; transition: background-color 0.3s; }
@@ -204,23 +204,37 @@
         #admin-panel h4 { margin: 0 0 10px 0; color: #b71c1c; }
         #admin-panel ul { margin: 0; padding-left: 20px; }
         #admin-panel li { margin-bottom: 5px; }
-        .controls { flex-shrink: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px 15px; background: #f1f1f1; border-top: 1px solid #ddd; box-sizing: border-box; }
-        .controls-label {
-             /* Старые стили */
-           color: #555;
-           margin-bottom: 8px;
-           font-weight: bold;
-           text-align: center;
-           font-size: clamp(1.2rem, 2.5vw, 1.4em);
-
-            /* НОВЫЕ СВОЙСТВА ДЛЯ ГАРАНТИРОВАННОГО ПЕРЕНОСА */
-           max-width: 100%;             /* Убеждаемся, что элемент не может быть шире родителя */
-           word-break: break-word;      /* Разрешаем разрыв слов (для совместимости) */
-           overflow-wrap: break-word;   /* Стандартное свойство для переноса длинных слов */
-           hyphens: auto;               /* Включаем автоматические переносы с дефисом (выглядит лучше) */
-           min-width: 0;                /* Ключевое свойство: разрешаем flex-элементу сжиматься меньше его контента */
+        .controls {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 15px;
+            background: #f1f1f1;
+            border-top: 1px solid #ddd;
+            box-sizing: border-box;
         }
-        .controls-buttons { display: flex; justify-content: center; align-items: center; width: 100%; gap: clamp(10px, 3vw, 25px); }
+        .controls-label {
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: bold;
+            text-align: center;
+            font-size: clamp(1.2rem, 2.5vw, 1.4em);
+            max-width: 100%;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            min-width: 0;
+        }
+        .controls-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            gap: clamp(10px, 3vw, 25px);
+            flex-wrap: wrap;
+        }
         .button-wrapper { display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .button-label { font-size: clamp(1.0rem, 1.8vw, 1.2rem); color: #555; text-align: center; line-height: 1.3; }
         .controls button { color: white; border: none; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: background-color 0.3s, transform 0.3s; }
@@ -272,7 +286,6 @@
             background: rgba(0,0,0,0.8);
         }
         @media (max-width: 768px) {
-            /* В этом блоке остаются ТОЛЬКО общие мобильные стили, НЕ связанные с feed-mode */
             #modalCarousel {
                 flex-direction: column;
                 gap: 10px;
@@ -294,7 +307,6 @@
             }
         }
 
-        /* --- УНИВЕРСАЛЬНЫЕ СТИЛИ ДЛЯ РЕЖИМА ЛЕНТЫ (теперь вне @media) --- */
         .feed-mode {
             height: auto;
             overflow-y: auto;
@@ -316,14 +328,14 @@
             margin-bottom: 10px;
         }
         .feed-mode .page details {
-             width: 100%;
-             border: 1px solid #e0e0e0;
-             border-radius: 8px;
-             box-sizing: border-box;
+            width: 100%;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-sizing: border-box;
         }
         .feed-mode .page details[open] {
-             min-height: 80vh;
-             padding-bottom: 80px;
+            min-height: 80vh;
+            padding-bottom: 80px;
         }
         .feed-mode .controls {
             position: sticky;
@@ -331,10 +343,31 @@
             z-index: 1000;
             width: 100%;
         }
-        body.feed-mode .button-wrapper#prevBtnWrapper,
-        body.feed-mode .button-wrapper#nextBtnWrapper,
-        body.feed-mode #pageIndicator {
-        display: none !important;
+        .feed-mode .page summary {
+            padding: 15px;
+            background-color: #f1f1f1;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            list-style: none;
+            position: relative;
+        }
+        .feed-mode .page summary:hover {
+            background-color: #e0e0e0;
+        }
+        .feed-mode .page summary::before {
+            content: '▼';
+            position: absolute;
+            right: 20px;
+            transition: transform 0.2s;
+        }
+        .feed-mode .page details:not([open]) > summary::before {
+            transform: rotate(-90deg);
+        }
+        .feed-mode .page details > .page-buttons-container {
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -400,7 +433,7 @@
         const CONFIG = {
             mobileFeedMode: true,
             feedModeForDesktop: true,
-            mainTitle: 'Маршрут 2.6 Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
+            mainTitle: 'Маршрут 2. Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
             audioUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisyachting/main/2RouteAudioVasilisa.mp3',
             bookingUrl: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route2',
             coverVideoUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4',
@@ -437,35 +470,33 @@
                     published: true,
                     text: `<h2> О маршруте. </h2><p>Название: Маршрут 2. Дневной яхтенный тур под парусом Мармарис-Кумлубюк с обедом на яхте. Продолжительность: 1 день. Время: 9:30 – 18:15. Аудитория: от 1 до 6 гостей, включая детей от 6 лет. Стоимость: 1000 долларов США (стандартный обед)/1300 долларов США (обед-гриль). Особенности: Эксклюзивный однодневный круиз, сочетающий панорамные виды побережья, долгий отдых с купанием в живописной бухте Кумлубюк и изысканный обед, приготовленный для вас прямо на борту яхты.</p>`,
                     narrationEndTime: 40,
-                    extraMedia: [
-                        { type: 'iframe', buttonText: 'Наш маршрут на карте', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRpdxYPi6EBS7X21LMQxEvUAcdXCgHrBbrJ96rhr3TsMGc', headerText: 'Маршрут 2. Дневной яхтенный тур под парусом Мармарис-Кумлубюк с обедом на яхте.', footerText: '' }
-                    ],
+                    extraMedia: [ { type: 'iframe', buttonText: 'Наш маршрут на карте', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRpdxYPi6EBS7X21LMQxEvUAcdXCgHrBbrJ96rhr3TsMGc', headerText: 'Маршрут 2. Дневной яхтенный тур под парусом Мармарис-Кумлубюк с обедом на яхте.', footerText: '' } ],
                 },
                 {
                     published: true,
-                    collapsible: true,        // <-- ВКЛЮЧАЕМ возможность
-                    collapsedOnLoad: true,  // <-- Говорим, что она должна быть свернута
+                    collapsible: true,
+                    collapsedOnLoad: true,
                     text: `<h2> Парусный день в Кумлубюк: Гастрономический круиз на яхте.</h2><p>Посвятите день абсолютному наслаждению: это эксклюзивный дневной тур, где живописные пейзажи Эгейского моря сочетаются с изысканным обедом, приготовленным специально для вас прямо на борту яхты. Идеальный сценарий для особого случая или просто идеального дня в море. Приглашаем вас на борт комфортабельной парусной яхты для путешествия к знаменитому пляжу Кумлубюк. Вас ждет неспешный круиз вдоль панорамных берегов, почти шесть часов отдыха в уединенной бухте с купанием и водными развлечениями, и кульминация дня — гастрономический обед в открытом море. Этот тур создан для небольшой компании от 1 до 6 человек. Мы стремимся подарить вам истинное удовольствие от яхтинга, поэтому при благоприятных погодных условиях мы обязательно совершим переход под парусами. А для самых ярких фотографий белоснежный парус будет поднят в любом случае.</p>`,
                     narrationEndTime: 101,
                 },
                 {
                     published: true,
-                    collapsible: true,         // <-- ВКЛЮЧАЕМ возможность
-                    collapsedOnLoad: false,   // <-- Говорим, что она должна быть раскрыта
+                    collapsible: true,
+                    collapsedOnLoad: false,
                     text: `<h2> Программа путешествия: </h2><p>9:30 – Отправление и панорамный круиз Наше путешествие начнется из гавани Мармарис Яхт Марина. Следующие 90 минут мы посвятим неспешному переходу вдоль живописного побережья, наслаждаясь видами на Adakoy Marina, уединенные Козий и Вороний острова и знаменитый пляж Турунч. 11:00 – Отдых и обед в бухте Кумлубюк Мы бросим якорь в кристально чистых водах респектабельной бухты Кумлубюк почти на шесть часов. Это ваше время для полного расслабления: купайтесь, загорайте на палубе, исследуйте бухту на каяке или сап-борде. А мы позаботимся о вашем комфорте и гастрономических впечатлениях. Гастрономический опыт на борту. В течение дня мы будем рады предложить вам наш фирменный сервис: 11:30 — Приветственный чай, кофе и восточные сладости. 13:00 — Тарелка сочных сезонных фруктов для освежения. 14:30 — Комплексный обед (включен в стоимость 1000$): Салат "Чабан": Свежий микс из томатов черри, огурцов, перца и лука под заправкой из оливкового масла. Карбонара по-флотски: Классические спагетти Barilla №5 с пикантной говяжьей бастурмой, сливками, яйцом и настоящим сыром Parmigiano Reggiano. После обеда — чай, кофе и сладости. Обед-гриль (общая стоимость тура 1300$): Хотите сделать этот день еще более особенным? Выберите опцию с роскошным меню, приготовленным на гриле прямо на яхте: Сочные куриные крылья в соусе барбекю (300 гр.). Ароматный картофель в мундире на гриле (200 гр.). Шампиньоны на гриле (50 гр.). Свежий салат "Чабан" (150 гр.). 16:45 – Возвращение в Мармарис. Насладившись отдыхом, мы начинаем обратный 90-минутный переход в марину. Это прекрасное время, чтобы расслабиться на палубе и проводить солнце, окрашивающее береговую линию в золотые тона. 18:15 – Прибытие в Мармарис Яхт Марина.</p>`,
                     narrationEndTime: 240,
                 },
                 {
                     published: true,
-                    collapsible: true,         // <-- ВКЛЮЧАЕМ возможность
-                    collapsedOnLoad: false,   // <-- Говорим, что она должна быть раскрыта
+                    collapsible: true,
+                    collapsedOnLoad: false,
                     text: `<h2> Важные детали и сервисы. </h2><p>Важные детали и сервисы. В стоимость тура включено: Аренда парусной яхты с капитаном. Комплексный обед или обед-гриль на борту (в зависимости от выбранного варианта). Чай, кофе, питьевая вода в течение всего дня. Фруктовая тарелка и сладости к чаю. Пользование надувным каяком, сап-бордом, надувной "ватрушкой" и масками для плавания. Подарите себе день идеального отдыха, где каждая деталь продумана для вашего удовольствия!</p>`,
                     narrationEndTime: 272,
                 },
                 {
                     published: true,
-                    collapsible: true,        // <-- ВКЛЮЧАЕМ возможность
-                    collapsedOnLoad: true,  // <-- Говорим, что она должна быть свернута
+                    collapsible: true,
+                    collapsedOnLoad: true,
                     text: `<h2> Фото и Видео о маршруте </h2><p>.</p>`,
                     narrationEndTime: 480,
                     mainVideo: { type: 'iframe', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQSe6WT-_Nt4QYem_P3qEx_3Abn7W0p9009H02uPVTxShdI', headerText: 'Видео: Выход из Мармарис Яхт Марины', footerText: '' },
@@ -487,9 +518,9 @@
                 },
                 {
                     published: true,
-                    collapsible: true,        // <-- ВКЛЮЧАЕМ возможность
-                    collapsedOnLoad: true,  // <-- Говорим, что она должна быть свернута
-                    text: `<h2> О яхте Bavaria C45. </h2><p>Яхта произведена в Германии в 2022 году. Модель BAVARIA C45. На площади более 60 м² организовано уютное пространство для путешествий. ... (здесь ваш полный текст о яхте) ...</p>`,
+                    collapsible: true,
+                    collapsedOnLoad: true,
+                    text: `<h2> О яхте Bavaria C45. </h2><p>Яхта произведена в Германии в 2022 году. Модель BAVARIA C45. ...</p>`,
                     narrationEndTime: 427,
                     mainVideo: { url: 'https://www.youtube.com/embed/Dp2g78eqw18', headerText: 'Видео: Bavaria C45 - яхта для вашего путешествия', footerText: 'BAVARIA C45 на площади более 60 м² организовано уютное пространство для путешествий.' },
                     extraMedia: [
@@ -516,11 +547,11 @@
                 },
             ]
         };
-        
-             // --- ИСПРАВЛЕННАЯ ЛОГИКА АКТИВАЦИИ РЕЖИМА ЛЕНТЫ ---
-            const isMobile = window.innerWidth < 768;
-        if ((isMobile && CONFIG.mobileFeedMode) || (!isMobile && CONFIG.feedModeForDesktop)) {
-             document.body.classList.add('feed-mode');
+
+        const isMobile = window.innerWidth < 768;
+        const isFeedMode = (isMobile && CONFIG.mobileFeedMode) || (!isMobile && CONFIG.feedModeForDesktop);
+        if (isFeedMode) {
+            document.body.classList.add('feed-mode');
         }
 
         const isAdmin = new URLSearchParams(window.location.search).get('admin') === 'true';
@@ -553,7 +584,6 @@
             document.querySelector('#main-title').textContent = CONFIG.mainTitle;
             if (CONFIG.audioUrl) audioPlayer.src = CONFIG.audioUrl;
             else if(isAdmin) adminErrors.push('Не указан URL для основного аудио');
-            
             if (CONFIG.coverVideoUrl) {
                 const video = document.createElement('video');
                 video.id = 'cover-video';
@@ -564,7 +594,6 @@
             } else if (isAdmin) {
                 adminErrors.push('Не указан URL для видео на обложке');
             }
-            
             const tooltipBox = document.getElementById('tooltip-box');
             function showTooltip(element, text) {
                 if (!text) return;
@@ -575,10 +604,7 @@
                 tooltipBox.style.transform = 'translate(-50%, -100%)';
                 tooltipBox.classList.add('visible');
             }
-            function hideTooltip() {
-                tooltipBox.classList.remove('visible');
-            }
-
+            function hideTooltip() { tooltipBox.classList.remove('visible'); }
             CONFIG.coverTexts.forEach((item) => {
                 if (item.visible !== false) {
                     const textBox = document.createElement('div');
@@ -594,7 +620,6 @@
                     coverView.appendChild(textBox);
                 }
             });
-
             if (CONFIG.contactButtons) {
                 CONFIG.contactButtons.forEach(btnData => {
                     if (btnData.visible && btnData.url) {
@@ -615,7 +640,6 @@
                     }
                 });
             }
-
             if (CONFIG.routeSelector && CONFIG.routeSelector.visible) {
                 const selector = CONFIG.routeSelector;
                 const menuBtn = document.createElement('button');
@@ -628,23 +652,19 @@
                 if ((CONFIG.pulsingEffect?.enabled && selector.pulsing !== false) || selector.pulsing === true) {
                     menuBtn.classList.add('pulsing');
                 }
-                
                 const dropdown = document.createElement('div');
                 dropdown.id = 'route-dropdown-menu';
                 dropdown.style.top = `calc(${selector.top} - 10px)`;
                 dropdown.style.left = selector.left;
                 dropdown.style.transform = 'translate(-50%, -100%)';
-                
                 selector.routes.forEach(route => {
                     const link = document.createElement('a');
                     link.href = route.url;
                     link.textContent = route.name;
                     dropdown.appendChild(link);
                 });
-
                 coverView.appendChild(menuBtn);
                 coverView.appendChild(dropdown);
-                
                 menuBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     dropdown.classList.toggle('visible');
@@ -660,17 +680,14 @@
         function setupBookPages() {
             const pageViewer = document.querySelector('.page-viewer');
             pageViewer.innerHTML = '';
-            
             publishedPages.forEach((pageData, index) => {
                 const pageNum = index + 1;
                 const page = document.createElement('div');
                 page.className = 'page';
                 page.dataset.pageNumber = pageNum;
                 if (pageNum === 1) page.classList.add('active');
-                
                 const buttonsContainer = document.createElement('div');
                 buttonsContainer.className = 'page-buttons-container';
-                
                 const allMedia = [];
                 if (pageData.mainVideo && pageData.mainVideo.url) {
                     allMedia.push({ ...pageData.mainVideo, type: pageData.mainVideo.type || 'video', buttonText: 'Показать видео' });
@@ -678,7 +695,6 @@
                 if (pageData.extraMedia) {
                     allMedia.push(...pageData.extraMedia);
                 }
-                
                 allMedia.forEach((media) => {
                     const hasUrl = (media.type === 'carousel' && media.images && media.images.length > 0) || (media.url && media.url.trim() !== '');
                     if (hasUrl) {
@@ -698,36 +714,27 @@
                         buttonsContainer.appendChild(errorBtn);
                     }
                 });
-                
                 const textContent = document.createElement('p');
                 textContent.innerHTML = pageData.text || '';
-
-                // --- НОВАЯ ЛОГИКА ДЛЯ СВОРАЧИВАЕМЫХ БЛОКОВ ---
-                if (document.body.classList.contains('feed-mode') && pageData.collapsible) {
+                if (isFeedMode && pageData.collapsible) {
                     const tempDiv = document.createElement('div');
                     tempDiv.innerHTML = pageData.text;
                     const h2 = tempDiv.querySelector('h2');
                     const title = h2 ? h2.innerHTML : 'Развернуть';
-                    if (h2) h2.remove(); // Удаляем заголовок из основного текста, чтобы не дублировался
-
+                    if (h2) h2.remove();
                     textContent.innerHTML = tempDiv.innerHTML;
-
                     const details = document.createElement('details');
                     const summary = document.createElement('summary');
-                    
                     summary.innerHTML = title;
                     details.open = !pageData.collapsedOnLoad;
-
                     details.appendChild(summary);
                     details.appendChild(buttonsContainer);
                     details.appendChild(textContent);
                     page.appendChild(details);
                 } else {
-                    // Стандартное поведение для десктопа или если страница не сворачиваемая
                     page.appendChild(buttonsContainer);
                     page.appendChild(textContent);
                 }
-                
                 pageViewer.appendChild(page);
             });
         }
@@ -747,13 +754,7 @@
             }
         }
         
-        setupCover();
-        setupBookPages();
-        updateAdminPanel();
-        
         const pages = document.querySelectorAll('.page');
-        updateButtonsAndIndicator();
-        
         const mediaModal = document.getElementById('mediaModal');
         const modalPhoto = document.getElementById('modalPhoto');
         const modalVideo = document.getElementById('modalVideo');
@@ -772,23 +773,17 @@
                 if(el.tagName === 'VIDEO' || el.tagName === 'AUDIO') { el.src = ''; el.pause(); } 
                 else if (el.tagName === 'IMG' || el.tagName === 'IFRAME') { el.src = 'about:blank'; }
             });
-        
             mediaModal.querySelector('.modal-header').textContent = media.headerText || '';
             mediaModal.querySelector('.modal-footer').textContent = ''; 
-            
             if (media.type === 'carousel' && media.images && media.images.length > 0) {
                 currentCarouselImages = media.images;
                 currentCarouselIndex = 0;
-
                 function showCarouselSlide(index) {
                     const wrapper = document.getElementById('carouselIframeWrapper');
                     const iframe = document.getElementById('carouselIframe');
                     const slideData = currentCarouselImages[index];
-
                     if (!slideData || !slideData.url || !slideData.width || !slideData.height) {
-                        console.error('Данные для слайда неполные:', slideData);
-                        iframe.src = 'about:blank';
-                        return;
+                        iframe.src = 'about:blank'; return;
                     }
                     const containerWidth = wrapper.clientWidth;
                     const containerHeight = wrapper.clientHeight;
@@ -803,110 +798,70 @@
                     carouselPrevBtn.style.visibility = (index === 0) ? 'hidden' : 'visible';
                     carouselNextBtn.style.visibility = (index === currentCarouselImages.length - 1) ? 'hidden' : 'visible';
                 }
-
-                carouselPrevBtn.onclick = () => {
-                    if (currentCarouselIndex > 0) {
-                        currentCarouselIndex--;
-                        showCarouselSlide(currentCarouselIndex);
-                    }
-                };
-
-                carouselNextBtn.onclick = () => {
-                    if (currentCarouselIndex < currentCarouselImages.length - 1) {
-                        currentCarouselIndex++;
-                        showCarouselSlide(currentCarouselIndex);
-                    }
-                };
-                
+                carouselPrevBtn.onclick = () => { if (currentCarouselIndex > 0) { currentCarouselIndex--; showCarouselSlide(currentCarouselIndex); } };
+                carouselNextBtn.onclick = () => { if (currentCarouselIndex < currentCarouselImages.length - 1) { currentCarouselIndex++; showCarouselSlide(currentCarouselIndex); } };
                 modalCarousel.style.display = 'flex';
-                setTimeout(() => {
-                    showCarouselSlide(0); 
-                }, 50);
-
+                setTimeout(() => { showCarouselSlide(0); }, 50);
             } else {
                 mediaModal.querySelector('.modal-footer').textContent = media.footerText || '';
-                
                 let contentElement;
-
                 if (media.type === 'iframe') {
                     if (media.width && media.height) {
                         modalIframe.style.aspectRatio = `${media.width} / ${media.height}`;
-                        modalIframe.style.width = 'auto';
-                        modalIframe.style.height = 'auto';
+                        modalIframe.style.width = 'auto'; modalIframe.style.height = 'auto';
                     } else {
                         modalIframe.style.aspectRatio = '16 / 9';
-                        modalIframe.style.width = '90%';
-                        modalIframe.style.height = '80%';
+                        modalIframe.style.width = '90%'; modalIframe.style.height = '80%';
                     }
                     modalIframe.src = media.url;
                     modalIframe.style.display = 'block';
-                } else if (media.type === 'photo') {
-                    contentElement = modalPhoto;
+                } else if (media.type === 'photo') { contentElement = modalPhoto;
                 } else if (media.type === 'video') {
                      if (media.url.includes('youtu.be') || media.url.includes('youtube.com')) {
                         const videoId = media.url.split('v=')[1] || media.url.split('/').pop().split('?')[0];
                         const embedUrl = `https://www.youtube.com/embed/${videoId}`;
                         modalIframe.style.aspectRatio = '16 / 9';
-                        modalIframe.style.width = '90%';
-                        modalIframe.style.height = 'auto';
+                        modalIframe.style.width = '90%'; modalIframe.style.height = 'auto';
                         modalIframe.src = embedUrl;
                         modalIframe.style.display = 'block';
-                    } else {
-                        contentElement = modalVideo;
-                    }
-                } else if (media.type === 'audio') {
-                    contentElement = modalAudio;
-                } else if (media.type === 'text') {
-                    contentElement = modalText;
-                }
-        
+                    } else { contentElement = modalVideo; }
+                } else if (media.type === 'audio') { contentElement = modalAudio;
+                } else if (media.type === 'text') { contentElement = modalText; }
                 if (contentElement) {
                     if (media.type === 'text') {
                         contentElement.innerHTML = '<em>Загрузка...</em>';
                         fetch(media.url).then(res => res.text()).then(text => contentElement.innerHTML = text).catch(err => contentElement.innerHTML = '<strong>Ошибка загрузки.</strong>');
-                    } else {
-                        contentElement.src = media.url;
-                    }
+                    } else { contentElement.src = media.url; }
                     contentElement.style.display = 'block';
-                    if ((media.type === 'video' || media.type === 'audio')) {
-                        contentElement.play();
-                    }
+                    if ((media.type === 'video' || media.type === 'audio')) { contentElement.play(); }
                 }
             }
-        
             mediaModal.style.display = 'flex';
         }
-
         const bookingModal = document.getElementById('bookingModal');
         const bookingFrame = document.getElementById('bookingFrame');
-
         function closeModal(modal) {
             modal.style.display = 'none';
             if (modal.id === 'mediaModal') {
                 [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => {
                     el.style.display = 'none';
                     if (el.tagName === 'VIDEO' || el.tagName === 'AUDIO') {
-                        el.pause();
-                        el.src = '';
+                        el.pause(); el.src = '';
                     } else if (el.tagName === 'IMG' || el.tagName === 'IFRAME') {
                         el.src = 'about:blank';
                     }
                 });
             }
-            if (modal.id === 'bookingModal') {
-                bookingFrame.src = '';
-            }
+            if (modal.id === 'bookingModal') { bookingFrame.src = ''; }
         }
         mediaModal.querySelector('.modal-close').onclick = () => closeModal(mediaModal);
         bookingModal.querySelector('.modal-close').onclick = () => closeModal(bookingModal);
-        
         document.getElementById('bookingBtn').onclick = () => {
             if (!CONFIG.bookingUrl && isAdmin) { alert('URL формы бронирования не указан в CONFIG'); return; }
             document.getElementById('iframe-wrapper').style.height = '90vh';
             bookingFrame.src = CONFIG.bookingUrl;
             bookingModal.style.display = 'flex';
         };
-
         window.addEventListener('message', function(event) {
             if (event.data && event.data.type === 'formHeight') {
                 const wrapper = document.getElementById('iframe-wrapper');
@@ -922,8 +877,7 @@
             updateButtonsAndIndicator();
         }
         function updateButtonsAndIndicator() {
-            // Теперь эта логика будет работать ТОЛЬКО если режим ленты выключен
-            if (!document.body.classList.contains('feed-mode')) {
+            if (!isFeedMode) {
                 prevBtn.parentElement.style.display = isCoverActive ? 'none' : 'flex';
                 pageIndicator.textContent = isCoverActive ? `0 / ${publishedPages.length}` : `${currentPage} / ${publishedPages.length}`;
             }
@@ -933,8 +887,7 @@
             return publishedPages[pageNumber - 2].narrationEndTime;
         }
         playPauseBtn.addEventListener('click', () => {
-            // Логика переключения с обложки на страницы теперь работает ТОЛЬКО в режиме книги
-            if (!document.body.classList.contains('feed-mode') && isCoverActive) {
+            if (!isFeedMode && isCoverActive) {
                 coverView.style.display = 'none';
                 bookView.style.display = 'flex';
                 isCoverActive = false;
@@ -942,16 +895,14 @@
                 audioPlayer.currentTime = 0;
                 audioPlayer.play();
             } else {
-                // А эта часть (просто плей/пауза) работает в обоих режимах
                 isPlaying ? audioPlayer.pause() : audioPlayer.play();
             }
         });
         audioPlayer.onplaying = () => { isPlaying = true; playPauseBtn.textContent = '❚❚'; };
         audioPlayer.onpause = () => { isPlaying = false; playPauseBtn.textContent = '▶'; };
         audioPlayer.onended = () => { isPlaying = false; playPauseBtn.textContent = '▶'; showPage(1); };
-        
         nextBtn.addEventListener('click', () => {
-            if (!document.body.classList.contains('feed-mode')) {
+            if (!isFeedMode) {
                 if (isCoverActive) {
                     coverView.style.display = 'none';
                     bookView.style.display = 'flex';
@@ -964,9 +915,8 @@
                 }
             }
         });
-
         prevBtn.addEventListener('click', () => {
-            if (!document.body.classList.contains('feed-mode')) {
+            if (!isFeedMode) {
                 if (isCoverActive) return;
                 if (currentPage > 1) {
                     const prevPage = currentPage - 1;
@@ -981,9 +931,8 @@
                 }
             }
         });
-
         audioPlayer.addEventListener('timeupdate', () => {
-            if (!document.body.classList.contains('feed-mode')) {
+            if (!isFeedMode) {
                 if (!isPlaying || isCoverActive) return;
                 const currentTime = audioPlayer.currentTime;
                 const targetPageData = publishedPages.find((p, index) => {
@@ -995,20 +944,22 @@
                 }
             }
         });
-            if (document.body.classList.contains('feed-mode')) {
-                const prevWrapper = document.getElementById('prevBtnWrapper');
-                const nextWrapper = document.getElementById('nextBtnWrapper');
-                const pageIndicator = document.getElementById('pageIndicator');
 
-                if (prevWrapper) prevWrapper.style.display = 'none';
-                if (nextWrapper) nextWrapper.style.display = 'none';
-                if (pageIndicator) pageIndicator.style.display = 'none';
-                }
-               // ---------------------------------------------------------
-        });
+        setupCover();
+        setupBookPages();
+        updateAdminPanel();
+        updateButtonsAndIndicator();
+        
+        if (isFeedMode) {
+            if (prevBtn) prevBtn.parentElement.style.display = 'none';
+            if (nextBtn) nextBtn.parentElement.style.display = 'none';
+            if (pageIndicator) pageIndicator.style.display = 'none';
+        }
+    });
     </script>
 </body>
 </html>
+
 
 
 
