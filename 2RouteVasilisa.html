@@ -193,7 +193,6 @@
             border-radius: 8px;
             max-width: 95vw;
             max-height: 90vh;
-            /* ИЗМЕНЕНО: убираем фиксированные размеры, будем задавать их динамически */
         }
         #modalText { background-color: #fff; padding: 25px; color: #333; overflow-y: auto; line-height: 1.6; }
         .modal-close { position: absolute; top: 20px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 1001; }
@@ -216,7 +215,6 @@
         #bookingBtn { background: #4CAF50; width: 40px; height: 40px; font-size: 20px; }
         #pageIndicator { font-size: 1.2em; font-weight: bold; color: #333; min-width: 50px; text-align: center; }
 
-        /* --- ИЗМЕНЕНО: СТИЛИ ДЛЯ IFRAME-КАРУСЕЛИ --- */
         #modalCarousel {
             display: flex;
             flex-direction: row;
@@ -227,17 +225,21 @@
             height: 90%;
             gap: 15px;
         }
-        /* Новая обертка для iframe */
         #carouselIframeWrapper {
             flex-grow: 1;
             width: 100%;
-            /* Высота будет управляться через aspect-ratio в JS */
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
         #carouselIframe {
-            width: 100%;
-            height: 100%;
+            flex-shrink: 0;
             border: none;
             border-radius: 8px;
+            transition: transform 0.3s ease;
+            transform-origin: center center;
         }
         .carousel-nav {
             flex-shrink: 0;
@@ -254,42 +256,25 @@
         .carousel-nav:hover {
             background: rgba(0,0,0,0.8);
         }
-        /* Адаптация для мобильных устройств */
         @media (max-width: 768px) {
             #modalCarousel {
                 flex-direction: column;
                 gap: 10px;
             }
-            /* ИЗМЕНЕНО: Адаптация для обертки */
             #carouselIframeWrapper {
                 order: 1;
                 width: 100%;
-                height: 80%; /* Запас высоты для мобильных */
-            }
-            #carouselIframe {
-                width: 100%;
-                height: 100%;
+                height: 80%;
             }
             .carousel-nav {
-                order: 2;
-                width: 80%;
-                height: auto;
-                display: flex;
-                justify-content: space-between;
-                background: none;
-                margin-top: 15px;
+                order: 2; width: 80%; height: auto; display: flex;
+                justify-content: space-between; background: none; margin-top: 15px;
             }
             #modalCarousel .carousel-nav.prev,
             #modalCarousel .carousel-nav.next {
-                font-size: 2em;
-                background: rgba(0,0,0,0.4);
-                border-radius: 50%;
-                height: 45px;
-                width: 45px;
-                padding: 0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
+                font-size: 2em; background: rgba(0,0,0,0.4); border-radius: 50%;
+                height: 45px; width: 45px; padding: 0; display: flex;
+                align-items: center; justify-content: center;
             }
         }
     </style>
@@ -327,7 +312,6 @@
     <div id="mediaModal" class="modal">
         <span class="modal-close">&times;</span>
         <div class="modal-header"></div>
-
         <div class="modal-content" id="modalText"></div>
         <img class="modal-content" id="modalPhoto" alt="Изображение">
         <video class="modal-content" id="modalVideo" controls playsinline></video>
@@ -371,22 +355,8 @@
                 hiddenDuration: 3.0
             },
             contactButtons: [
-                {
-                    visible: true,
-                    pulsing: true,
-                    url: 'https://wa.me/905366140347?text=Здравствуйте!%20Интересует%20бронирование.',
-                    icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#25D366"/><text x="12" y="16" font-size="10" text-anchor="middle" fill="white">WA</text></svg>',
-                    tooltip: 'Написать в WhatsApp',
-                    top: '90%', left: '15%'
-                },
-                {
-                    visible: true,
-                    pulsing: true,
-                    url: 'https://t.me/marmarisyachtingru?text=Здравствуйте!%20Интересует%20бронирование.',
-                    icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#0088cc"/><text x="12" y="16" font-size="10" text-anchor="middle" fill="white">TG</text></svg>',
-                    tooltip: 'Написать в Telegram',
-                    top: '90%', left: '85%'
-                }
+                { visible: true, pulsing: true, url: 'https://wa.me/905366140347?text=Здравствуйте!%20Интересует%20бронирование.', icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#25D366"/><text x="12" y="16" font-size="10" text-anchor="middle" fill="white">WA</text></svg>', tooltip: 'Написать в WhatsApp', top: '90%', left: '15%' },
+                { visible: true, pulsing: true, url: 'https://t.me/marmarisyachtingru?text=Здравствуйте!%20Интересует%20бронирование.', icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#0088cc"/><text x="12" y="16" font-size="10" text-anchor="middle" fill="white">TG</text></svg>', tooltip: 'Написать в Telegram', top: '90%', left: '85%' }
             ],
             routeSelector: {
                 visible: true,
@@ -402,115 +372,79 @@
                 ]
             },
             pages: [
-                // Страница 1
                 {
                     published: true,
                     text: `<h2> О маршруте. </h2><p>Название: Маршрут 2. Дневной яхтенный тур под парусом Мармарис-Кумлубюк с обедом на яхте. Продолжительность: 1 день. Время: 9:30 – 18:15. Аудитория: от 1 до 6 гостей, включая детей от 6 лет. Стоимость: 1000 долларов США (стандартный обед)/1300 долларов США (обед-гриль). Особенности: Эксклюзивный однодневный круиз, сочетающий панорамные виды побережья, долгий отдых с купанием в живописной бухте Кумлубюк и изысканный обед, приготовленный для вас прямо на борту яхты.</p>`,
                     narrationEndTime: 40,
                     extraMedia: [
-                        { 
-                            type: 'iframe', 
-                            buttonText: 'Наш маршрут на карте', 
-                            url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRpdxYPi6EBS7X21LMQxEvUAcdXCgHrBbrJ96rhr3TsMGc', 
-                            headerText: 'Маршрут 2. Дневной яхтенный тур под парусом Мармарис-Кумлубюк с обедом на яхте.', 
-                            footerText: '' 
-                        }
+                        { type: 'iframe', buttonText: 'Наш маршрут на карте', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRpdxYPi6EBS7X21LMQxEvUAcdXCgHrBbrJ96rhr3TsMGc', headerText: 'Маршрут 2. Дневной яхтенный тур под парусом Мармарис-Кумлубюк с обедом на яхте.', footerText: '' }
                     ],
                 },
-                // Страница 2
                 {
                     published: true,
                     text: `<h2> Парусный день в Кумлубюк: Гастрономический круиз на яхте.</h2><p>Посвятите день абсолютному наслаждению: это эксклюзивный дневной тур, где живописные пейзажи Эгейского моря сочетаются с изысканным обедом, приготовленным специально для вас прямо на борту яхты. Идеальный сценарий для особого случая или просто идеального дня в море. Приглашаем вас на борт комфортабельной парусной яхты для путешествия к знаменитому пляжу Кумлубюк. Вас ждет неспешный круиз вдоль панорамных берегов, почти шесть часов отдыха в уединенной бухте с купанием и водными развлечениями, и кульминация дня — гастрономический обед в открытом море. Этот тур создан для небольшой компании от 1 до 6 человек. Мы стремимся подарить вам истинное удовольствие от яхтинга, поэтому при благоприятных погодных условиях мы обязательно совершим переход под парусами. А для самых ярких фотографий белоснежный парус будет поднят в любом случае.</p>`,
                     narrationEndTime: 101,
                 },
-                // Страница 3
                 {
                     published: true,
                     text: `<h2> Программа путешествия: </h2><p>9:30 – Отправление и панорамный круиз Наше путешествие начнется из гавани Мармарис Яхт Марина. Следующие 90 минут мы посвятим неспешному переходу вдоль живописного побережья, наслаждаясь видами на Adakoy Marina, уединенные Козий и Вороний острова и знаменитый пляж Турунч. 11:00 – Отдых и обед в бухте Кумлубюк Мы бросим якорь в кристально чистых водах респектабельной бухты Кумлубюк почти на шесть часов. Это ваше время для полного расслабления: купайтесь, загорайте на палубе, исследуйте бухту на каяке или сап-борде. А мы позаботимся о вашем комфорте и гастрономических впечатлениях. Гастрономический опыт на борту. В течение дня мы будем рады предложить вам наш фирменный сервис: 11:30 — Приветственный чай, кофе и восточные сладости. 13:00 — Тарелка сочных сезонных фруктов для освежения. 14:30 — Комплексный обед (включен в стоимость 1000$): Салат "Чабан": Свежий микс из томатов черри, огурцов, перца и лука под заправкой из оливкового масла. Карбонара по-флотски: Классические спагетти Barilla №5 с пикантной говяжьей бастурмой, сливками, яйцом и настоящим сыром Parmigiano Reggiano. После обеда — чай, кофе и сладости. Обед-гриль (общая стоимость тура 1300$): Хотите сделать этот день еще более особенным? Выберите опцию с роскошным меню, приготовленным на гриле прямо на яхте: Сочные куриные крылья в соусе барбекю (300 гр.). Ароматный картофель в мундире на гриле (200 гр.). Шампиньоны на гриле (50 гр.). Свежий салат "Чабан" (150 гр.). 16:45 – Возвращение в Мармарис. Насладившись отдыхом, мы начинаем обратный 90-минутный переход в марину. Это прекрасное время, чтобы расслабиться на палубе и проводить солнце, окрашивающее береговую линию в золотые тона. 18:15 – Прибытие в Мармарис Яхт Марина.</p>`,
                     narrationEndTime: 240,
                 },
-                // Страница 4
                 {
                     published: true,
                     text: `<h2> Важные детали и сервисы. </h2><p>Важные детали и сервисы. В стоимость тура включено: Аренда парусной яхты с капитаном. Комплексный обед или обед-гриль на борту (в зависимости от выбранного варианта). Чай, кофе, питьевая вода в течение всего дня. Фруктовая тарелка и сладости к чаю. Пользование надувным каяком, сап-бордом, надувной "ватрушкой" и масками для плавания. Подарите себе день идеального отдыха, где каждая деталь продумана для вашего удовольствия!</p>`,
                     narrationEndTime: 272,
                 },
-                // Страница 5
                 {
                     published: true,
                     text: `<h2> Фото и Видео о маршруте </h2><p>.</p>`,
                     narrationEndTime: 480,
-                    mainVideo: { 
-                        type: 'iframe',
-                        url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQSe6WT-_Nt4QYem_P3qEx_3Abn7W0p9009H02uPVTxShdI',
-                        headerText: 'Видео: Выход из Мармарис Яхт Марины',
-                        footerText: ''
-                    },
+                    mainVideo: { type: 'iframe', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQSe6WT-_Nt4QYem_P3qEx_3Abn7W0p9009H02uPVTxShdI', headerText: 'Видео: Выход из Мармарис Яхт Марины', footerText: '' },
                     extraMedia: [
                         {
                             type: 'carousel',
                             buttonText: 'Фото нашего маршрута',
                             headerText: 'Фотографии',
                             images: [
-                                // ИЗМЕНЕНО: Добавлены width и height для каждого фото
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'Вид на Кумлубюк', width: 1513, height: 951 },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQTbA-9y3P1aQY6p-qQ3fGqgAYq8Lw5qD7zP8A6F7Qn8Zw?action=embedview', caption: 'Бухта Кумлубюк', width: 1600, height: 1200 },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQT7_n8wP_Y9Sp2qI_5qY4J-Ad9qZ_9qZ_9qZ_9qZ_9qZw?action=embedview', caption: 'Панорама', width: 1920, height: 1080 }
+                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'BAVARIA C45 - Фото 1', width: 1513, height: 951 },
+                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'BAVARIA C45 - Фото 2', width: 1513, height: 951 },
+                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'BAVARIA C45 - Фото 3', width: 1513, height: 951 },
+                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'BAVARIA C45 - Фото 4', width: 1513, height: 951 },
+                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'BAVARIA C45 - Фото 5', width: 1513, height: 951 }
                             ]
                         },
-                        { 
-                            type: 'iframe', 
-                            buttonText: 'Видеообзор яхты', 
-                            url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0', 
-                            headerText: 'Кумлюбюк', 
-                            footerText: '' 
-                        }
+                        { type: 'iframe', buttonText: 'Видеообзор яхты', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0', headerText: 'Кумлубюк', footerText: '' }
                     ],
                 },
-                // Страница 6
                 {
                     published: true,
-                    text: `<h2> О яхте Bavaria C45. </h2><p>Яхта произведена в Германии в 2022 году. Модель BAVARIA C45... (текст без изменений)</p>`,
+                    text: `<h2> О яхте Bavaria C45. </h2><p>Яхта произведена в Германии в 2022 году. Модель BAVARIA C45. На площади более 60 м² организовано уютное пространство для путешествий. ... (здесь ваш полный текст о яхте) ...</p>`,
                     narrationEndTime: 427,
-                    mainVideo: {
-                        url: 'https://www.youtube.com/embed/Dp2g78eqw18',
-                        headerText: 'Видео: Bavaria C45 - яхта для вашего путешествия',
-                        footerText: 'BAVARIA C45 на площади более 60 м² организовано уютное пространство для путешествий.'
-                    },
+                    mainVideo: { url: 'https://www.youtube.com/embed/Dp2g78eqw18', headerText: 'Видео: Bavaria C45 - яхта для вашего путешествия', footerText: 'BAVARIA C45 на площади более 60 м² организовано уютное пространство для путешествий.' },
                     extraMedia: [
                         {
                             type: 'carousel',
                             buttonText: 'Фото Яхты',
                             headerText: 'Фотографии BAVARIA C45',
                             images: [
-                                // ИЗМЕНЕНО: Добавлены width и height для каждого фото
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQTt0pbjcDOaQ4EzOYUnlLjFAcFIzWiG_6RGa8MxNqsnAE8?action=embedview', caption: 'BAVARIA C45 - Фото 1', width: 931, height: 616 },
+                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQTt0pbjcDOaQ4EzOYUnlLjFAcFIzWiG_6RGa8MxNqsnAE8?action=embedview', caption: 'BAVARIA C45- Фото 1', width: 931, height: 616 },
                                 { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQSyu_NPfwz-Q7vkjqlgRWihAQq3NPmk8Zii_vvq84r6MCY?action=embedview', caption: 'BAVARIA C45 - Фото 2', width: 1155, height: 707 },
                                 { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQSb6bzlT7ajSY3Vab9F66BoARTPNHSaB2JzYE_nQOKkzrI?action=embedview', caption: 'BAVARIA C45 - Фото 3', width: 930, height: 608 },
                                 { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQRlrsLTzjuKSqCYH3WZKC9YAQVRQHT_n24533Iaa3eBS9I?action=embedview', caption: 'BAVARIA C45 - Фото 4', width: 1056, height: 836 },
                                 { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQST2enSQDURTKzus8inBLBFAXMJKUZCryc5LEUuQlwl9bo?action=embedview', caption: 'BAVARIA C45 - Фото 5', width: 1132, height: 685 }
                             ]
                         },
-                        { 
-                            type: 'iframe',
-                            buttonText: '360° тур по яхте',
-                            url: 'https://360.bavariayachts.com/2021/tours/index_en.html?nav_id=5491-135719',
-                            headerText: '360° тур по яхте',
-                            footerText: ''
-                        },
-                        { 
-                            type: 'iframe', 
-                            buttonText: 'Видеообзор яхты', 
-                            url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0', 
-                            headerText: 'Видеообзор яхты', 
-                            footerText: '' 
-                        }
+                        { type: 'iframe', buttonText: '360° тур по яхте', url: 'https://360.bavariayachts.com/2021/tours/index_en.html?nav_id=5491-135719', headerText: '360° тур по яхте', footerText: '' },
+                        { type: 'iframe', buttonText: 'Видеообзор яхты', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0', headerText: 'Видеообзор яхты', footerText: '' }
                     ],
-                }
+                },
+                {
+                    published: false,
+                    text: `<h2> Шаблон </h2><p>Название: Шаблон</p>`,
+                    narrationEndTime: 510,
+                },
             ]
         };
-        
-        // --- ДАЛЕЕ СЛЕДУЕТ ИСПОЛНЯЕМЫЙ КОД ---
         
         const isAdmin = new URLSearchParams(window.location.search).get('admin') === 'true';
         const adminErrors = [];
@@ -736,36 +670,35 @@
             [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => {
                 el.style.display = 'none';
                 if(el.tagName === 'VIDEO' || el.tagName === 'AUDIO') { el.src = ''; el.pause(); } 
-                else if (el.tagName === 'IMG' || el.tagName === 'IFRAME') { el.src = ''; }
+                else if (el.tagName === 'IMG' || el.tagName === 'IFRAME') { el.src = 'about:blank'; }
             });
         
             mediaModal.querySelector('.modal-header').textContent = media.headerText || '';
             mediaModal.querySelector('.modal-footer').textContent = ''; 
             
             if (media.type === 'carousel' && media.images && media.images.length > 0) {
-                const carouselIframeWrapper = document.getElementById('carouselIframeWrapper');
-                const carouselIframe = document.getElementById('carouselIframe');
-                
                 currentCarouselImages = media.images;
                 currentCarouselIndex = 0;
 
                 function showCarouselSlide(index) {
+                    const wrapper = document.getElementById('carouselIframeWrapper');
+                    const iframe = document.getElementById('carouselIframe');
                     const slideData = currentCarouselImages[index];
-                    
-                    // ИЗМЕНЕНО: Обработка размеров
-                    if (slideData.width && slideData.height) {
-                        carouselIframeWrapper.style.aspectRatio = `${slideData.width} / ${slideData.height}`;
-                        carouselIframeWrapper.style.height = 'auto';
-                    } else {
-                        // Сброс, если размеры не указаны
-                        carouselIframeWrapper.style.aspectRatio = 'auto';
-                        carouselIframeWrapper.style.height = '100%';
-                    }
 
-                    if (slideData.url) {
-                        carouselIframe.src = slideData.url;
+                    if (!slideData || !slideData.url || !slideData.width || !slideData.height) {
+                        console.error('Данные для слайда неполные:', slideData);
+                        iframe.src = 'about:blank';
+                        return;
                     }
-                    
+                    const containerWidth = wrapper.clientWidth;
+                    const containerHeight = wrapper.clientHeight;
+                    iframe.width = slideData.width;
+                    iframe.height = slideData.height;
+                    const scaleX = containerWidth / slideData.width;
+                    const scaleY = containerHeight / slideData.height;
+                    const scale = Math.min(scaleX, scaleY);
+                    iframe.style.transform = `scale(${scale})`;
+                    iframe.src = slideData.url;
                     mediaModal.querySelector('.modal-footer').textContent = slideData.caption || '';
                     carouselPrevBtn.style.visibility = (index === 0) ? 'hidden' : 'visible';
                     carouselNextBtn.style.visibility = (index === currentCarouselImages.length - 1) ? 'hidden' : 'visible';
@@ -794,13 +727,12 @@
                 let contentElement;
 
                 if (media.type === 'iframe') {
-                    // ИЗМЕНЕНО: Обработка размеров для одиночного iframe
                     if (media.width && media.height) {
                         modalIframe.style.aspectRatio = `${media.width} / ${media.height}`;
                         modalIframe.style.width = 'auto';
                         modalIframe.style.height = 'auto';
                     } else {
-                        modalIframe.style.aspectRatio = '16 / 9'; // Значение по умолчанию
+                        modalIframe.style.aspectRatio = '16 / 9';
                         modalIframe.style.width = '90%';
                         modalIframe.style.height = '80%';
                     }
@@ -855,7 +787,7 @@
                         el.pause();
                         el.src = '';
                     } else if (el.tagName === 'IMG' || el.tagName === 'IFRAME') {
-                        el.src = '';
+                        el.src = 'about:blank';
                     }
                 });
             }
@@ -951,3 +883,4 @@
     </script>
 </body>
 </html>
+
