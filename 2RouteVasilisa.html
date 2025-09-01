@@ -150,6 +150,7 @@
             margin-top: 15px; text-align: left; font-size: 1.1em; line-height: 1.6;
             color: #333; overflow-y: auto; width: 100%;
             padding-right: 10px; flex-grow: 1; min-height: 0;
+            box-sizing: border-box; /* <-- Вот это исправление */
         }
         .page-buttons-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 15px; flex-shrink: 0; }
         .page-btn { color: white; border: none; border-radius: 8px; padding: 10px 20px; font-size: 1em; cursor: pointer; transition: background-color 0.3s; }
@@ -936,6 +937,7 @@
     </script>
 </body>
 </html>
+
 
 
 
