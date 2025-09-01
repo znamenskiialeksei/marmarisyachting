@@ -276,41 +276,42 @@
                 height: 45px; width: 45px; padding: 0; display: flex;
                 align-items: center; justify-content: center;
             }
-            /* --- СТИЛИ ДЛЯ РЕЖИМА ЛЕНТЫ НА МОБИЛЬНЫХ --- */
-            .feed-mode {
-                height: auto;
-                overflow-y: auto;
-                overflow-x: hidden;
-            }
-            .feed-mode .content-view {
-                display: block !important;
-                position: relative;
-                height: auto;
-            }
-            .feed-mode #cover-view {
-                height: 100vh; /* Обложка занимает первый экран */
-                height: 100svh;
-            }
-            .feed-mode .page {
-                position: relative;
-                opacity: 1 !important;
-                visibility: visible !important;
-                min-height: 80vh; /* Каждая страница как отдельная секция */
-                border-bottom: 1px solid #e0e0e0;
-                padding-bottom: 80px; /* Отступ снизу, чтобы не перекрывалось панелью */
-            }
-            .feed-mode .controls {
-                position: sticky; /* Прилипающая панель */
-                bottom: 0;
-                z-index: 1000;
-                width: 100%;
-            }
-             /* Скрываем ненужные в режиме ленты элементы */
-            .feed-mode #prevBtn,
-            .feed-mode #nextBtn,
-            .feed-mode #pageIndicator {
-                display: none;
-            }   
+        }
+        
+        .feed-mode {
+            height: auto;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        .feed-mode .content-view {
+            display: block !important;
+            position: relative;
+            height: auto;
+        }
+        .feed-mode #cover-view {
+            height: 100vh;
+            height: 100svh;
+        }
+        .feed-mode .page {
+            position: relative;
+            opacity: 1 !important;
+            visibility: visible !important;
+            min-height: 80vh;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 80px;
+        }
+        .feed-mode .controls {
+            position: sticky;
+            bottom: 0;
+            z-index: 1000;
+            width: 100%;
+        }
+        .feed-mode #prevBtn,
+        .feed-mode #nextBtn,
+        .feed-mode #pageIndicator,
+        .feed-mode #prevBtn + .button-label,
+        .feed-mode #nextBtn + .button-label {
+            display: none;
         }
     </style>
 </head>
@@ -372,14 +373,10 @@
     </div>
     <audio id="narrationAudio" preload="auto"></audio>
     <script>
-         document.addEventListener('DOMContentLoaded', function() {
-        // ---- ДОБАВЬТЕ ЭТОТ БЛОК В НАЧАЛО СКРИПТА ----
-        if (CONFIG.mobileFeedMode && window.innerWidth < 768) {
-            document.body.classList.add('feed-mode');
-        }
-            const CONFIG = {
-                mobileFeedMode: true, // <-- ДОБАВЬТЕ ЭТУ СТРОКУ
-                mainTitle: 'Маршрут 2.2 Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
+    document.addEventListener('DOMContentLoaded', function() {
+        const CONFIG = {
+            mobileFeedMode: true,
+            mainTitle: 'Маршрут 2. Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
             audioUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisyachting/main/2RouteAudioVasilisa.mp3',
             bookingUrl: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route2',
             coverVideoUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4',
@@ -453,7 +450,7 @@
                                 { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'BAVARIA C45 - Фото 5', width: 1513, height: 951 }
                             ]
                         },
-                        { type: 'iframe', buttonText: 'Видеообзор яхты', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0', headerText: 'Кумлубюк', footerText: '' }
+                        { type: 'iframe', buttonText: 'Видеообзор яхты', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0', headerText: 'Кумлюбюк', footerText: '' }
                     ],
                 },
                 {
@@ -486,6 +483,11 @@
             ]
         };
         
+        // --- ИСПРАВЛЕННАЯ ЛОГИКА АКТИВАЦИИ РЕЖИМА ЛЕНТЫ ---
+        if (CONFIG.mobileFeedMode && window.innerWidth < 768) {
+            document.body.classList.add('feed-mode');
+        }
+
         const isAdmin = new URLSearchParams(window.location.search).get('admin') === 'true';
         const adminErrors = [];
         const publishedPages = CONFIG.pages.filter(p => p.published);
@@ -757,15 +759,11 @@
                         showCarouselSlide(currentCarouselIndex);
                     }
                 };
-
-                // ---- ИЗМЕНЕНИЕ ЗДЕСЬ ----
-                // Сначала делаем блок видимым
+                
                 modalCarousel.style.display = 'flex';
-                // И только потом, с минимальной задержкой, показываем первый слайд
                 setTimeout(() => {
                     showCarouselSlide(0); 
-                }, 50); // 50 миллисекунд достаточно для отрисовки
-                // -------------------------
+                }, 50);
 
             } else {
                 mediaModal.querySelector('.modal-footer').textContent = media.footerText || '';
@@ -888,8 +886,8 @@
         audioPlayer.onplaying = () => { isPlaying = true; playPauseBtn.textContent = '❚❚'; };
         audioPlayer.onpause = () => { isPlaying = false; playPauseBtn.textContent = '▶'; };
         audioPlayer.onended = () => { isPlaying = false; playPauseBtn.textContent = '▶'; showPage(1); };
+        
         nextBtn.addEventListener('click', () => {
-            // Оборачиваем всю логику в условие
             if (!document.body.classList.contains('feed-mode')) {
                 if (isCoverActive) {
                     coverView.style.display = 'none';
@@ -905,7 +903,6 @@
         });
 
         prevBtn.addEventListener('click', () => {
-            // Оборачиваем всю логику в условие
             if (!document.body.classList.contains('feed-mode')) {
                 if (isCoverActive) return;
                 if (currentPage > 1) {
@@ -923,7 +920,6 @@
         });
 
         audioPlayer.addEventListener('timeupdate', () => {
-            // Оборачиваем всю логику в условие
             if (!document.body.classList.contains('feed-mode')) {
                 if (!isPlaying || isCoverActive) return;
                 const currentTime = audioPlayer.currentTime;
@@ -940,6 +936,7 @@
     </script>
 </body>
 </html>
+
 
 
 
