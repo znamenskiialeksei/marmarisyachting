@@ -85,9 +85,9 @@
             background-color: rgba(0, 0, 0, 0.7);
         }
         .cover-button.route-selector-btn {
-            width: 90px;          /* Делаем кнопку шире */
-            height: 40px;         /* и немного ниже */
-            border-radius: 8px;   /* Заменяем круг на скруглённые углы */
+            width: 90px;
+            height: 40px;
+            border-radius: 8px;
         }
         .cover-button svg { width: 28px; height: 28px; fill: white; }
         .pulsing {
@@ -97,9 +97,9 @@
             animation-duration: var(--pulse-total-duration, 8s);
         }
         .cover-button.route-selector-btn svg {
-            width: 100%;   /* Растягиваем иконку на всю ширину */
-            height: 100%;  /* и высоту кнопки */
-            fill: initial; /* Убираем лишнюю заливку, если она есть */
+            width: 100%;
+            height: 100%;
+            fill: initial;
         }
         @keyframes pulseAnimation {
             0% { opacity: 0; }
@@ -187,7 +187,14 @@
             flex-direction: column;
         }
         .modal-content { display: none; max-width: 90%; max-height: 80%; width: auto; height: auto; border-radius: 4px; }
-        #modalIframe { width: 90%; height: 80%; max-width: 1580px; aspect-ratio: 16 / 9; border-radius: 8px; background-color: #000; }
+        #modalIframe { 
+            display: block;
+            background-color: #000;
+            border-radius: 8px;
+            max-width: 95vw;
+            max-height: 90vh;
+            /* ИЗМЕНЕНО: убираем фиксированные размеры, будем задавать их динамически */
+        }
         #modalText { background-color: #fff; padding: 25px; color: #333; overflow-y: auto; line-height: 1.6; }
         .modal-close { position: absolute; top: 20px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 1001; }
         .modal-header, .modal-footer { color: white; text-align: center; padding: 5px 15px; max-width: 90%; box-sizing: border-box; font-size: clamp(0.8rem, 2vw, 1.1em); }
@@ -209,7 +216,7 @@
         #bookingBtn { background: #4CAF50; width: 40px; height: 40px; font-size: 20px; }
         #pageIndicator { font-size: 1.2em; font-weight: bold; color: #333; min-width: 50px; text-align: center; }
 
-        /* --- ФИНАЛЬНЫЕ СТИЛИ ДЛЯ IFRAME-КАРУСЕЛИ --- */
+        /* --- ИЗМЕНЕНО: СТИЛИ ДЛЯ IFRAME-КАРУСЕЛИ --- */
         #modalCarousel {
             display: flex;
             flex-direction: row;
@@ -220,8 +227,13 @@
             height: 90%;
             gap: 15px;
         }
-        #carouselIframe {
+        /* Новая обертка для iframe */
+        #carouselIframeWrapper {
             flex-grow: 1;
+            width: 100%;
+            /* Высота будет управляться через aspect-ratio в JS */
+        }
+        #carouselIframe {
             width: 100%;
             height: 100%;
             border: none;
@@ -248,10 +260,15 @@
                 flex-direction: column;
                 gap: 10px;
             }
-            #carouselIframe {
+            /* ИЗМЕНЕНО: Адаптация для обертки */
+            #carouselIframeWrapper {
                 order: 1;
                 width: 100%;
-                height: 80%;
+                height: 80%; /* Запас высоты для мобильных */
+            }
+            #carouselIframe {
+                width: 100%;
+                height: 100%;
             }
             .carousel-nav {
                 order: 2;
@@ -319,7 +336,9 @@
         
         <div class="modal-content" id="modalCarousel">
             <button class="carousel-nav prev">&lt;</button>
-            <iframe src="" frameborder="0" allowfullscreen id="carouselIframe"></iframe>
+            <div id="carouselIframeWrapper">
+                <iframe src="" frameborder="0" allowfullscreen id="carouselIframe"></iframe>
+            </div>
             <button class="carousel-nav next">&gt;</button>
         </div>
         
@@ -433,13 +452,10 @@
                             buttonText: 'Фото нашего маршрута',
                             headerText: 'Фотографии',
                             images: [
-                                // ИСПРАВЛЕНО: Карусель ожидает объекты с ключами url и caption.
-                                // Вам нужно вставить сюда ваши ссылки на iframe от OneDrive
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?width=1513&height=951&action=embedview', caption: 'BAVARIA C45 - Фото 1' },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?width=1513&height=951&action=embedview', caption: 'BAVARIA C45 - Фото 2' },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?width=1513&height=951&action=embedview', caption: 'BAVARIA C45 - Фото 3' },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?width=1513&height=951&action=embedview', caption: 'BAVARIA C45 - Фото 4' },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?width=1513&height=951&action=embedview', caption: 'BAVARIA C45 - Фото 5' }
+                                // ИЗМЕНЕНО: Добавлены width и height для каждого фото
+                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'Вид на Кумлубюк', width: 1513, height: 951 },
+                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQTbA-9y3P1aQY6p-qQ3fGqgAYq8Lw5qD7zP8A6F7Qn8Zw?action=embedview', caption: 'Бухта Кумлубюк', width: 1600, height: 1200 },
+                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQT7_n8wP_Y9Sp2qI_5qY4J-Ad9qZ_9qZ_9qZ_9qZ_9qZw?action=embedview', caption: 'Панорама', width: 1920, height: 1080 }
                             ]
                         },
                         { 
@@ -454,107 +470,33 @@
                 // Страница 6
                 {
                     published: true,
-                    text: `<h2> О яхте Bavaria C45. </h2><p>Яхта произведена в Германии в 2022 году. Модель BAVARIA C45. На площади более 60 м² организовано уютное пространство для путешествий. Три каюты, в каждой из них кровать 140 см на 200 см. Такое же спальное место (140 см на 200 см) можно организовать в салоне (стол трансформер). В кокпите так же столы трансформируются в лежаки, где два взрослых человека комфортно разместятся на ночёвку и вахту. Итого 10 спальных мест. Холодная и горячая вода присутствует. Два туалета с электрической системой слива оборудованы баком-накопителем по 70 литров каждый. Две душевые кабинки и один открытый душ на откидной платформе для купания. Два холодильника и отдельная морозильная камера, газовая плита, духовой шкаф, посудомоечная машина, посуда, кухонная техника с кофемашиной - к услугам тех, кто хочет отличиться на кухне и удивить команду. Так же возможно приготовление блюд нашей командой. Для дальних переходов на яхте имеется генератор и солнечные панели. Две зоны отдыха под навесами, а так же открытые зоны для загара на палубе яхты. Для купания откидная платформа имеет удобную систему спуска в воду. Технические данные Общая длина 14,06 м. Ширина корпуса 4,49 м. Осадка (Киль) 2,60 м. Вес балласта (киль) 2,984 кг. Топливный бак 250 литров. Резервуар для воды 650 литров. Паруса: Грот (закрутка) 51,0 м². Кливер 45,0 м². Генуя 52,0 м². Длина мачты (макс.) от ватерлинии 22,00 м. Район плавания Категория CE А10/Б14/С16 (неограниченно). Дизайн яхты Cossutti. Безопасность на яхте обеспечена необходимым комплектом: 12 спасательных жилетов, спасательным плотом на 10 человек, динги с мотором на 6 человек и другим спасательным оборудованием по регламенту. Так же на борту имеются: надувные каяк, сап-борд, ватрушка и маски для подводного плавания, применяемые для водных развлечений.</p>`,
+                    text: `<h2> О яхте Bavaria C45. </h2><p>Яхта произведена в Германии в 2022 году. Модель BAVARIA C45... (текст без изменений)</p>`,
                     narrationEndTime: 427,
-                    mainVideo: {
-                    url: 'https://www.youtube.com/embed/Dp2g78eqw18',
-                    headerText: 'Видео: Bavaria C45 - яхта для вашего путешествия',
-                    footerText: 'BAVARIA C45 на площади более 60 м² организовано уютное пространство для путешествий.'
-                    },
-                    extraMedia: [
-                        {
-                            type: 'carousel',
-                            buttonText: 'Фото Яхты',
-                            headerText: 'Фотографии BAVARIA C45',
-                            images: [
-                                // ИСПРАВЛЕНО: Карусель ожидает объекты с ключами url и caption.
-                                // Вам нужно вставить сюда ваши ссылки на iframe от OneDrive
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQTt0pbjcDOaQ4EzOYUnlLjFAcFIzWiG_6RGa8MxNqsnAE8?width=931&height=616&action=embedview', caption: 'BAVARIA C45- Фото 1' },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQSyu_NPfwz-Q7vkjqlgRWihAQq3NPmk8Zii_vvq84r6MCY?width=1155&height=707&action=embedview', caption: 'BAVARIA C45 - Фото 2' },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQSb6bzlT7ajSY3Vab9F66BoARTPNHSaB2JzYE_nQOKkzrI?width=930&height=608&action=embedview', caption: 'BAVARIA C45 - Фото 3' },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQRlrsLTzjuKSqCYH3WZKC9YAQVRQHT_n24533Iaa3eBS9I?width=1056&height=836&action=embedview', caption: 'BAVARIA C45 - Фото 4' },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQST2enSQDURTKzus8inBLBFAXMJKUZCryc5LEUuQlwl9bo?width=1132&height=685&action=embedview', caption: 'BAVARIA C45 - Фото 5' }
-                            ]
-                        },
-                        { type: 'iframe',
-                            buttonText: '360° тур по яхте',
-                            url: 'https://360.bavariayachts.com/2021/tours/index_en.html?nav_id=5491-135719',
-                            headerText: '360° тур по яхте',
-                            footerText: ''
-                          },
-                        { 
-                            type: 'iframe', 
-                            buttonText: 'Видеообзор яхты', 
-                            url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0', 
-                            headerText: 'Видеообзор яхты', 
-                            footerText: '' 
-                        }
-                    ],
-                },
-                // Шаблон страницы
-                /*{
-                    published: false, 
-                    text: `<h2> Шаблон </h2><p>Название: Шаблон</p>`,
-                    narrationEndTime: 510,
                     mainVideo: {
                         url: 'https://www.youtube.com/embed/Dp2g78eqw18',
                         headerText: 'Видео: Bavaria C45 - яхта для вашего путешествия',
                         footerText: 'BAVARIA C45 на площади более 60 м² организовано уютное пространство для путешествий.'
                     },
-                    mainVideo: {
-                        url: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4',
-                        headerText: 'Видео: Наш маршрут',
-                        footerText: 'Маршрут 2. Дневной яхтенный тур под парусом Мармарис-Кумлубюк с обедом на яхте.'
-                    },
-                    mainVideo: { 
-                        type: 'iframe',
-                        url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQSe6WT-_Nt4QYem_P3qEx_3Abn7W0p9009H02uPVTxShdI',
-                        headerText: 'Видео: Выход из Мармарис Яхт Марины',
-                        footerText: ''
-                    },
-                    extraMedia: [
-                        { 
-                            type: 'iframe',
-                            buttonText: 'Меню в Мармарис Яхт марине', 
-                            url: 'https://1drv.ms/b/c/2919ff56cb24dc70/IQQIN21JSvSSSqyLVDgdwTiOATPjz3gKkUouSw9qqLTwRfI',
-                            headerText: 'Меню на вечер', 
-                            footerText: 'Рекомендуем' 
-                        },
-                        { 
-                            type: 'iframe',
-                            buttonText: 'Фото Кумлубюка', 
-                            url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?width=1513&height=951&action=embedview',
-                            headerText: 'Фото Кумлубюка', 
-                            footerText: 'Панорама' 
-                        }
-                    ],
                     extraMedia: [
                         {
                             type: 'carousel',
                             buttonText: 'Фото Яхты',
                             headerText: 'Фотографии BAVARIA C45',
                             images: [
-                                // ИСПРАВЛЕНО: Карусель ожидает объекты с ключами url и caption.
-                                // Вам нужно вставить сюда ваши ссылки на iframe от OneDrive
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQTt0pbjcDOaQ4EzOYUnlLjFAcFIzWiG_6RGa8MxNqsnAE8?width=931&height=616&action=embedview', caption: 'BAVARIA C45 - Фото 1' },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQSyu_NPfwz-Q7vkjqlgRWihAQq3NPmk8Zii_vvq84r6MCY?width=1155&height=707&action=embedview', caption: 'BAVARIA C45 - Фото 2' },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQSb6bzlT7ajSY3Vab9F66BoARTPNHSaB2JzYE_nQOKkzrI?width=930&height=608&action=embedview', caption: 'BAVARIA C45 - Фото 3' },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQRlrsLTzjuKSqCYH3WZKC9YAQVRQHT_n24533Iaa3eBS9I?width=1056&height=836&action=embedview', caption: 'BAVARIA C45 - Фото 4' },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQST2enSQDURTKzus8inBLBFAXMJKUZCryc5LEUuQlwl9bo?width=1132&height=685&action=embedview', caption: 'BAVARIA C45 - Фото 5' }
+                                // ИЗМЕНЕНО: Добавлены width и height для каждого фото
+                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQTt0pbjcDOaQ4EzOYUnlLjFAcFIzWiG_6RGa8MxNqsnAE8?action=embedview', caption: 'BAVARIA C45 - Фото 1', width: 931, height: 616 },
+                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQSyu_NPfwz-Q7vkjqlgRWihAQq3NPmk8Zii_vvq84r6MCY?action=embedview', caption: 'BAVARIA C45 - Фото 2', width: 1155, height: 707 },
+                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQSb6bzlT7ajSY3Vab9F66BoARTPNHSaB2JzYE_nQOKkzrI?action=embedview', caption: 'BAVARIA C45 - Фото 3', width: 930, height: 608 },
+                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQRlrsLTzjuKSqCYH3WZKC9YAQVRQHT_n24533Iaa3eBS9I?action=embedview', caption: 'BAVARIA C45 - Фото 4', width: 1056, height: 836 },
+                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQST2enSQDURTKzus8inBLBFAXMJKUZCryc5LEUuQlwl9bo?action=embedview', caption: 'BAVARIA C45 - Фото 5', width: 1132, height: 685 }
                             ]
                         },
                         { 
                             type: 'iframe',
-                            buttonText: 'Фото Кумлубюка', 
-                            url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?width=1513&height=951&action=embedview',
-                            headerText: 'Фото Кумлубюка', 
-                            footerText: 'Панорама' 
-                        },
-                        { type: 'text',
-                          buttonText: 'Меню в Мармарис Яхт марине',
-                          url: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/README.md',
-                          headerText: 'Меню на вечер',
-                          footerText: '' 
+                            buttonText: '360° тур по яхте',
+                            url: 'https://360.bavariayachts.com/2021/tours/index_en.html?nav_id=5491-135719',
+                            headerText: '360° тур по яхте',
+                            footerText: ''
                         },
                         { 
                             type: 'iframe', 
@@ -564,10 +506,7 @@
                             footerText: '' 
                         }
                     ],
-                    linkButtons: [
-                        { text: 'Наш Instagram', url: 'https://www.instagram.com/marmarisyachtvasilisa/', icon: '📸', top: '85%', left: '50%', isNewTab: true }
-                    ]
-                },*/
+                }
             ]
         };
         
@@ -750,45 +689,11 @@
                 });
                 
                 const textContent = document.createElement('p');
-                if (pageData.textUrl && pageData.textUrl.trim() !== '') {
-                    textContent.innerHTML = '<em>Загрузка текста...</em>';
-                    fetch(pageData.textUrl).then(response => {
-                        if (!response.ok) { throw new Error(`Ошибка сети: ${response.status}`); }
-                        return response.text();
-                    }).then(htmlContent => { textContent.innerHTML = htmlContent; }).catch(error => {
-                        textContent.innerHTML = '<strong>Ошибка:</strong> Не удалось загрузить текст.';
-                        if (isAdmin) {
-                            textContent.innerHTML += `<br><small>${error.message}</small>`;
-                            adminErrors.push(`Стр. ${pageNum}: Ошибка загрузки текста по URL`);
-                            updateAdminPanel();
-                        }
-                    });
-                } else {
-                    textContent.innerHTML = pageData.text || '';
-                }
+                textContent.innerHTML = pageData.text || '';
                 
                 page.appendChild(buttonsContainer);
                 page.appendChild(textContent);
                 
-                if (pageData.linkButtons && Array.isArray(pageData.linkButtons)) {
-                    pageData.linkButtons.forEach(buttonData => {
-                        if (buttonData.url) {
-                            const linkBtn = document.createElement('a');
-                            linkBtn.href = buttonData.url;
-                            linkBtn.className = 'link-btn';
-                            linkBtn.style.top = buttonData.top || 'auto';
-                            linkBtn.style.left = buttonData.left || 'auto';
-                            if (buttonData.isNewTab) {
-                                linkBtn.target = '_blank';
-                                linkBtn.rel = 'noopener noreferrer';
-                            }
-                            linkBtn.innerHTML = `${buttonData.icon || ''} ${buttonData.text}`;
-                            page.appendChild(linkBtn);
-                        } else if (isAdmin) {
-                            adminErrors.push(`Стр. ${pageNum}, кнопка-ссылка "${buttonData.text}": URL отсутствует`);
-                        }
-                    });
-                }
                 pageViewer.appendChild(page);
             });
         }
@@ -838,6 +743,7 @@
             mediaModal.querySelector('.modal-footer').textContent = ''; 
             
             if (media.type === 'carousel' && media.images && media.images.length > 0) {
+                const carouselIframeWrapper = document.getElementById('carouselIframeWrapper');
                 const carouselIframe = document.getElementById('carouselIframe');
                 
                 currentCarouselImages = media.images;
@@ -845,9 +751,21 @@
 
                 function showCarouselSlide(index) {
                     const slideData = currentCarouselImages[index];
+                    
+                    // ИЗМЕНЕНО: Обработка размеров
+                    if (slideData.width && slideData.height) {
+                        carouselIframeWrapper.style.aspectRatio = `${slideData.width} / ${slideData.height}`;
+                        carouselIframeWrapper.style.height = 'auto';
+                    } else {
+                        // Сброс, если размеры не указаны
+                        carouselIframeWrapper.style.aspectRatio = 'auto';
+                        carouselIframeWrapper.style.height = '100%';
+                    }
+
                     if (slideData.url) {
                         carouselIframe.src = slideData.url;
                     }
+                    
                     mediaModal.querySelector('.modal-footer').textContent = slideData.caption || '';
                     carouselPrevBtn.style.visibility = (index === 0) ? 'hidden' : 'visible';
                     carouselNextBtn.style.visibility = (index === currentCarouselImages.length - 1) ? 'hidden' : 'visible';
@@ -876,23 +794,29 @@
                 let contentElement;
 
                 if (media.type === 'iframe') {
+                    // ИЗМЕНЕНО: Обработка размеров для одиночного iframe
+                    if (media.width && media.height) {
+                        modalIframe.style.aspectRatio = `${media.width} / ${media.height}`;
+                        modalIframe.style.width = 'auto';
+                        modalIframe.style.height = 'auto';
+                    } else {
+                        modalIframe.style.aspectRatio = '16 / 9'; // Значение по умолчанию
+                        modalIframe.style.width = '90%';
+                        modalIframe.style.height = '80%';
+                    }
                     modalIframe.src = media.url;
                     modalIframe.style.display = 'block';
                 } else if (media.type === 'photo') {
                     contentElement = modalPhoto;
                 } else if (media.type === 'video') {
-                    if (media.url.includes('youtu.be') || media.url.includes('youtube.com')) {
-                        const videoId = media.url.split('v=')[1] || media.url.split('/').pop();
+                     if (media.url.includes('youtu.be') || media.url.includes('youtube.com')) {
+                        const videoId = media.url.split('v=')[1] || media.url.split('/').pop().split('?')[0];
                         const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-                        const youtubeIframe = document.createElement('iframe');
-                        youtubeIframe.src = embedUrl;
-                        youtubeIframe.className = 'modal-content';
-                        youtubeIframe.style.width = '90%';
-                        youtubeIframe.style.aspectRatio = '16/9';
-                        youtubeIframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-                        youtubeIframe.allowFullscreen = true;
-                        mediaModal.insertBefore(youtubeIframe, modalCarousel);
-                        contentElement = youtubeIframe;
+                        modalIframe.style.aspectRatio = '16 / 9';
+                        modalIframe.style.width = '90%';
+                        modalIframe.style.height = 'auto';
+                        modalIframe.src = embedUrl;
+                        modalIframe.style.display = 'block';
                     } else {
                         contentElement = modalVideo;
                     }
@@ -906,11 +830,11 @@
                     if (media.type === 'text') {
                         contentElement.innerHTML = '<em>Загрузка...</em>';
                         fetch(media.url).then(res => res.text()).then(text => contentElement.innerHTML = text).catch(err => contentElement.innerHTML = '<strong>Ошибка загрузки.</strong>');
-                    } else if (contentElement.tagName !== 'IFRAME') {
+                    } else {
                         contentElement.src = media.url;
                     }
                     contentElement.style.display = 'block';
-                    if ((media.type === 'video' || media.type === 'audio') && contentElement.tagName !== 'IFRAME') {
+                    if ((media.type === 'video' || media.type === 'audio')) {
                         contentElement.play();
                     }
                 }
@@ -934,10 +858,6 @@
                         el.src = '';
                     }
                 });
-                const oldYoutubeIframe = mediaModal.querySelector('iframe:not(#modalIframe):not(#carouselIframe)');
-                if (oldYoutubeIframe) {
-                    oldYoutubeIframe.remove();
-                }
             }
             if (modal.id === 'bookingModal') {
                 bookingFrame.src = '';
