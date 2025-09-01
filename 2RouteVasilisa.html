@@ -276,6 +276,41 @@
                 height: 45px; width: 45px; padding: 0; display: flex;
                 align-items: center; justify-content: center;
             }
+            /* --- СТИЛИ ДЛЯ РЕЖИМА ЛЕНТЫ НА МОБИЛЬНЫХ --- */
+            .feed-mode {
+                height: auto;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+            .feed-mode .content-view {
+                display: block !important;
+                position: relative;
+                height: auto;
+            }
+            .feed-mode #cover-view {
+                height: 100vh; /* Обложка занимает первый экран */
+                height: 100svh;
+            }
+            .feed-mode .page {
+                position: relative;
+                opacity: 1 !important;
+                visibility: visible !important;
+                min-height: 80vh; /* Каждая страница как отдельная секция */
+                border-bottom: 1px solid #e0e0e0;
+                padding-bottom: 80px; /* Отступ снизу, чтобы не перекрывалось панелью */
+            }
+            .feed-mode .controls {
+                position: sticky; /* Прилипающая панель */
+                bottom: 0;
+                z-index: 1000;
+                width: 100%;
+            }
+             /* Скрываем ненужные в режиме ленты элементы */
+            .feed-mode #prevBtn,
+            .feed-mode #nextBtn,
+            .feed-mode #pageIndicator {
+                display: none;
+            }   
         }
     </style>
 </head>
@@ -337,9 +372,14 @@
     </div>
     <audio id="narrationAudio" preload="auto"></audio>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const CONFIG = {
-            mainTitle: 'Маршрут 2. Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
+         document.addEventListener('DOMContentLoaded', function() {
+        // ---- ДОБАВЬТЕ ЭТОТ БЛОК В НАЧАЛО СКРИПТА ----
+        if (CONFIG.mobileFeedMode && window.innerWidth < 768) {
+            document.body.classList.add('feed-mode');
+        }
+            const CONFIG = {
+                mobileFeedMode: true, // <-- ДОБАВЬТЕ ЭТУ СТРОКУ
+                mainTitle: 'Маршрут 2.2 Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
             audioUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisyachting/main/2RouteAudioVasilisa.mp3',
             bookingUrl: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route2',
             coverVideoUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4',
@@ -849,46 +889,58 @@
         audioPlayer.onpause = () => { isPlaying = false; playPauseBtn.textContent = '▶'; };
         audioPlayer.onended = () => { isPlaying = false; playPauseBtn.textContent = '▶'; showPage(1); };
         nextBtn.addEventListener('click', () => {
-            if (isCoverActive) {
-                coverView.style.display = 'none';
-                bookView.style.display = 'flex';
-                isCoverActive = false;
-                showPage(1);
-            } else if (currentPage < publishedPages.length) {
-                const nextPage = currentPage + 1;
-                showPage(nextPage);
-                audioPlayer.currentTime = getPageStartTime(nextPage);
+            // Оборачиваем всю логику в условие
+            if (!document.body.classList.contains('feed-mode')) {
+                if (isCoverActive) {
+                    coverView.style.display = 'none';
+                    bookView.style.display = 'flex';
+                    isCoverActive = false;
+                    showPage(1);
+                } else if (currentPage < publishedPages.length) {
+                    const nextPage = currentPage + 1;
+                    showPage(nextPage);
+                    audioPlayer.currentTime = getPageStartTime(nextPage);
+                }
             }
         });
+
         prevBtn.addEventListener('click', () => {
-            if (isCoverActive) return;
-            if (currentPage > 1) {
-                const prevPage = currentPage - 1;
-                showPage(prevPage);
-                audioPlayer.currentTime = getPageStartTime(prevPage);
-            } else {
-                bookView.style.display = 'none';
-                coverView.style.display = 'flex';
-                isCoverActive = true;
-                audioPlayer.pause();
-                updateButtonsAndIndicator();
+            // Оборачиваем всю логику в условие
+            if (!document.body.classList.contains('feed-mode')) {
+                if (isCoverActive) return;
+                if (currentPage > 1) {
+                    const prevPage = currentPage - 1;
+                    showPage(prevPage);
+                    audioPlayer.currentTime = getPageStartTime(prevPage);
+                } else {
+                    bookView.style.display = 'none';
+                    coverView.style.display = 'flex';
+                    isCoverActive = true;
+                    audioPlayer.pause();
+                    updateButtonsAndIndicator();
+                }
             }
         });
+
         audioPlayer.addEventListener('timeupdate', () => {
-            if (!isPlaying || isCoverActive) return;
-            const currentTime = audioPlayer.currentTime;
-            const targetPageData = publishedPages.find((p, index) => {
-                const startTime = getPageStartTime(index + 1);
-                return currentTime >= startTime && currentTime < p.narrationEndTime;
-            });
-            if (targetPageData && publishedPages.indexOf(targetPageData) + 1 !== currentPage) {
-                showPage(publishedPages.indexOf(targetPageData) + 1);
+            // Оборачиваем всю логику в условие
+            if (!document.body.classList.contains('feed-mode')) {
+                if (!isPlaying || isCoverActive) return;
+                const currentTime = audioPlayer.currentTime;
+                const targetPageData = publishedPages.find((p, index) => {
+                    const startTime = getPageStartTime(index + 1);
+                    return currentTime >= startTime && currentTime < p.narrationEndTime;
+                });
+                if (targetPageData && publishedPages.indexOf(targetPageData) + 1 !== currentPage) {
+                    showPage(publishedPages.indexOf(targetPageData) + 1);
+                }
             }
         });
     });
     </script>
 </body>
 </html>
+
 
 
 
