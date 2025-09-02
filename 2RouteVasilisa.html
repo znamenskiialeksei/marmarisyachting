@@ -40,7 +40,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            transition: opacity: 0.5s;
+            transition: opacity 0.5s;
         }
         .cover-text-bg {
             background-color: rgba(0, 0, 0, 0.5);
@@ -85,9 +85,11 @@
             background-color: rgba(0, 0, 0, 0.7);
         }
         .cover-button.route-selector-btn {
-            width: 90px;
+            width: auto;
+            min-width: 90px;
             height: 40px;
             border-radius: 8px;
+            padding: 0 5px;
         }
         .cover-button svg { width: 28px; height: 28px; fill: white; }
         .pulsing {
@@ -108,9 +110,10 @@
             81.25% { opacity: 0; }
             100% { opacity: 0; }
         }
-        #route-dropdown-menu {
+        
+        .route-dropdown-menu {
             position: absolute;
-            z-index: 4;
+            z-index: 100;
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.3);
@@ -122,12 +125,12 @@
             transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
             transform-origin: top center;
         }
-        #route-dropdown-menu.visible {
+        .route-dropdown-menu.visible {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
         }
-        #route-dropdown-menu a {
+        .route-dropdown-menu a {
             display: block;
             padding: 10px 15px;
             color: #333;
@@ -135,15 +138,18 @@
             border-radius: 6px;
             transition: background-color 0.2s;
         }
-        #route-dropdown-menu a:hover {
+        .route-dropdown-menu a:hover {
             background-color: #f0f0f0;
         }
+
         .page {
             position: absolute; width: 100%; height: 100%;
             display: flex; flex-direction: column; align-items: center;
             padding: 20px; box-sizing: border-box;
             opacity: 0; visibility: hidden; transition: opacity 0.5s ease-in-out;
             background: white;
+            position: relative; 
+            overflow-x: hidden;
         }
         .page.active { opacity: 1; visibility: visible; }
         .page p {
@@ -151,16 +157,9 @@
             color: #333; overflow-y: auto; width: 100%;
             padding-right: 10px; flex-grow: 1; min-height: 0;
             box-sizing: border-box;
+            padding-bottom: 80px; 
         }
-        .page-buttons-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 15px; flex-shrink: 0; }
-        .page-btn { color: white; border: none; border-radius: 8px; padding: 10px 20px; font-size: 1em; cursor: pointer; transition: background-color 0.3s; }
-        .page-btn.video-btn, .page-btn.iframe-btn { background-color: #4285F4; }
-        .page-btn.audio-btn { background-color: #f4b400; }
-        .page-btn.photo-btn { background-color: #0F9D58; }
-        .page-btn.text-btn { background-color: #673ab7; }
-        .page-btn.carousel-btn { background-color: #9c27b0; }
-        .page-btn:hover { filter: brightness(90%); }
-        .page-btn.admin-error-btn { background-color: #db4437; cursor: not-allowed; border: 2px dashed white; font-weight: bold; }
+
         .link-btn {
             position: absolute;
             z-index: 5;
@@ -194,6 +193,8 @@
             border-radius: 8px;
             max-width: 95vw;
             max-height: 90vh;
+            aspect-ratio: 16 / 9;
+            width: 90%;
         }
         #modalText { background-color: #fff; padding: 25px; color: #333; overflow-y: auto; line-height: 1.6; }
         .modal-close { position: absolute; top: 20px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 1001; }
@@ -262,8 +263,8 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            position: relative; /* <-- Добавлено для управления слоем */
-            z-index: 1;         /* <-- Устанавливаем нижний слой (Слой 1) */
+            position: relative;
+            z-index: 1;
         }
         #carouselIframe {
             flex-shrink: 0;
@@ -283,8 +284,8 @@
             border-radius: 8px;
             user-select: none;
             height: 80%;
-            position: relative; /* <-- Убедитесь, что это свойство есть */
-            z-index: 2;         /* <-- Устанавливаем верхний слой (Слой 2) */
+            position: relative;
+            z-index: 2;
         }
         .carousel-nav:hover {
             background: rgba(0,0,0,0.8);
@@ -420,7 +421,7 @@
         <div class="modal-content" id="modalText"></div>
         <img class="modal-content" id="modalPhoto" alt="Изображение">
         <video class="modal-content" id="modalVideo" controls playsinline></video>
-        <iframe class="modal-content" id="modalIframe" frameborder="0" allowfullscreen></iframe>
+        <iframe class="modal-content" id="modalIframe" frameborder="0" allow="autoplay; fullscreen"></iframe>
         <audio class="modal-content" id="modalAudio" controls></audio>
         
         <div class="modal-content" id="modalCarousel">
@@ -476,6 +477,20 @@
                     collapsible: false,
                     text: `<h2> О маршруте. </h2><p>Название: Маршрут 2. Дневной яхтенный тур под парусом Мармарис-Кумлубюк с обедом на яхте. Продолжительность: 1 день. Время: 9:30 – 18:15. Аудитория: от 1 до 6 гостей, включая детей от 6 лет. Стоимость: 1000 долларов США (стандартный обед)/1300 долларов США (обед-гриль). Особенности: Эксклюзивный однодневный круиз, сочетающий панорамные виды побережья, долгий отдых с купанием в живописной бухте Кумлубюк и изысканный обед, приготовленный для вас прямо на борту яхты.</p>`,
                     narrationEndTime: 40,
+                    customButtons: [
+                        {
+                            type: 'dropdown',
+                            visible: true,
+                            pulsing: true,
+                            icon: '<svg viewBox="0 0 90 40"><rect x="0.5" y="0.5" width="89" height="39" rx="8" fill="#4CAF50" stroke="#FFFFFF" stroke-width="1"/><text x="45" y="25" font-size="14" fill="white" font-weight="bold" text-anchor="middle">Связаться</text></svg>',
+                            tooltip: 'Напишите нам',
+                            top: '85%', left: '50%',
+                            routes: [
+                                { name: 'Написать в WhatsApp', url: 'https://wa.me/905366140347', target: '_blank' },
+                                { name: 'Написать в Telegram', url: 'https://t.me/marmarisyachtingru', target: '_blank' }
+                            ]
+                        }
+                    ]
                 },
                 {
                     published: true,
@@ -504,46 +519,92 @@
                     collapsedOnLoad: true,
                     text: `<h2>Фото и Видео о маршруте.</h2><p>К данной странице мы рекомендуем вам вернуться после завершения прослушивания и подробно ознакомиться с представленными фотографиями и видео о маршруте.</p>`,
                     narrationEndTime: 284,
-                    mainVideo: { type: 'iframe', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQSe6WT-_Nt4QYem_P3qEx_3Abn7W0p9009H02uPVTxShdI', headerText: 'Видео: Выход из Мармарис Яхт Марины', footerText: '' },
-                    extraMedia: [
+                    customButtons: [
                         {
-                            type: 'carousel',
-                            buttonText: 'Фото нашего маршрута',
-                            headerText: 'Фотографии',
-                            images: [
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'BAVARIA C45 - Фото 1', width: 1513, height: 951 },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'BAVARIA C45 - Фото 2', width: 1513, height: 951 },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'BAVARIA C45 - Фото 3', width: 1513, height: 951 },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'BAVARIA C45 - Фото 4', width: 1513, height: 951 },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'BAVARIA C45 - Фото 5', width: 1513, height: 951 }
-                            ]
+                            type: 'media',
+                            visible: true,
+                            pulsing: false,
+                            icon: '<svg viewBox="0 0 100 40"><rect x="0.5" y="0.5" width="99" height="39" rx="8" fill="#4285F4" stroke="#FFFFFF" stroke-width="1"/><text x="50" y="25" font-size="14" fill="white" font-weight="bold" text-anchor="middle">Видео выхода</text></svg>',
+                            tooltip: 'Видео: Выход из Мармарис Яхт Марины',
+                            top: '85%', left: '25%',
+                            mediaData: { type: 'iframe', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQSe6WT-_Nt4QYem_P3qEx_3Abn7W0p9009H02uPVTxShdI', headerText: 'Видео: Выход из Мармарис Яхт Марины' }
                         },
-                        { type: 'iframe', buttonText: 'Видеообзор яхты', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0', headerText: 'Кумлюбюк', footerText: '' }
-                    ],
+                        {
+                            type: 'media',
+                            visible: true,
+                            pulsing: false,
+                            icon: '<svg viewBox="0 0 100 40"><rect x="0.5" y="0.5" width="99" height="39" rx="8" fill="#0F9D58" stroke="#FFFFFF" stroke-width="1"/><text x="50" y="25" font-size="14" fill="white" font-weight="bold" text-anchor="middle">Фото маршрута</text></svg>',
+                            tooltip: 'Фотографии этого маршрута',
+                            top: '85%', left: '50%',
+                            mediaData: {
+                                type: 'carousel', headerText: 'Фотографии',
+                                images: [
+                                    { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'Фото 1', width: 1513, height: 951 },
+                                    { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'Фото 2', width: 1513, height: 951 }
+                                ]
+                            }
+                        },
+                        {
+                            type: 'media',
+                            visible: true,
+                            pulsing: false,
+                            icon: '<svg viewBox="0 0 100 40"><rect x="0.5" y="0.5" width="99" height="39" rx="8" fill="#f4b400" stroke="#FFFFFF" stroke-width="1"/><text x="50" y="25" font-size="14" fill="white" font-weight="bold" text-anchor="middle">Видеообзор</text></svg>',
+                            tooltip: 'Видеообзор яхты',
+                            top: '85%', left: '75%',
+                            mediaData: { type: 'iframe', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0', headerText: 'Кумлубюк' }
+                        }
+                    ]
                 },
                 {
                     published: true,
                     collapsible: true,
                     collapsedOnLoad: true,
-                    text: `<h2> О яхте Bavaria C45. </h2><p>Яхта произведена в Германии в 2022 году. Модель BAVARIA C45. На площади более 60 м² организовано уютное пространство для путешествий. Три каюты, в каждой из них кровать 140 см на 200 см. Такое же спальное место (140 см на 200 см) можно организовать в салоне (стол трансформер). В кокпите так же столы трансформируются в лежаки, где два взрослых человека комфортно разместятся на ночёвку и вахту. Итого 10 спальных мест. Холодная и горячая вода присутствует. Два туалета с электрической системой слива оборудованы баком-накопителем по 70 литров каждый. Две душевые кабинки и один открытый душ на откидной платформе для купания. Два холодильника и отдельная морозильная камера, газовая плита, духовой шкаф, посудомоечная машина, посуда, кухонная техника с кофемашиной - к услугам тех, кто хочет отличиться на кухне и удивить команду. Так же возможно приготовление блюд нашей командой. Для дальних переходов на яхте имеется генератор и солнечные панели. Две зоны отдыха под навесами, а так же открытые зоны для загара на палубе яхты. Для купания откидная платформа имеет удобную систему спуска в воду. Технические данные Общая длина 14,06 м. Ширина корпуса 4,49 м. Осадка (Киль) 2,60 м. Вес балласта (киль) 2,984 кг. Топливный бак 250 литров. Резервуар для воды 650 литров. Паруса: Грот (закрутка) 51,0 м². Кливер 45,0 м². Генуя 52,0 м². Длина мачты (макс.) от ватерлинии 22,00 м. Район плавания Категория CE А10/Б14/С16 (неограниченно). Дизайн яхты Cossutti. Безопасность на яхте обеспечена необходимым комплектом из: двенадцати спасательных жилетов, спасательного плота на 10 человек, динги с мотором на 6 человек и другим спасательным оборудованием по регламенту. Так же на борту имеются: надувные каяк, сап-борд, "ватрушка" и маски для подводного плавания, применяемые для водных развлечений.</p>`,
+                    text: `<h2> О яхте Bavaria C45. </h2><p>Яхта произведена в Германии в 2022 году. Модель BAVARIA C45. На площади более 60 м² организовано уютное пространство для путешествий...</p>`,
                     narrationEndTime: 439,
-                    mainVideo: { url: 'https://www.youtube.com/embed/Dp2g78eqw18', headerText: 'Видео: Bavaria C45 - яхта для вашего путешествия', footerText: 'BAVARIA C45 на площади более 60 м² организовано уютное пространство для путешествий.' },
-                    extraMedia: [
+                    customButtons: [
                         {
-                            type: 'carousel',
-                            buttonText: 'Фото Яхты',
-                            headerText: 'Фотографии BAVARIA C45',
-                            images: [
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQTt0pbjcDOaQ4EzOYUnlLjFAcFIzWiG_6RGa8MxNqsnAE8?action=embedview', caption: 'BAVARIA C45- Фото 1', width: 931, height: 616 },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQSyu_NPfwz-Q7vkjqlgRWihAQq3NPmk8Zii_vvq84r6MCY?action=embedview', caption: 'BAVARIA C45 - Фото 2', width: 1155, height: 707 },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQSb6bzlT7ajSY3Vab9F66BoARTPNHSaB2JzYE_nQOKkzrI?action=embedview', caption: 'BAVARIA C45 - Фото 3', width: 930, height: 608 },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQRlrsLTzjuKSqCYH3WZKC9YAQVRQHT_n24533Iaa3eBS9I?action=embedview', caption: 'BAVARIA C45 - Фото 4', width: 1056, height: 836 },
-                                { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQST2enSQDURTKzus8inBLBFAXMJKUZCryc5LEUuQlwl9bo?action=embedview', caption: 'BAVARIA C45 - Фото 5', width: 1132, height: 685 }
-                            ]
+                            type: 'media',
+                            visible: true,
+                            pulsing: false,
+                            icon: '<svg viewBox="0 0 100 40"><rect x="0.5" y="0.5" width="99" height="39" rx="8" fill="#DB4437" stroke="#FFFFFF" stroke-width="1"/><text x="50" y="25" font-size="14" fill="white" font-weight="bold" text-anchor="middle">YouTube</text></svg>',
+                            tooltip: 'Видео: Bavaria C45 - яхта для вашего путешествия',
+                            top: '85%', left: '20%',
+                            mediaData: { type: 'iframe', url: 'https://www.youtube.com/embed/Dp2g78eqw18', headerText: 'Видео: Bavaria C45 - яхта для вашего путешествия' }
                         },
-                        { type: 'iframe', buttonText: '360° тур по яхте', url: 'https://360.bavariayachts.com/2021/tours/index_en.html?nav_id=5491-135719', headerText: '360° тур по яхте', footerText: '' },
-                        { type: 'iframe', buttonText: 'Видеообзор яхты', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0', headerText: 'Видеообзор яхты', footerText: '' }
-                    ],
+                         {
+                            type: 'media',
+                            visible: true,
+                            pulsing: false,
+                            icon: '<svg viewBox="0 0 100 40"><rect x="0.5" y="0.5" width="99" height="39" rx="8" fill="#0F9D58" stroke="#FFFFFF" stroke-width="1"/><text x="50" y="25" font-size="14" fill="white" font-weight="bold" text-anchor="middle">Фото яхты</text></svg>',
+                            tooltip: 'Фотографии BAVARIA C45',
+                            top: '85%', left: '45%',
+                            mediaData: {
+                                type: 'carousel', headerText: 'Фотографии BAVARIA C45',
+                                images: [
+                                    { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQTt0pbjcDOaQ4EzOYUnlLjFAcFIzWiG_6RGa8MxNqsnAE8?action=embedview', caption: 'BAVARIA C45- Фото 1', width: 931, height: 616 },
+                                    { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQSyu_NPfwz-Q7vkjqlgRWihAQq3NPmk8Zii_vvq84r6MCY?action=embedview', caption: 'BAVARIA C45 - Фото 2', width: 1155, height: 707 }
+                                ]
+                            }
+                        },
+                        {
+                            type: 'media',
+                            visible: true,
+                            pulsing: false,
+                            icon: '<svg viewBox="0 0 100 40"><rect x="0.5" y="0.5" width="99" height="39" rx="8" fill="#673ab7" stroke="#FFFFFF" stroke-width="1"/><text x="50" y="25" font-size="14" fill="white" font-weight="bold" text-anchor="middle">360° тур</text></svg>',
+                            tooltip: '360° тур по яхте',
+                            top: '85%', left: '70%',
+                            mediaData: { type: 'iframe', url: 'https://360.bavariayachts.com/2021/tours/index_en.html?nav_id=5491-135719', headerText: '360° тур по яхте' }
+                        },
+                        {
+                            type: 'media',
+                            visible: true,
+                            pulsing: false,
+                            icon: '<svg viewBox="0 0 100 40"><rect x="0.5" y="0.5" width="99" height="39" rx="8" fill="#f4b400" stroke="#FFFFFF" stroke-width="1"/><text x="50" y="25" font-size="14" fill="white" font-weight="bold" text-anchor="middle">Видеообзор</text></svg>',
+                            tooltip: 'Видеообзор яхты',
+                            top: '85%', left: '95%',
+                            mediaData: { type: 'iframe', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0', headerText: 'Видеообзор яхты' }
+                        }
+                    ]
                 },
                 { published: false, text: `<h2> Шаблон </h2><p>Название: Шаблон</p>`, narrationEndTime: 510, },
             ]
@@ -581,6 +642,74 @@
             document.documentElement.style.setProperty('--pulse-total-duration', `${totalDuration}s`);
         }
         
+        function createCustomButton(config, parentElement) {
+            if (!config || config.visible === false) return;
+
+            const button = document.createElement('button');
+            button.className = 'cover-button route-selector-btn';
+            button.style.position = 'absolute';
+            button.style.top = config.top || '50%';
+            button.style.left = config.left || '50%';
+            button.innerHTML = config.icon || '?';
+
+            if ((CONFIG.pulsingEffect?.enabled && config.pulsing !== false) || config.pulsing === true) {
+                button.classList.add('pulsing');
+            }
+
+            const tooltipBox = document.getElementById('tooltip-box');
+            function showTooltip(element, text) { if (!text) return; tooltipBox.textContent = text; const rect = element.getBoundingClientRect(); tooltipBox.style.left = `${rect.left + rect.width / 2}px`; tooltipBox.style.top = `${rect.top - 10}px`; tooltipBox.style.transform = 'translate(-50%, -100%)'; tooltipBox.classList.add('visible'); }
+            function hideTooltip() { tooltipBox.classList.remove('visible'); }
+            button.addEventListener('mouseenter', (e) => showTooltip(e.currentTarget, config.tooltip));
+            button.addEventListener('mouseleave', hideTooltip);
+
+            if (config.type === 'dropdown' && config.routes) {
+                const dropdown = document.createElement('div');
+                dropdown.className = 'route-dropdown-menu';
+                dropdown.style.top = `calc(${config.top || '50%'} - 10px)`;
+                dropdown.style.left = config.left || '50%';
+                dropdown.style.transform = 'translate(-50%, -100%)';
+
+                config.routes.forEach(route => {
+                    const link = document.createElement('a');
+                    link.href = route.url;
+                    link.textContent = route.name;
+                    if (route.target) {
+                        link.target = route.target;
+                        link.rel = 'noopener noreferrer';
+                    }
+                    dropdown.appendChild(link);
+                });
+
+                parentElement.append(button, dropdown);
+
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    document.querySelectorAll('.route-dropdown-menu.visible').forEach(menu => {
+                        if (menu !== dropdown) menu.classList.remove('visible');
+                    });
+                    dropdown.classList.toggle('visible');
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!dropdown.contains(e.target) && !button.contains(e.target)) {
+                        dropdown.classList.remove('visible');
+                    }
+                });
+
+            } else if (config.type === 'media' && config.mediaData) {
+                button.addEventListener('click', () => {
+                    openMediaModal(config.mediaData);
+                });
+                parentElement.appendChild(button);
+
+            } else {
+                parentElement.appendChild(button);
+                if(isAdmin) {
+                    adminErrors.push(`Неверная конфигурация customButton на странице ${parentElement.dataset.pageNumber}`);
+                }
+            }
+        }
+
         function setupCover() {
             document.querySelector('#main-title').textContent = CONFIG.mainTitle;
             if (CONFIG.audioUrl) audioPlayer.src = CONFIG.audioUrl;
@@ -588,14 +717,17 @@
             if (CONFIG.coverVideoUrl) {
                 const video = document.createElement('video'); video.id = 'cover-video'; video.src = CONFIG.coverVideoUrl; video.autoplay = true; video.loop = true; video.muted = true; video.playsInline = true; video.style.objectFit = CONFIG.coverVideoFitMode || 'cover'; coverView.prepend(video);
             } else if (isAdmin) { adminErrors.push('Не указан URL для видео на обложке'); }
+            
             const tooltipBox = document.getElementById('tooltip-box');
             function showTooltip(element, text) { if (!text) return; tooltipBox.textContent = text; const rect = element.getBoundingClientRect(); tooltipBox.style.left = `${rect.left + rect.width / 2}px`; tooltipBox.style.top = `${rect.top - 10}px`; tooltipBox.style.transform = 'translate(-50%, -100%)'; tooltipBox.classList.add('visible'); }
             function hideTooltip() { tooltipBox.classList.remove('visible'); }
+
             CONFIG.coverTexts.forEach((item) => {
                 if (item.visible !== false) {
                     const textBox = document.createElement('div'); textBox.className = 'cover-text-box'; textBox.style.top = item.top; textBox.style.left = item.left; const textBg = document.createElement('span'); textBg.className = 'cover-text-bg'; textBg.textContent = item.text; textBox.appendChild(textBg); textBox.addEventListener('mouseenter', (e) => showTooltip(e.currentTarget, item.tooltip)); textBox.addEventListener('mouseleave', hideTooltip); coverView.appendChild(textBox);
                 }
             });
+
             if (CONFIG.contactButtons) {
                 CONFIG.contactButtons.forEach(btnData => {
                     if (btnData.visible && btnData.url) {
@@ -603,21 +735,53 @@
                     }
                 });
             }
-            if (CONFIG.routeSelector && CONFIG.routeSelector.visible) {
-                const selector = CONFIG.routeSelector; const menuBtn = document.createElement('button'); menuBtn.className = 'cover-button route-selector-btn'; menuBtn.style.top = selector.top; menuBtn.style.left = selector.left; menuBtn.innerHTML = selector.icon; menuBtn.addEventListener('mouseenter', (e) => showTooltip(e.currentTarget, selector.tooltip)); menuBtn.addEventListener('mouseleave', hideTooltip); if ((CONFIG.pulsingEffect?.enabled && selector.pulsing !== false) || selector.pulsing === true) { menuBtn.classList.add('pulsing'); } const dropdown = document.createElement('div'); dropdown.id = 'route-dropdown-menu'; dropdown.style.top = `calc(${selector.top} - 10px)`; dropdown.style.left = selector.left; dropdown.style.transform = 'translate(-50%, -100%)'; selector.routes.forEach(route => { const link = document.createElement('a'); link.href = route.url; link.textContent = route.name; dropdown.appendChild(link); }); coverView.appendChild(menuBtn); coverView.appendChild(dropdown); menuBtn.addEventListener('click', (e) => { e.stopPropagation(); dropdown.classList.toggle('visible'); }); document.addEventListener('click', (e) => { if (!dropdown.contains(e.target) && !menuBtn.contains(e.target)) { dropdown.classList.remove('visible'); } });
+            
+            if (CONFIG.routeSelector) {
+                createCustomButton({ ...CONFIG.routeSelector, type: 'dropdown' }, coverView);
             }
         }
         
         function setupBookPages() {
-            const pageViewer = document.querySelector('.page-viewer'); pageViewer.innerHTML = ''; publishedPages.forEach((pageData, index) => {
-                const pageNum = index + 1; const page = document.createElement('div'); page.className = 'page'; page.dataset.pageNumber = pageNum; if (pageNum === 1) page.classList.add('active'); const buttonsContainer = document.createElement('div'); buttonsContainer.className = 'page-buttons-container'; const allMedia = []; if (pageData.mainVideo && pageData.mainVideo.url) { allMedia.push({ ...pageData.mainVideo, type: pageData.mainVideo.type || 'video', buttonText: 'Показать видео' }); } if (pageData.extraMedia) { allMedia.push(...pageData.extraMedia); } allMedia.forEach((media) => {
-                    const hasUrl = (media.type === 'carousel' && media.images && media.images.length > 0) || (media.url && media.url.trim() !== '');
-                    if (hasUrl) { const btn = document.createElement('button'); const btnClass = (media.type === 'iframe') ? 'iframe-btn' : `${media.type}-btn`; btn.className = `page-btn ${btnClass}`; btn.textContent = media.buttonText; btn.onclick = () => openMediaModal(media); buttonsContainer.appendChild(btn); } else if (isAdmin) { const errorMsg = `Стр. ${pageNum}, кнопка "${media.buttonText}": URL или данные отсутствуют`; adminErrors.push(errorMsg); const errorBtn = document.createElement('button'); errorBtn.className = 'page-btn admin-error-btn'; errorBtn.textContent = 'ОШИБКА URL'; errorBtn.title = errorMsg; buttonsContainer.appendChild(errorBtn); }
-                }); const textContent = document.createElement('p'); textContent.innerHTML = pageData.text || '';
+            const pageViewer = document.querySelector('.page-viewer');
+            pageViewer.innerHTML = '';
+            
+            publishedPages.forEach((pageData, index) => {
+                const pageNum = index + 1;
+                const page = document.createElement('div');
+                page.className = 'page';
+                page.dataset.pageNumber = pageNum;
+                if (pageNum === 1 && !isFeedMode) page.classList.add('active');
+
+                const textContent = document.createElement('p');
+                textContent.innerHTML = pageData.text || '';
+
                 if (isFeedMode && pageData.collapsible) {
-                    const tempDiv = document.createElement('div'); tempDiv.innerHTML = pageData.text; const h2 = tempDiv.querySelector('h2'); const title = h2 ? h2.innerHTML : 'Развернуть'; if (h2) h2.remove(); textContent.innerHTML = tempDiv.innerHTML; const details = document.createElement('details'); const summary = document.createElement('summary'); summary.innerHTML = title; details.open = !pageData.collapsedOnLoad; details.appendChild(summary); details.appendChild(buttonsContainer); details.appendChild(textContent); page.appendChild(details);
-                } else { page.appendChild(buttonsContainer); page.appendChild(textContent); }
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = pageData.text;
+                    const h2 = tempDiv.querySelector('h2');
+                    const title = h2 ? h2.innerHTML : 'Развернуть';
+                    if (h2) h2.remove();
+                    textContent.innerHTML = tempDiv.innerHTML;
+                    
+                    const details = document.createElement('details');
+                    const summary = document.createElement('summary');
+                    summary.innerHTML = title;
+                    details.open = !pageData.collapsedOnLoad;
+                    
+                    details.appendChild(summary);
+                    details.appendChild(textContent);
+                    page.appendChild(details);
+                } else {
+                    page.appendChild(textContent);
+                }
+
                 pageViewer.appendChild(page);
+
+                if (pageData.customButtons && Array.isArray(pageData.customButtons)) {
+                    pageData.customButtons.forEach(buttonConfig => {
+                        createCustomButton(buttonConfig, page);
+                    });
+                }
             });
         }
         
@@ -625,25 +789,72 @@
             if (isAdmin && adminErrors.length > 0) { let panel = document.getElementById('admin-panel'); if (!panel) { panel = document.createElement('div'); panel.id = 'admin-panel'; document.body.appendChild(panel); } let errorList = '<h4>Обнаружены ошибки конфигурации:</h4><ul>'; adminErrors.forEach(err => { errorList += `<li>${err}</li>`; }); errorList += '</ul>'; panel.innerHTML = errorList; }
         }
         
-        const pages = document.querySelectorAll('.page'); const mediaModal = document.getElementById('mediaModal'); const modalPhoto = document.getElementById('modalPhoto'); const modalVideo = document.getElementById('modalVideo'); const modalAudio = document.getElementById('modalAudio'); const modalText = document.getElementById('modalText'); const modalCarousel = document.getElementById('modalCarousel'); const modalIframe = document.getElementById('modalIframe'); const carouselPrevBtn = modalCarousel.querySelector('.prev'); const carouselNextBtn = modalCarousel.querySelector('.next'); let currentCarouselImages = []; let currentCarouselIndex = 0;
+        const mediaModal = document.getElementById('mediaModal'); const modalPhoto = document.getElementById('modalPhoto'); const modalVideo = document.getElementById('modalVideo'); const modalAudio = document.getElementById('modalAudio'); const modalText = document.getElementById('modalText'); const modalCarousel = document.getElementById('modalCarousel'); const modalIframe = document.getElementById('modalIframe'); const carouselPrevBtn = modalCarousel.querySelector('.prev'); const carouselNextBtn = modalCarousel.querySelector('.next'); let currentCarouselImages = []; let currentCarouselIndex = 0;
 
         function openMediaModal(media) {
-            [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => { el.style.display = 'none'; if(el.tagName === 'VIDEO' || el.tagName === 'AUDIO') { el.src = ''; el.pause(); } else if (el.tagName === 'IMG' || el.tagName === 'IFRAME') { el.src = 'about:blank'; } });
-            mediaModal.querySelector('.modal-header').textContent = media.headerText || ''; mediaModal.querySelector('.modal-footer').textContent = ''; 
+            [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => { 
+                el.style.display = 'none';
+                if (el.tagName === 'VIDEO' || el.tagName === 'AUDIO') { el.pause(); el.src = ''; } 
+                else if (el.tagName === 'IFRAME') { el.src = 'about:blank'; }
+            });
+
+            mediaModal.querySelector('.modal-header').textContent = media.headerText || ''; 
+            mediaModal.querySelector('.modal-footer').textContent = media.footerText || ''; 
+
             if (media.type === 'carousel' && media.images && media.images.length > 0) {
                 currentCarouselImages = media.images; currentCarouselIndex = 0;
+                const carouselIframe = document.getElementById('carouselIframe');
                 function showCarouselSlide(index) {
-                    const wrapper = document.getElementById('carouselIframeWrapper'); const iframe = document.getElementById('carouselIframe'); const slideData = currentCarouselImages[index]; if (!slideData || !slideData.url || !slideData.width || !slideData.height) { iframe.src = 'about:blank'; return; } const containerWidth = wrapper.clientWidth; const containerHeight = wrapper.clientHeight; iframe.width = slideData.width; iframe.height = slideData.height; const scaleX = containerWidth / slideData.width; const scaleY = containerHeight / slideData.height; const scale = Math.min(scaleX, scaleY); iframe.style.transform = `scale(${scale})`; iframe.src = slideData.url; mediaModal.querySelector('.modal-footer').textContent = slideData.caption || ''; carouselPrevBtn.style.visibility = (index === 0) ? 'hidden' : 'visible'; carouselNextBtn.style.visibility = (index === currentCarouselImages.length - 1) ? 'hidden' : 'visible';
+                    const wrapper = document.getElementById('carouselIframeWrapper'); 
+                    const slideData = currentCarouselImages[index]; 
+                    if (!slideData || !slideData.url || !slideData.width || !slideData.height) { carouselIframe.src = 'about:blank'; return; } 
+                    const containerWidth = wrapper.clientWidth; const containerHeight = wrapper.clientHeight; 
+                    carouselIframe.width = slideData.width; carouselIframe.height = slideData.height; 
+                    const scaleX = containerWidth / slideData.width; const scaleY = containerHeight / slideData.height; 
+                    const scale = Math.min(scaleX, scaleY); 
+                    carouselIframe.style.transform = `scale(${scale})`; 
+                    carouselIframe.src = slideData.url; 
+                    mediaModal.querySelector('.modal-footer').textContent = slideData.caption || ''; 
+                    carouselPrevBtn.style.visibility = (index === 0) ? 'hidden' : 'visible'; 
+                    carouselNextBtn.style.visibility = (index === currentCarouselImages.length - 1) ? 'hidden' : 'visible';
                 }
-                carouselPrevBtn.onclick = () => { if (currentCarouselIndex > 0) { currentCarouselIndex--; showCarouselSlide(currentCarouselIndex); } }; carouselNextBtn.onclick = () => { if (currentCarouselIndex < currentCarouselImages.length - 1) { currentCarouselIndex++; showCarouselSlide(currentCarouselIndex); } };
-                modalCarousel.style.display = 'flex'; setTimeout(() => { showCarouselSlide(0); }, 50);
+                carouselPrevBtn.onclick = () => { if (currentCarouselIndex > 0) { currentCarouselIndex--; showCarouselSlide(currentCarouselIndex); } }; 
+                carouselNextBtn.onclick = () => { if (currentCarouselIndex < currentCarouselImages.length - 1) { currentCarouselIndex++; showCarouselSlide(currentCarouselIndex); } };
+                modalCarousel.style.display = 'flex'; 
+                setTimeout(() => { showCarouselSlide(0); }, 50);
+
             } else {
-                mediaModal.querySelector('.modal-footer').textContent = media.footerText || ''; let contentElement;
-                if (media.type === 'iframe') { if (media.width && media.height) { modalIframe.style.aspectRatio = `${media.width} / ${media.height}`; modalIframe.style.width = 'auto'; modalIframe.style.height = 'auto'; } else { modalIframe.style.aspectRatio = '16 / 9'; modalIframe.style.width = '90%'; modalIframe.style.height = '80%'; } modalIframe.src = media.url; modalIframe.style.display = 'block'; } else if (media.type === 'photo') { contentElement = modalPhoto; } else if (media.type === 'video') { if (media.url.includes('youtu.be') || media.url.includes('youtube.com')) { const videoId = media.url.split('v=')[1] || media.url.split('/').pop().split('?')[0]; const embedUrl = `https://www.youtube.com/embed/${videoId}`; modalIframe.style.aspectRatio = '16 / 9'; modalIframe.style.width = '90%'; modalIframe.style.height = 'auto'; modalIframe.src = embedUrl; modalIframe.style.display = 'block'; } else { contentElement = modalVideo; } } else if (media.type === 'audio') { contentElement = modalAudio; } else if (media.type === 'text') { contentElement = modalText; }
-                if (contentElement) { if (media.type === 'text') { contentElement.innerHTML = '<em>Загрузка...</em>'; fetch(media.url).then(res => res.text()).then(text => contentElement.innerHTML = text).catch(err => contentElement.innerHTML = '<strong>Ошибка загрузки.</strong>'); } else { contentElement.src = media.url; } contentElement.style.display = 'block'; if ((media.type === 'video' || media.type === 'audio')) { contentElement.play(); } }
+                let contentElement;
+                let url = media.url || '';
+                
+                const isIframe = media.type === 'iframe' || url.includes('youtu.be') || url.includes('youtube.com') || url.includes('1drv.ms');
+
+                if (isIframe) {
+                    let embedUrl = url;
+                    if (url.includes('youtu.be') || url.includes('youtube.com')) {
+                        const videoId = url.split('v=')[1] || url.split('/').pop().split('?')[0];
+                        embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                    } else if (url.includes('1drv.ms') && !url.includes('embedview')) {
+                        embedUrl += (url.includes('?') ? '&' : '?') + 'action=embedview';
+                    }
+                    contentElement = modalIframe;
+                    contentElement.src = embedUrl;
+
+                } else if (media.type === 'photo') { 
+                    contentElement = modalPhoto;
+                    contentElement.src = url;
+                } else if (media.type === 'video') { 
+                    contentElement = modalVideo;
+                    contentElement.src = url;
+                } 
+
+                if (contentElement) {
+                    contentElement.style.display = 'block';
+                }
             }
             mediaModal.style.display = 'flex';
         }
+        
         const bookingModal = document.getElementById('bookingModal'); const bookingFrame = document.getElementById('bookingFrame'); function closeModal(modal) { modal.style.display = 'none'; if (modal.id === 'mediaModal') { [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => { el.style.display = 'none'; if (el.tagName === 'VIDEO' || el.tagName === 'AUDIO') { el.pause(); el.src = ''; } else if (el.tagName === 'IMG' || el.tagName === 'IFRAME') { el.src = 'about:blank'; } }); } if (modal.id === 'bookingModal') { bookingFrame.src = ''; } }
         mediaModal.querySelector('.modal-close').onclick = () => closeModal(mediaModal);
         bookingModal.querySelector('.modal-close').onclick = () => closeModal(bookingModal);
@@ -652,8 +863,12 @@
         
         function showPage(pageNumber) {
             if (pageNumber < 1 || pageNumber > publishedPages.length) return;
-            pages.forEach(p => p.classList.remove('active'));
-            document.querySelector(`.page[data-page-number="${pageNumber}"]`).classList.add('active');
+            const allPages = document.querySelectorAll('.page');
+            allPages.forEach(p => p.classList.remove('active'));
+            const activePage = document.querySelector(`.page[data-page-number="${pageNumber}"]`);
+            if (activePage) {
+                activePage.classList.add('active');
+            }
             currentPage = pageNumber;
             updateButtonsAndIndicator();
         }
@@ -757,6 +972,7 @@
     </script>
 </body>
 </html>
+
 
 
 
