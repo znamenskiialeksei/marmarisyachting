@@ -380,6 +380,29 @@
         .feed-mode .page details:not([open]) > summary::before {
             transform: rotate(-90deg);
         }
+        #singleVideoWrapper {
+            /* Скрываем по умолчанию, как и другие .modal-content */
+            display: none; 
+            /* Задаем размеры контейнера, в который будет вписываться видео */
+            width: 95%;
+            max-width: 1280px;
+            height: 90%;
+            /* Используем flex для центрирования iframe внутри */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        #singleVideoWrapper iframe {
+            /* Убираем рамку и скругления по умолчанию */
+            border: none;
+            border-radius: 8px;
+            /* Готовим к масштабированию */
+            flex-shrink: 0;
+            transform-origin: center center;
+            transition: transform 0.3s ease;
+        }
     </style>
 </head>
 <body>
@@ -419,6 +442,9 @@
         <img class="modal-content" id="modalPhoto" alt="Изображение">
         <video class="modal-content" id="modalVideo" controls playsinline></video>
         <iframe class="modal-content" id="modalIframe" frameborder="0" allowfullscreen></iframe>
+        <div class="modal-content" id="singleVideoWrapper">
+        <iframe id="modalIframe" frameborder="0" allow="autoplay; fullscreen"></iframe>
+        </div>
         <audio class="modal-content" id="modalAudio" controls></audio>
         
         <div class="modal-content" id="modalCarousel">
@@ -803,65 +829,100 @@
         const mediaModal = document.getElementById('mediaModal'); const modalPhoto = document.getElementById('modalPhoto'); const modalVideo = document.getElementById('modalVideo'); const modalAudio = document.getElementById('modalAudio'); const modalText = document.getElementById('modalText'); const modalCarousel = document.getElementById('modalCarousel'); const modalIframe = document.getElementById('modalIframe'); const carouselPrevBtn = modalCarousel.querySelector('.prev'); const carouselNextBtn = modalCarousel.querySelector('.next'); let currentCarouselImages = []; let currentCarouselIndex = 0;
 
         function openMediaModal(media) {
+            // Получаем элементы один раз
+            const singleVideoWrapper = document.getElementById('singleVideoWrapper');
+            const modalIframe = document.getElementById('modalIframe');
+        
             // Сбрасываем все модальные окна
-            [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => { 
+            [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, singleVideoWrapper].forEach(el => { 
                 el.style.display = 'none'; 
-                // Сбрасываем стили, которые могли быть добавлены ранее
-                el.style.width = '';
-                el.style.height = '';
-                el.style.aspectRatio = '';
-                if(el.tagName === 'VIDEO' || el.tagName === 'AUDIO') { el.src = ''; el.pause(); } 
-                else if (el.tagName === 'IMG' || el.tagName === 'IFRAME') { el.src = 'about:blank'; } 
             });
+            // Сбрасываем iframe, чтобы не было "промаргивания" старого контента
+            modalIframe.src = 'about:blank';
+            modalIframe.style.transform = 'scale(1)'; // Сбрасываем масштаб
         
             mediaModal.querySelector('.modal-header').textContent = media.headerText || ''; 
             mediaModal.querySelector('.modal-footer').textContent = media.footerText || ''; 
         
             if (media.type === 'carousel' && media.images && media.images.length > 0) {
-                // Логика карусели (она работает, не трогаем)
+                // Логика карусели (не изменилась)
                 currentCarouselImages = media.images; currentCarouselIndex = 0;
+                const carouselIframe = document.getElementById('carouselIframe');
                 function showCarouselSlide(index) {
-                    const wrapper = document.getElementById('carouselIframeWrapper'); const iframe = document.getElementById('carouselIframe'); const slideData = currentCarouselImages[index]; if (!slideData || !slideData.url || !slideData.width || !slideData.height) { iframe.src = 'about:blank'; return; } const containerWidth = wrapper.clientWidth; const containerHeight = wrapper.clientHeight; iframe.width = slideData.width; iframe.height = slideData.height; const scaleX = containerWidth / slideData.width; const scaleY = containerHeight / slideData.height; const scale = Math.min(scaleX, scaleY); iframe.style.transform = `scale(${scale})`; iframe.src = slideData.url; mediaModal.querySelector('.modal-footer').textContent = slideData.caption || ''; carouselPrevBtn.style.visibility = (index === 0) ? 'hidden' : 'visible'; carouselNextBtn.style.visibility = (index === currentCarouselImages.length - 1) ? 'hidden' : 'visible';
+                    const wrapper = document.getElementById('carouselIframeWrapper'); 
+                    const slideData = currentCarouselImages[index]; 
+                    if (!slideData || !slideData.url || !slideData.width || !slideData.height) { carouselIframe.src = 'about:blank'; return; } 
+                    const containerWidth = wrapper.clientWidth; 
+                    const containerHeight = wrapper.clientHeight; 
+                    carouselIframe.width = slideData.width; 
+                    carouselIframe.height = slideData.height; 
+                    const scaleX = containerWidth / slideData.width; 
+                    const scaleY = containerHeight / slideData.height; 
+                    const scale = Math.min(scaleX, scaleY); 
+                    carouselIframe.style.transform = `scale(${scale})`; 
+                    carouselIframe.src = slideData.url; 
+                    mediaModal.querySelector('.modal-footer').textContent = slideData.caption || ''; 
+                    carouselPrevBtn.style.visibility = (index === 0) ? 'hidden' : 'visible'; 
+                    carouselNextBtn.style.visibility = (index === currentCarouselImages.length - 1) ? 'hidden' : 'visible';
                 }
-                carouselPrevBtn.onclick = () => { if (currentCarouselIndex > 0) { currentCarouselIndex--; showCarouselSlide(currentCarouselIndex); } }; carouselNextBtn.onclick = () => { if (currentCarouselIndex < currentCarouselImages.length - 1) { currentCarouselIndex++; showCarouselSlide(currentCarouselIndex); } };
-                modalCarousel.style.display = 'flex'; setTimeout(() => { showCarouselSlide(0); }, 50);
+                carouselPrevBtn.onclick = () => { if (currentCarouselIndex > 0) { currentCarouselIndex--; showCarouselSlide(currentCarouselIndex); } }; 
+                carouselNextBtn.onclick = () => { if (currentCarouselIndex < currentCarouselImages.length - 1) { currentCarouselIndex++; showCarouselSlide(currentCarouselIndex); } };
+                modalCarousel.style.display = 'flex'; 
+                setTimeout(() => { showCarouselSlide(0); }, 50);
         
             } else {
-                // Логика для одиночных медиа (видео, фото и т.д.)
+                // ▼▼▼ ОБНОВЛЕННАЯ ЛОГИКА ДЛЯ ОДИНОЧНЫХ МЕДИА ▼▼▼
                 let contentElement;
                 let url = media.url || '';
                 
-                // Проверяем, является ли ссылка видео, которое нужно вставить через iframe
                 const isIframeVideo = media.type === 'iframe' || url.includes('youtu.be') || url.includes('youtube.com') || url.includes('1drv.ms');
         
                 if (isIframeVideo) {
+                    // Показываем наш новый контейнер
+                    singleVideoWrapper.style.display = 'flex';
+        
                     let embedUrl = url;
-                    // Преобразуем ссылки для правильного встраивания
                     if (url.includes('youtu.be') || url.includes('youtube.com')) {
                         const videoId = url.split('v=')[1] || url.split('/').pop().split('?')[0];
                         embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
                     } else if (url.includes('1drv.ms') && !url.includes('embedview')) {
-                        // ИСПРАВЛЕНИЕ: Добавляем параметр для OneDrive
                         embedUrl += (url.includes('?') ? '&' : '?') + 'action=embedview';
                     }
                     
-                    modalIframe.src = embedUrl;
-                    modalIframe.style.display = 'block';
+                    // Задаем базовый размер (стандартное соотношение 16:9)
+                    const videoBaseWidth = 1280;
+                    const videoBaseHeight = 720;
+                    modalIframe.width = videoBaseWidth;
+                    modalIframe.height = videoBaseHeight;
+                    
+                    // Даем браузеру мгновение, чтобы отрисовать контейнер и получить его размеры
+                    setTimeout(() => {
+                        const containerWidth = singleVideoWrapper.clientWidth;
+                        const containerHeight = singleVideoWrapper.clientHeight;
+        
+                        // Вычисляем масштаб точно так же, как в карусели
+                        const scaleX = containerWidth / videoBaseWidth;
+                        const scaleY = containerHeight / videoBaseHeight;
+                        const scale = Math.min(scaleX, scaleY, 1); // Не позволяем увеличивать больше 100%
+        
+                        modalIframe.style.transform = `scale(${scale})`;
+                        modalIframe.src = embedUrl;
+                    }, 50);
+        
                 } else {
-                    // Для остальных типов (photo, audio, text, video-файл)
                     if (media.type === 'photo') { contentElement = modalPhoto; } 
                     else if (media.type === 'video') { contentElement = modalVideo; } 
                     else if (media.type === 'audio') { contentElement = modalAudio; } 
                     else if (media.type === 'text') { contentElement = modalText; }
         
                     if (contentElement) { 
+                        contentElement.style.display = 'block'; 
                         if (media.type === 'text') { 
                             contentElement.innerHTML = '<em>Загрузка...</em>'; 
                             fetch(url).then(res => res.text()).then(text => contentElement.innerHTML = text).catch(err => contentElement.innerHTML = '<strong>Ошибка загрузки.</strong>'); 
                         } else { 
                             contentElement.src = url; 
                         } 
-                        contentElement.style.display = 'block'; 
                         if ((media.type === 'video' || media.type === 'audio')) { 
                             contentElement.play(); 
                         } 
@@ -987,6 +1048,7 @@
     </script>
 </body>
 </html>
+
 
 
 
