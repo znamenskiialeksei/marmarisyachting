@@ -140,12 +140,15 @@
         .route-dropdown-menu a:hover {
             background-color: #f0f0f0;
         }
+
         .page {
             position: absolute; width: 100%; height: 100%;
             display: flex; flex-direction: column; align-items: center;
             padding: 20px; box-sizing: border-box;
             opacity: 0; visibility: hidden; transition: opacity 0.5s ease-in-out;
             background: white;
+            /* *** ДОПОЛНЕНИЕ: Это нужно, чтобы кнопка позиционировалась внутри страницы, а не всего экрана *** */
+            position: relative; 
         }
         .page.active { opacity: 1; visibility: visible; }
         .page p {
@@ -264,8 +267,8 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            position: relative; /* <-- Добавлено для управления слоем */
-            z-index: 1;          /* <-- Устанавливаем нижний слой (Слой 1) */
+            position: relative; 
+            z-index: 1;
         }
         #carouselIframe {
             flex-shrink: 0;
@@ -285,8 +288,8 @@
             border-radius: 8px;
             user-select: none;
             height: 80%;
-            position: relative; /* <-- Убедитесь, что это свойство есть */
-            z-index: 2;          /* <-- Устанавливаем верхний слой (Слой 2) */
+            position: relative; 
+            z-index: 2;
         }
         .carousel-nav:hover {
             background: rgba(0,0,0,0.8);
@@ -448,7 +451,7 @@
         const CONFIG = {
             mobileFeedMode: true,
             feedModeForDesktop: true,
-            mainTitle: 'Маршрут 2.10 Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
+            mainTitle: 'Маршрут 2. Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
             audioUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisyachting/main/2RouteAudioVasilisa.mp3',
             bookingUrl: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route2',
             coverVideoUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4',
@@ -478,17 +481,16 @@
                     collapsible: false,
                     text: `<h2> О маршруте. </h2><p>Название: Маршрут 2. Дневной яхтенный тур под парусом Мармарис-Кумлубюк с обедом на яхте. Продолжительность: 1 день. Время: 9:30 – 18:15. Аудитория: от 1 до 6 гостей, включая детей от 6 лет. Стоимость: 1000 долларов США (стандартный обед)/1300 долларов США (обед-гриль). Особенности: Эксклюзивный однодневный круиз, сочетающий панорамные виды побережья, долгий отдых с купанием в живописной бухте Кумлубюк и изысканный обед, приготовленный для вас прямо на борту яхты.</p>`,
                     narrationEndTime: 40,
-                    // *** ИЗМЕНЕНИЕ 2: Пример добавления новой кнопки на конкретную страницу ***
-                    // Теперь можно добавить такой массив `customDropdowns` на любую страницу
+                    // *** ИЗМЕНЕНИЕ 2: Вот ваша новая кнопка. Вы добавили ее правильно. ***
                     customDropdowns: [
                         {
                             visible: true,
                             pulsing: true,
                             icon: '<svg viewBox="0 0 90 40"><rect x="0.5" y="0.5" width="89" height="39" rx="8" fill="#4CAF50" stroke="#FFFFFF" stroke-width="1"/><text x="45" y="25" font-size="14" font-family="Arial, sans-serif" fill="white" font-weight="bold" text-anchor="middle">Связаться</text></svg>',
                             tooltip: 'Напишите нам',
-                            top: '85%', // Позиция относительно границ страницы
+                            top: '85%',
                             left: '50%',
-                            routes: [ // Уникальные ссылки для этой кнопки
+                            routes: [
                                 { name: 'Написать в WhatsApp', url: 'https://wa.me/905366140347', target: '_blank' },
                                 { name: 'Написать в Telegram', url: 'https://t.me/marmarisyachtingru', target: '_blank' }
                             ]
@@ -599,6 +601,70 @@
             document.documentElement.style.setProperty('--pulse-total-duration', `${totalDuration}s`);
         }
         
+        // *** ИЗМЕНЕНИЕ 3: НОВАЯ УНИВЕРСАЛЬНАЯ ФУНКЦИЯ для создания кнопок с выпадающим меню ***
+        function createDropdownButton(config, parentElement) {
+            if (!config || !config.visible) return;
+
+            const viewContainer = parentElement.closest('.content-view, body');
+            const tooltipBox = document.getElementById('tooltip-box');
+
+            function showTooltip(element, text) { if (!text) return; tooltipBox.textContent = text; const rect = element.getBoundingClientRect(); tooltipBox.style.left = `${rect.left + rect.width / 2}px`; tooltipBox.style.top = `${rect.top - 10}px`; tooltipBox.style.transform = 'translate(-50%, -100%)'; tooltipBox.classList.add('visible'); }
+            function hideTooltip() { tooltipBox.classList.remove('visible'); }
+
+            const menuBtn = document.createElement('button');
+            menuBtn.className = 'cover-button route-selector-btn';
+            
+            // ВАЖНО: для кнопок на страницах, которые не являются .content-view,
+            // нужно явно задавать position: absolute, так как у родителя .page оно уже есть.
+            if (!parentElement.classList.contains('content-view')) {
+                 menuBtn.style.position = 'absolute';
+            }
+            
+            menuBtn.style.top = config.top;
+            menuBtn.style.left = config.left;
+            menuBtn.innerHTML = config.icon;
+            menuBtn.addEventListener('mouseenter', (e) => showTooltip(e.currentTarget, config.tooltip));
+            menuBtn.addEventListener('mouseleave', hideTooltip);
+            if ((CONFIG.pulsingEffect?.enabled && config.pulsing !== false) || config.pulsing === true) {
+                menuBtn.classList.add('pulsing');
+            }
+
+            const dropdown = document.createElement('div');
+            dropdown.className = 'route-dropdown-menu';
+            dropdown.style.top = `calc(${config.top} - 10px)`;
+            dropdown.style.left = config.left;
+            dropdown.style.transform = 'translate(-50%, -100%)';
+
+            config.routes.forEach(route => {
+                const link = document.createElement('a');
+                link.href = route.url;
+                link.textContent = route.name;
+                if (route.target) {
+                    link.target = route.target;
+                    link.rel = 'noopener noreferrer';
+                }
+                dropdown.appendChild(link);
+            });
+            
+            // Добавляем сразу два элемента, чтобы они были рядом в DOM
+            parentElement.append(menuBtn, dropdown);
+
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Закрываем все другие открытые меню перед открытием этого
+                document.querySelectorAll('.route-dropdown-menu.visible').forEach(menu => {
+                    if (menu !== dropdown) menu.classList.remove('visible');
+                });
+                dropdown.classList.toggle('visible');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!dropdown.contains(e.target) && !menuBtn.contains(e.target)) {
+                    dropdown.classList.remove('visible');
+                }
+            });
+        }
+
         function setupCover() {
             document.querySelector('#main-title').textContent = CONFIG.mainTitle;
             if (CONFIG.audioUrl) audioPlayer.src = CONFIG.audioUrl;
@@ -621,21 +687,86 @@
                     }
                 });
             }
-            if (CONFIG.routeSelector && CONFIG.routeSelector.visible) {
-                const selector = CONFIG.routeSelector; const menuBtn = document.createElement('button'); menuBtn.className = 'cover-button route-selector-btn'; menuBtn.style.top = selector.top; menuBtn.style.left = selector.left; menuBtn.innerHTML = selector.icon; menuBtn.addEventListener('mouseenter', (e) => showTooltip(e.currentTarget, selector.tooltip)); menuBtn.addEventListener('mouseleave', hideTooltip); if ((CONFIG.pulsingEffect?.enabled && selector.pulsing !== false) || selector.pulsing === true) { menuBtn.classList.add('pulsing'); } const dropdown = document.createElement('div'); dropdown.id = 'route-dropdown-menu'; dropdown.style.top = `calc(${selector.top} - 10px)`; dropdown.style.left = selector.left; dropdown.style.transform = 'translate(-50%, -100%)'; selector.routes.forEach(route => { const link = document.createElement('a'); link.href = route.url; link.textContent = route.name; dropdown.appendChild(link); }); coverView.appendChild(menuBtn); coverView.appendChild(dropdown); menuBtn.addEventListener('click', (e) => { e.stopPropagation(); dropdown.classList.toggle('visible'); }); document.addEventListener('click', (e) => { if (!dropdown.contains(e.target) && !menuBtn.contains(e.target)) { dropdown.classList.remove('visible'); } });
+            
+            // *** ИЗМЕНЕНИЕ 4: Старый код создания кнопки заменен на вызов новой функции ***
+            if (CONFIG.routeSelector) {
+                createDropdownButton(CONFIG.routeSelector, coverView);
             }
         }
         
         function setupBookPages() {
-            const pageViewer = document.querySelector('.page-viewer'); pageViewer.innerHTML = ''; publishedPages.forEach((pageData, index) => {
-                const pageNum = index + 1; const page = document.createElement('div'); page.className = 'page'; page.dataset.pageNumber = pageNum; if (pageNum === 1) page.classList.add('active'); const buttonsContainer = document.createElement('div'); buttonsContainer.className = 'page-buttons-container'; const allMedia = []; if (pageData.mainVideo && pageData.mainVideo.url) { allMedia.push({ ...pageData.mainVideo, type: pageData.mainVideo.type || 'video', buttonText: 'Показать видео' }); } if (pageData.extraMedia) { allMedia.push(...pageData.extraMedia); } allMedia.forEach((media) => {
+            const pageViewer = document.querySelector('.page-viewer'); pageViewer.innerHTML = ''; 
+            publishedPages.forEach((pageData, index) => {
+                const pageNum = index + 1; 
+                const page = document.createElement('div'); 
+                page.className = 'page'; 
+                page.dataset.pageNumber = pageNum; 
+                if (pageNum === 1) page.classList.add('active'); 
+                
+                const buttonsContainer = document.createElement('div'); 
+                buttonsContainer.className = 'page-buttons-container'; 
+                
+                const allMedia = []; 
+                if (pageData.mainVideo && pageData.mainVideo.url) { 
+                    allMedia.push({ ...pageData.mainVideo, type: pageData.mainVideo.type || 'video', buttonText: 'Показать видео' }); 
+                } 
+                if (pageData.extraMedia) { 
+                    allMedia.push(...pageData.extraMedia); 
+                } 
+                
+                allMedia.forEach((media) => {
                     const hasUrl = (media.type === 'carousel' && media.images && media.images.length > 0) || (media.url && media.url.trim() !== '');
-                    if (hasUrl) { const btn = document.createElement('button'); const btnClass = (media.type === 'iframe') ? 'iframe-btn' : `${media.type}-btn`; btn.className = `page-btn ${btnClass}`; btn.textContent = media.buttonText; btn.onclick = () => openMediaModal(media); buttonsContainer.appendChild(btn); } else if (isAdmin) { const errorMsg = `Стр. ${pageNum}, кнопка "${media.buttonText}": URL или данные отсутствуют`; adminErrors.push(errorMsg); const errorBtn = document.createElement('button'); errorBtn.className = 'page-btn admin-error-btn'; errorBtn.textContent = 'ОШИБКА URL'; errorBtn.title = errorMsg; buttonsContainer.appendChild(errorBtn); }
-                }); const textContent = document.createElement('p'); textContent.innerHTML = pageData.text || '';
+                    if (hasUrl) { 
+                        const btn = document.createElement('button'); 
+                        const btnClass = (media.type === 'iframe') ? 'iframe-btn' : `${media.type}-btn`; 
+                        btn.className = `page-btn ${btnClass}`; 
+                        btn.textContent = media.buttonText; 
+                        btn.onclick = () => openMediaModal(media); 
+                        buttonsContainer.appendChild(btn); 
+                    } else if (isAdmin) { 
+                        const errorMsg = `Стр. ${pageNum}, кнопка "${media.buttonText}": URL или данные отсутствуют`; 
+                        adminErrors.push(errorMsg); 
+                        const errorBtn = document.createElement('button'); 
+                        errorBtn.className = 'page-btn admin-error-btn'; 
+                        errorBtn.textContent = 'ОШИБКА URL'; 
+                        errorBtn.title = errorMsg; 
+                        buttonsContainer.appendChild(errorBtn); 
+                    }
+                }); 
+                
+                const textContent = document.createElement('p'); 
+                textContent.innerHTML = pageData.text || '';
+                
                 if (isFeedMode && pageData.collapsible) {
-                    const tempDiv = document.createElement('div'); tempDiv.innerHTML = pageData.text; const h2 = tempDiv.querySelector('h2'); const title = h2 ? h2.innerHTML : 'Развернуть'; if (h2) h2.remove(); textContent.innerHTML = tempDiv.innerHTML; const details = document.createElement('details'); const summary = document.createElement('summary'); summary.innerHTML = title; details.open = !pageData.collapsedOnLoad; details.appendChild(summary); details.appendChild(buttonsContainer); details.appendChild(textContent); page.appendChild(details);
-                } else { page.appendChild(buttonsContainer); page.appendChild(textContent); }
+                    const tempDiv = document.createElement('div'); 
+                    tempDiv.innerHTML = pageData.text; 
+                    const h2 = tempDiv.querySelector('h2'); 
+                    const title = h2 ? h2.innerHTML : 'Развернуть'; 
+                    if (h2) h2.remove(); 
+                    textContent.innerHTML = tempDiv.innerHTML; 
+                    const details = document.createElement('details'); 
+                    const summary = document.createElement('summary'); 
+                    summary.innerHTML = title; 
+                    details.open = !pageData.collapsedOnLoad; 
+                    details.appendChild(summary); 
+                    details.appendChild(buttonsContainer); 
+                    details.appendChild(textContent); 
+                    page.appendChild(details);
+                } else { 
+                    page.appendChild(buttonsContainer); 
+                    page.appendChild(textContent); 
+                }
+                
                 pageViewer.appendChild(page);
+                
+                // *** ИЗМЕНЕНИЕ 5: Добавлена логика для создания кастомных кнопок на странице ***
+                if (pageData.customDropdowns && Array.isArray(pageData.customDropdowns)) {
+                    pageData.customDropdowns.forEach(dropdownConfig => {
+                        // Для каждой конфигурации вызываем нашу универсальную функцию,
+                        // передавая в качестве родителя саму страницу (div.page)
+                        createDropdownButton(dropdownConfig, page);
+                    });
+                }
             });
         }
         
@@ -671,6 +802,7 @@
         function showPage(pageNumber) {
             if (pageNumber < 1 || pageNumber > publishedPages.length) return;
             pages.forEach(p => p.classList.remove('active'));
+            // Важно: нужно пересоздать `pages`, так как они создаются динамически.
             document.querySelector(`.page[data-page-number="${pageNumber}"]`).classList.add('active');
             currentPage = pageNumber;
             updateButtonsAndIndicator();
@@ -775,6 +907,7 @@
     </script>
 </body>
 </html>
+
 
 
 
