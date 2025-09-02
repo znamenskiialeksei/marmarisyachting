@@ -148,7 +148,8 @@
             padding: 20px; box-sizing: border-box;
             opacity: 0; visibility: hidden; transition: opacity 0.5s ease-in-out;
             background: white;
-            position: relative; 
+            position: relative;
+            overflow-x: hidden;
         }
         .page.active { opacity: 1; visibility: visible; }
         .page p {
@@ -802,27 +803,70 @@
         const mediaModal = document.getElementById('mediaModal'); const modalPhoto = document.getElementById('modalPhoto'); const modalVideo = document.getElementById('modalVideo'); const modalAudio = document.getElementById('modalAudio'); const modalText = document.getElementById('modalText'); const modalCarousel = document.getElementById('modalCarousel'); const modalIframe = document.getElementById('modalIframe'); const carouselPrevBtn = modalCarousel.querySelector('.prev'); const carouselNextBtn = modalCarousel.querySelector('.next'); let currentCarouselImages = []; let currentCarouselIndex = 0;
 
         function openMediaModal(media) {
-            [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => { el.style.display = 'none'; if(el.tagName === 'VIDEO' || el.tagName === 'AUDIO') { el.src = ''; el.pause(); } else if (el.tagName === 'IMG' || el.tagName === 'IFRAME') { el.src = 'about:blank'; } });
-            mediaModal.querySelector('.modal-header').textContent = media.headerText || ''; mediaModal.querySelector('.modal-footer').textContent = ''; 
+            // Сбрасываем все модальные окна
+            [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => { 
+                el.style.display = 'none'; 
+                // Сбрасываем стили, которые могли быть добавлены ранее
+                el.style.width = '';
+                el.style.height = '';
+                el.style.aspectRatio = '';
+                if(el.tagName === 'VIDEO' || el.tagName === 'AUDIO') { el.src = ''; el.pause(); } 
+                else if (el.tagName === 'IMG' || el.tagName === 'IFRAME') { el.src = 'about:blank'; } 
+            });
+        
+            mediaModal.querySelector('.modal-header').textContent = media.headerText || ''; 
+            mediaModal.querySelector('.modal-footer').textContent = media.footerText || ''; 
+        
             if (media.type === 'carousel' && media.images && media.images.length > 0) {
+                // Логика карусели (она работает, не трогаем)
                 currentCarouselImages = media.images; currentCarouselIndex = 0;
                 function showCarouselSlide(index) {
                     const wrapper = document.getElementById('carouselIframeWrapper'); const iframe = document.getElementById('carouselIframe'); const slideData = currentCarouselImages[index]; if (!slideData || !slideData.url || !slideData.width || !slideData.height) { iframe.src = 'about:blank'; return; } const containerWidth = wrapper.clientWidth; const containerHeight = wrapper.clientHeight; iframe.width = slideData.width; iframe.height = slideData.height; const scaleX = containerWidth / slideData.width; const scaleY = containerHeight / slideData.height; const scale = Math.min(scaleX, scaleY); iframe.style.transform = `scale(${scale})`; iframe.src = slideData.url; mediaModal.querySelector('.modal-footer').textContent = slideData.caption || ''; carouselPrevBtn.style.visibility = (index === 0) ? 'hidden' : 'visible'; carouselNextBtn.style.visibility = (index === currentCarouselImages.length - 1) ? 'hidden' : 'visible';
                 }
                 carouselPrevBtn.onclick = () => { if (currentCarouselIndex > 0) { currentCarouselIndex--; showCarouselSlide(currentCarouselIndex); } }; carouselNextBtn.onclick = () => { if (currentCarouselIndex < currentCarouselImages.length - 1) { currentCarouselIndex++; showCarouselSlide(currentCarouselIndex); } };
                 modalCarousel.style.display = 'flex'; setTimeout(() => { showCarouselSlide(0); }, 50);
+        
             } else {
-                mediaModal.querySelector('.modal-footer').textContent = media.footerText || ''; let contentElement;
-                if (media.type === 'iframe' || media.url.includes('youtu.be') || media.url.includes('youtube.com')) { 
-                    const isYoutube = media.url.includes('youtu.be') || media.url.includes('youtube.com');
-                    const embedUrl = isYoutube ? `https://www.youtube.com/embed/${media.url.split('v=')[1] || media.url.split('/').pop().split('?')[0]}` : media.url;
-                    modalIframe.style.aspectRatio = (media.width && media.height) ? `${media.width} / ${media.height}` : '16 / 9'; 
-                    modalIframe.style.width = '90%'; 
-                    modalIframe.style.height = 'auto'; 
-                    modalIframe.src = embedUrl; 
-                    modalIframe.style.display = 'block'; 
-                } else if (media.type === 'photo') { contentElement = modalPhoto; } else if (media.type === 'video') { contentElement = modalVideo; } else if (media.type === 'audio') { contentElement = modalAudio; } else if (media.type === 'text') { contentElement = modalText; }
-                if (contentElement) { if (media.type === 'text') { contentElement.innerHTML = '<em>Загрузка...</em>'; fetch(media.url).then(res => res.text()).then(text => contentElement.innerHTML = text).catch(err => contentElement.innerHTML = '<strong>Ошибка загрузки.</strong>'); } else { contentElement.src = media.url; } contentElement.style.display = 'block'; if ((media.type === 'video' || media.type === 'audio')) { contentElement.play(); } }
+                // Логика для одиночных медиа (видео, фото и т.д.)
+                let contentElement;
+                let url = media.url || '';
+                
+                // Проверяем, является ли ссылка видео, которое нужно вставить через iframe
+                const isIframeVideo = media.type === 'iframe' || url.includes('youtu.be') || url.includes('youtube.com') || url.includes('1drv.ms');
+        
+                if (isIframeVideo) {
+                    let embedUrl = url;
+                    // Преобразуем ссылки для правильного встраивания
+                    if (url.includes('youtu.be') || url.includes('youtube.com')) {
+                        const videoId = url.split('v=')[1] || url.split('/').pop().split('?')[0];
+                        embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                    } else if (url.includes('1drv.ms') && !url.includes('embedview')) {
+                        // ИСПРАВЛЕНИЕ: Добавляем параметр для OneDrive
+                        embedUrl += (url.includes('?') ? '&' : '?') + 'action=embedview';
+                    }
+                    
+                    modalIframe.src = embedUrl;
+                    modalIframe.style.display = 'block';
+                } else {
+                    // Для остальных типов (photo, audio, text, video-файл)
+                    if (media.type === 'photo') { contentElement = modalPhoto; } 
+                    else if (media.type === 'video') { contentElement = modalVideo; } 
+                    else if (media.type === 'audio') { contentElement = modalAudio; } 
+                    else if (media.type === 'text') { contentElement = modalText; }
+        
+                    if (contentElement) { 
+                        if (media.type === 'text') { 
+                            contentElement.innerHTML = '<em>Загрузка...</em>'; 
+                            fetch(url).then(res => res.text()).then(text => contentElement.innerHTML = text).catch(err => contentElement.innerHTML = '<strong>Ошибка загрузки.</strong>'); 
+                        } else { 
+                            contentElement.src = url; 
+                        } 
+                        contentElement.style.display = 'block'; 
+                        if ((media.type === 'video' || media.type === 'audio')) { 
+                            contentElement.play(); 
+                        } 
+                    }
+                }
             }
             mediaModal.style.display = 'flex';
         }
@@ -943,6 +987,7 @@
     </script>
 </body>
 </html>
+
 
 
 
