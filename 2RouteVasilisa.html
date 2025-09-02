@@ -157,7 +157,6 @@
             color: #333; overflow-y: auto; width: 100%;
             padding-right: 10px; flex-grow: 1; min-height: 0;
             box-sizing: border-box;
-            /* Обеспечиваем, чтобы текст не залезал под кнопки */
             padding-bottom: 80px; 
         }
 
@@ -194,6 +193,8 @@
             border-radius: 8px;
             max-width: 95vw;
             max-height: 90vh;
+            aspect-ratio: 16 / 9; /* Добавим для лучшего отображения видео */
+            width: 90%; /* Зададим ширину, высота подстроится */
         }
         #modalText { background-color: #fff; padding: 25px; color: #333; overflow-y: auto; line-height: 1.6; }
         .modal-close { position: absolute; top: 20px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 1001; }
@@ -339,7 +340,7 @@
             opacity: 1 !important;
             visibility: visible !important;
             margin-bottom: 10px;
-            min-height: 20vh; /* Минимальная высота, чтобы страница не схлопывалась */
+            min-height: 20vh;
         }
         .feed-mode .page details {
             width: 100%;
@@ -380,29 +381,6 @@
         .feed-mode .page details:not([open]) > summary::before {
             transform: rotate(-90deg);
         }
-        #singleVideoWrapper {
-            /* Скрываем по умолчанию, как и другие .modal-content */
-            display: none; 
-            /* Задаем размеры контейнера, в который будет вписываться видео */
-            width: 95%;
-            max-width: 1280px;
-            height: 90%;
-            /* Используем flex для центрирования iframe внутри */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-        
-        #singleVideoWrapper iframe {
-            /* Убираем рамку и скругления по умолчанию */
-            border: none;
-            border-radius: 8px;
-            /* Готовим к масштабированию */
-            flex-shrink: 0;
-            transform-origin: center center;
-            transition: transform 0.3s ease;
-        }
     </style>
 </head>
 <body>
@@ -441,10 +419,7 @@
         <div class="modal-content" id="modalText"></div>
         <img class="modal-content" id="modalPhoto" alt="Изображение">
         <video class="modal-content" id="modalVideo" controls playsinline></video>
-        <iframe class="modal-content" id="modalIframe" frameborder="0" allowfullscreen></iframe>
-        <div class="modal-content" id="singleVideoWrapper">
-        <iframe id="modalIframe" frameborder="0" allow="autoplay; fullscreen"></iframe>
-        </div>
+        <iframe class="modal-content" id="modalIframe" frameborder="0" allow="autoplay; fullscreen"></iframe>
         <audio class="modal-content" id="modalAudio" controls></audio>
         
         <div class="modal-content" id="modalCarousel">
@@ -471,7 +446,7 @@
         const CONFIG = {
             mobileFeedMode: true,
             feedModeForDesktop: true,
-            mainTitle: 'Маршрут 2.17 Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
+            mainTitle: 'Маршрут 2.10 Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
             audioUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisyachting/main/2RouteAudioVasilisa.mp3',
             bookingUrl: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route2',
             coverVideoUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4',
@@ -495,9 +470,6 @@
                     { name: 'Недельная аренда виллы', url: 'https://www.marmarisyachting.ru/Villa-Turaman' }
                 ]
             },
-            // ===================================================================
-            // ▼▼▼ ОБНОВЛЕННАЯ КОНФИГУРАЦИЯ СТРАНИЦ С СИСТЕМОЙ customButtons ▼▼▼
-            // ===================================================================
             pages: [
                 {
                     published: true,
@@ -620,7 +592,7 @@
                             icon: '<svg viewBox="0 0 100 40"><rect x="0.5" y="0.5" width="99" height="39" rx="8" fill="#673ab7" stroke="#FFFFFF" stroke-width="1"/><text x="50" y="25" font-size="14" fill="white" font-weight="bold" text-anchor="middle">360° тур</text></svg>',
                             tooltip: '360° тур по яхте',
                             top: '85%', left: '70%',
-                            mediaData: { type: 'iframe', url: 'https://360.bavariayachts.com/2021/tours/index_en.html?nav_id=5491-135719', headerText: '360° тур по яхте' }
+                            mediaData: { type: 'iframe', url: 'https://360.bavariayachts.com/2021/tours/index_en.html?nav_id=541-135719', headerText: '360° тур по яхте' }
                         },
                         {
                             type: 'media',
@@ -669,9 +641,6 @@
             document.documentElement.style.setProperty('--pulse-total-duration', `${totalDuration}s`);
         }
         
-        // ===================================================================
-        // ▼▼▼ НОВАЯ УНИВЕРСАЛЬНАЯ ФУНКЦИЯ ДЛЯ ВСЕХ КНОПОК ▼▼▼
-        // ===================================================================
         function createCustomButton(config, parentElement) {
             if (!config || config.visible === false) return;
 
@@ -767,17 +736,10 @@
             }
             
             if (CONFIG.routeSelector) {
-                 // Тут создаем кнопку-дропдаун для обложки, используя новую функцию, но передавая ей старый конфиг
-                createCustomButton({
-                    ...CONFIG.routeSelector,
-                    type: 'dropdown'
-                }, coverView);
+                createCustomButton({ ...CONFIG.routeSelector, type: 'dropdown' }, coverView);
             }
         }
         
-        // ===================================================================
-        // ▼▼▼ ОБНОВЛЕННАЯ УПРОЩЕННАЯ ФУНКЦИЯ СОЗДАНИЯ СТРАНИЦ ▼▼▼
-        // ===================================================================
         function setupBookPages() {
             const pageViewer = document.querySelector('.page-viewer');
             pageViewer.innerHTML = '';
@@ -828,36 +790,27 @@
         
         const mediaModal = document.getElementById('mediaModal'); const modalPhoto = document.getElementById('modalPhoto'); const modalVideo = document.getElementById('modalVideo'); const modalAudio = document.getElementById('modalAudio'); const modalText = document.getElementById('modalText'); const modalCarousel = document.getElementById('modalCarousel'); const modalIframe = document.getElementById('modalIframe'); const carouselPrevBtn = modalCarousel.querySelector('.prev'); const carouselNextBtn = modalCarousel.querySelector('.next'); let currentCarouselImages = []; let currentCarouselIndex = 0;
 
+        // ▼▼▼ ИСПРАВЛЕННАЯ ФУНКЦИЯ: ПРОСТАЯ И НАДЕЖНАЯ ВЕРСИЯ ▼▼▼
         function openMediaModal(media) {
-            // Получаем элементы один раз
-            const singleVideoWrapper = document.getElementById('singleVideoWrapper');
-            const modalIframe = document.getElementById('modalIframe');
-        
-            // Сбрасываем все модальные окна
-            [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, singleVideoWrapper].forEach(el => { 
-                el.style.display = 'none'; 
+            [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => { 
+                el.style.display = 'none';
+                if (el.tagName === 'VIDEO' || el.tagName === 'AUDIO') { el.pause(); el.src = ''; } 
+                else if (el.tagName === 'IFRAME') { el.src = 'about:blank'; }
             });
-            // Сбрасываем iframe, чтобы не было "промаргивания" старого контента
-            modalIframe.src = 'about:blank';
-            modalIframe.style.transform = 'scale(1)'; // Сбрасываем масштаб
-        
+
             mediaModal.querySelector('.modal-header').textContent = media.headerText || ''; 
             mediaModal.querySelector('.modal-footer').textContent = media.footerText || ''; 
-        
+
             if (media.type === 'carousel' && media.images && media.images.length > 0) {
-                // Логика карусели (не изменилась)
                 currentCarouselImages = media.images; currentCarouselIndex = 0;
                 const carouselIframe = document.getElementById('carouselIframe');
                 function showCarouselSlide(index) {
                     const wrapper = document.getElementById('carouselIframeWrapper'); 
                     const slideData = currentCarouselImages[index]; 
                     if (!slideData || !slideData.url || !slideData.width || !slideData.height) { carouselIframe.src = 'about:blank'; return; } 
-                    const containerWidth = wrapper.clientWidth; 
-                    const containerHeight = wrapper.clientHeight; 
-                    carouselIframe.width = slideData.width; 
-                    carouselIframe.height = slideData.height; 
-                    const scaleX = containerWidth / slideData.width; 
-                    const scaleY = containerHeight / slideData.height; 
+                    const containerWidth = wrapper.clientWidth; const containerHeight = wrapper.clientHeight; 
+                    carouselIframe.width = slideData.width; carouselIframe.height = slideData.height; 
+                    const scaleX = containerWidth / slideData.width; const scaleY = containerHeight / slideData.height; 
                     const scale = Math.min(scaleX, scaleY); 
                     carouselIframe.style.transform = `scale(${scale})`; 
                     carouselIframe.src = slideData.url; 
@@ -869,18 +822,14 @@
                 carouselNextBtn.onclick = () => { if (currentCarouselIndex < currentCarouselImages.length - 1) { currentCarouselIndex++; showCarouselSlide(currentCarouselIndex); } };
                 modalCarousel.style.display = 'flex'; 
                 setTimeout(() => { showCarouselSlide(0); }, 50);
-        
+
             } else {
-                // ▼▼▼ ОБНОВЛЕННАЯ ЛОГИКА ДЛЯ ОДИНОЧНЫХ МЕДИА ▼▼▼
                 let contentElement;
                 let url = media.url || '';
                 
-                const isIframeVideo = media.type === 'iframe' || url.includes('youtu.be') || url.includes('youtube.com') || url.includes('1drv.ms');
-        
-                if (isIframeVideo) {
-                    // Показываем наш новый контейнер
-                    singleVideoWrapper.style.display = 'flex';
-        
+                const isIframe = media.type === 'iframe' || url.includes('youtu.be') || url.includes('youtube.com') || url.includes('1drv.ms');
+
+                if (isIframe) {
                     let embedUrl = url;
                     if (url.includes('youtu.be') || url.includes('youtube.com')) {
                         const videoId = url.split('v=')[1] || url.split('/').pop().split('?')[0];
@@ -888,49 +837,24 @@
                     } else if (url.includes('1drv.ms') && !url.includes('embedview')) {
                         embedUrl += (url.includes('?') ? '&' : '?') + 'action=embedview';
                     }
-                    
-                    // Задаем базовый размер (стандартное соотношение 16:9)
-                    const videoBaseWidth = 1280;
-                    const videoBaseHeight = 720;
-                    modalIframe.width = videoBaseWidth;
-                    modalIframe.height = videoBaseHeight;
-                    
-                    // Даем браузеру мгновение, чтобы отрисовать контейнер и получить его размеры
-                    setTimeout(() => {
-                        const containerWidth = singleVideoWrapper.clientWidth;
-                        const containerHeight = singleVideoWrapper.clientHeight;
-        
-                        // Вычисляем масштаб точно так же, как в карусели
-                        const scaleX = containerWidth / videoBaseWidth;
-                        const scaleY = containerHeight / videoBaseHeight;
-                        const scale = Math.min(scaleX, scaleY, 1); // Не позволяем увеличивать больше 100%
-        
-                        modalIframe.style.transform = `scale(${scale})`;
-                        modalIframe.src = embedUrl;
-                    }, 50);
-        
-                } else {
-                    if (media.type === 'photo') { contentElement = modalPhoto; } 
-                    else if (media.type === 'video') { contentElement = modalVideo; } 
-                    else if (media.type === 'audio') { contentElement = modalAudio; } 
-                    else if (media.type === 'text') { contentElement = modalText; }
-        
-                    if (contentElement) { 
-                        contentElement.style.display = 'block'; 
-                        if (media.type === 'text') { 
-                            contentElement.innerHTML = '<em>Загрузка...</em>'; 
-                            fetch(url).then(res => res.text()).then(text => contentElement.innerHTML = text).catch(err => contentElement.innerHTML = '<strong>Ошибка загрузки.</strong>'); 
-                        } else { 
-                            contentElement.src = url; 
-                        } 
-                        if ((media.type === 'video' || media.type === 'audio')) { 
-                            contentElement.play(); 
-                        } 
-                    }
+                    contentElement = modalIframe;
+                    contentElement.src = embedUrl;
+
+                } else if (media.type === 'photo') { 
+                    contentElement = modalPhoto;
+                    contentElement.src = url;
+                } else if (media.type === 'video') { 
+                    contentElement = modalVideo;
+                    contentElement.src = url;
+                } 
+
+                if (contentElement) {
+                    contentElement.style.display = 'block';
                 }
             }
             mediaModal.style.display = 'flex';
         }
+        
         const bookingModal = document.getElementById('bookingModal'); const bookingFrame = document.getElementById('bookingFrame'); function closeModal(modal) { modal.style.display = 'none'; if (modal.id === 'mediaModal') { [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => { el.style.display = 'none'; if (el.tagName === 'VIDEO' || el.tagName === 'AUDIO') { el.pause(); el.src = ''; } else if (el.tagName === 'IMG' || el.tagName === 'IFRAME') { el.src = 'about:blank'; } }); } if (modal.id === 'bookingModal') { bookingFrame.src = ''; } }
         mediaModal.querySelector('.modal-close').onclick = () => closeModal(mediaModal);
         bookingModal.querySelector('.modal-close').onclick = () => closeModal(bookingModal);
@@ -1048,6 +972,7 @@
     </script>
 </body>
 </html>
+
 
 
 
