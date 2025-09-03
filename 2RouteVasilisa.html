@@ -109,10 +109,9 @@
             100% { opacity: 0; }
         }
         
-        /* *** ИЗМЕНЕНИЕ 1: Селектор ID #route-dropdown-menu заменен на класс .route-dropdown-menu, чтобы меню можно было создавать многократно *** */
         .route-dropdown-menu {
             position: absolute;
-            z-index: 100; /* Увеличил z-index, чтобы меню на странице было поверх других элементов */
+            z-index: 100; 
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.3);
@@ -147,7 +146,6 @@
             padding: 20px; box-sizing: border-box;
             opacity: 0; visibility: hidden; transition: opacity 0.5s ease-in-out;
             background: white;
-            /* *** ДОПОЛНЕНИЕ: Это нужно, чтобы кнопка позиционировалась внутри страницы, а не всего экрана *** */
             position: relative; 
         }
         .page.active { opacity: 1; visibility: visible; }
@@ -481,7 +479,6 @@
                     collapsible: false,
                     text: `<h2> О маршруте. </h2><p>Название: Маршрут 2. Дневной яхтенный тур под парусом Мармарис-Кумлубюк с обедом на яхте. Продолжительность: 1 день. Время: 9:30 – 18:15. Аудитория: от 1 до 6 гостей, включая детей от 6 лет. Стоимость: 1000 долларов США (стандартный обед)/1300 долларов США (обед-гриль). Особенности: Эксклюзивный однодневный круиз, сочетающий панорамные виды побережья, долгий отдых с купанием в живописной бухте Кумлубюк и изысканный обед, приготовленный для вас прямо на борту яхты.</p>`,
                     narrationEndTime: 40,
-                    // *** ИЗМЕНЕНИЕ 2: Вот ваша новая кнопка. Вы добавили ее правильно. ***
                     customDropdowns: [
                         {
                             visible: true,
@@ -526,9 +523,12 @@
                     narrationEndTime: 284,
                     mainVideo: { type: 'iframe', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQSe6WT-_Nt4QYem_P3qEx_3Abn7W0p9009H02uPVTxShdI', headerText: 'Видео: Выход из Мармарис Яхт Марины', footerText: '' },
                     extraMedia: [
+                        // *** ИЗМЕНЕНИЕ 1: Пример кастомизации кнопки. Изменено название и добавлены цвета. ***
                         {
                             type: 'carousel',
-                            buttonText: 'Фото нашего маршрута',
+                            buttonText: 'Галерея (новое имя)', // Можно менять название
+                            buttonColor: '#E91E63',           // Можно задать свой цвет фона
+                            buttonTextColor: '#FFFFFF',        // Можно задать свой цвет текста
                             headerText: 'Фотографии',
                             images: [
                                 { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'BAVARIA C45 - Фото 1', width: 1513, height: 951 },
@@ -538,7 +538,15 @@
                                 { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'BAVARIA C45 - Фото 5', width: 1513, height: 951 }
                             ]
                         },
-                        { type: 'iframe', buttonText: 'Видеообзор яхты', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0', headerText: 'Кумлюбюк', footerText: '' }
+                        // *** ИЗМЕНЕНИЕ 2: Еще один пример. Изменено только название и цвет фона. ***
+                        { 
+                            type: 'iframe', 
+                            buttonText: 'Видеообзор (другой цвет)', // Изменено название
+                            buttonColor: '#00BCD4',              // Задан другой цвет фона
+                            url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0', 
+                            headerText: 'Кумлюбюк', 
+                            footerText: '' 
+                        }
                     ],
                 },
                 {
@@ -601,25 +609,17 @@
             document.documentElement.style.setProperty('--pulse-total-duration', `${totalDuration}s`);
         }
         
-        // *** ИЗМЕНЕНИЕ 3: НОВАЯ УНИВЕРСАЛЬНАЯ ФУНКЦИЯ для создания кнопок с выпадающим меню ***
         function createDropdownButton(config, parentElement) {
             if (!config || !config.visible) return;
-
             const viewContainer = parentElement.closest('.content-view, body');
             const tooltipBox = document.getElementById('tooltip-box');
-
             function showTooltip(element, text) { if (!text) return; tooltipBox.textContent = text; const rect = element.getBoundingClientRect(); tooltipBox.style.left = `${rect.left + rect.width / 2}px`; tooltipBox.style.top = `${rect.top - 10}px`; tooltipBox.style.transform = 'translate(-50%, -100%)'; tooltipBox.classList.add('visible'); }
             function hideTooltip() { tooltipBox.classList.remove('visible'); }
-
             const menuBtn = document.createElement('button');
             menuBtn.className = 'cover-button route-selector-btn';
-            
-            // ВАЖНО: для кнопок на страницах, которые не являются .content-view,
-            // нужно явно задавать position: absolute, так как у родителя .page оно уже есть.
             if (!parentElement.classList.contains('content-view')) {
-                 menuBtn.style.position = 'absolute';
+                menuBtn.style.position = 'absolute';
             }
-            
             menuBtn.style.top = config.top;
             menuBtn.style.left = config.left;
             menuBtn.innerHTML = config.icon;
@@ -628,13 +628,11 @@
             if ((CONFIG.pulsingEffect?.enabled && config.pulsing !== false) || config.pulsing === true) {
                 menuBtn.classList.add('pulsing');
             }
-
             const dropdown = document.createElement('div');
             dropdown.className = 'route-dropdown-menu';
             dropdown.style.top = `calc(${config.top} - 10px)`;
             dropdown.style.left = config.left;
             dropdown.style.transform = 'translate(-50%, -100%)';
-
             config.routes.forEach(route => {
                 const link = document.createElement('a');
                 link.href = route.url;
@@ -645,19 +643,14 @@
                 }
                 dropdown.appendChild(link);
             });
-            
-            // Добавляем сразу два элемента, чтобы они были рядом в DOM
             parentElement.append(menuBtn, dropdown);
-
             menuBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                // Закрываем все другие открытые меню перед открытием этого
                 document.querySelectorAll('.route-dropdown-menu.visible').forEach(menu => {
                     if (menu !== dropdown) menu.classList.remove('visible');
                 });
                 dropdown.classList.toggle('visible');
             });
-
             document.addEventListener('click', (e) => {
                 if (!dropdown.contains(e.target) && !menuBtn.contains(e.target)) {
                     dropdown.classList.remove('visible');
@@ -688,7 +681,6 @@
                 });
             }
             
-            // *** ИЗМЕНЕНИЕ 4: Старый код создания кнопки заменен на вызов новой функции ***
             if (CONFIG.routeSelector) {
                 createDropdownButton(CONFIG.routeSelector, coverView);
             }
@@ -721,6 +713,17 @@
                         const btnClass = (media.type === 'iframe') ? 'iframe-btn' : `${media.type}-btn`; 
                         btn.className = `page-btn ${btnClass}`; 
                         btn.textContent = media.buttonText; 
+
+                        // *** ИЗМЕНЕНИЕ 3: Логика для применения кастомных стилей к кнопкам ***
+                        // Если в конфигурации для этой кнопки задан цвет фона, применяем его
+                        if (media.buttonColor) {
+                            btn.style.backgroundColor = media.buttonColor;
+                        }
+                        // Если задан цвет текста, применяем и его
+                        if (media.buttonTextColor) {
+                            btn.style.color = media.buttonTextColor;
+                        }
+
                         btn.onclick = () => openMediaModal(media); 
                         buttonsContainer.appendChild(btn); 
                     } else if (isAdmin) { 
@@ -759,11 +762,8 @@
                 
                 pageViewer.appendChild(page);
                 
-                // *** ИЗМЕНЕНИЕ 5: Добавлена логика для создания кастомных кнопок на странице ***
                 if (pageData.customDropdowns && Array.isArray(pageData.customDropdowns)) {
                     pageData.customDropdowns.forEach(dropdownConfig => {
-                        // Для каждой конфигурации вызываем нашу универсальную функцию,
-                        // передавая в качестве родителя саму страницу (div.page)
                         createDropdownButton(dropdownConfig, page);
                     });
                 }
@@ -801,8 +801,7 @@
         
         function showPage(pageNumber) {
             if (pageNumber < 1 || pageNumber > publishedPages.length) return;
-            pages.forEach(p => p.classList.remove('active'));
-            // Важно: нужно пересоздать `pages`, так как они создаются динамически.
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelector(`.page[data-page-number="${pageNumber}"]`).classList.add('active');
             currentPage = pageNumber;
             updateButtonsAndIndicator();
@@ -907,6 +906,7 @@
     </script>
 </body>
 </html>
+
 
 
 
