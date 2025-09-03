@@ -1,0 +1,10 @@
+body { margin: 0; font-family: sans-serif; background-color: #f0f2f5; }
+header, footer, nav { padding: 15px; text-align: center; }
+nav a { margin: 0 15px; text-decoration: none; color: #007bff; }
+main { position: relative; width: 100%; min-height: 120vh; }
+.route-window {
+    border: 1px solid #ccc;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    border-radius: 8px;
+    background-color: white;
+}

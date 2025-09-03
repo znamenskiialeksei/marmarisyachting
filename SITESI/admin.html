@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Панель администратора</title>
+    <link rel="stylesheet" href="style.css">
+    <style> /* Стили специально для админки */
+        .draggable-route { resize: both; overflow: auto; border: 2px dashed #007bff; cursor: move; }
+        .admin-section { background: #fff; padding: 20px; margin: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        textarea { width: 98%; min-height: 100px; }
+        input { width: 98%; padding: 8px; margin-bottom: 10px; }
+        #login-view, #admin-view { text-align: center; }
+    </style>
+</head>
+<body>
+    <div id="login-view">
+        <h2>Вход в панель администратора</h2>
+        <input type="password" id="github-token" placeholder="Введите ваш GitHub Personal Access Token">
+        <button id="login-btn">Войти</button>
+    </div>
+
+    <div id="admin-view" style="display:none;">
+        <h1>Панель управления</h1>
+        <button id="save-btn" style="background-color: #28a745; color: white; padding: 15px; font-size: 1.2em; cursor: pointer;">Сохранить все изменения</button>
+        <p>Перетаскивайте и изменяйте размеры блоков прямо на странице.</p>
+        
+        <div class="admin-section">
+            <h3>Шапка (Header)</h3>
+            <textarea id="header-editor"></textarea>
+        </div>
+        <div class="admin-section">
+            <h3>Подвал (Footer)</h3>
+            <textarea id="footer-editor"></textarea>
+        </div>
+
+        <main id="route-container"></main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
