@@ -339,7 +339,7 @@
             opacity: 1 !important;
             visibility: visible !important;
             margin-bottom: 10px;
-            height: auto; /* Ensure height can be controlled by content */
+            height: auto; 
         }
         .feed-mode .page details {
             width: 100%;
@@ -876,19 +876,15 @@
                     const details = document.createElement('details'); 
                     details.open = !pageData.collapsedOnLoad; 
                     
-                    // <<< ИСПРАВЛЕНИЕ ЗДЕСЬ: ЛОГИКА УПРАВЛЕНИЯ ВЫСОТОЙ
-                    // Устанавливаем начальную высоту в зависимости от состояния
                     if (pageData.customHeight && pageData.customHeight !== 'auto') {
                         page.style.height = details.open ? pageData.customHeight : 'auto';
                     }
 
                     details.addEventListener('toggle', () => {
-                        // Динамически меняем высоту при сворачивании/разворачивании
                         if (pageData.customHeight && pageData.customHeight !== 'auto') {
                             page.style.height = details.open ? pageData.customHeight : 'auto';
                         }
                         
-                        // Синхронизация аудио
                         if (details.open) {
                             const pageNumToSync = parseInt(page.dataset.pageNumber, 10);
                             currentPage = pageNumToSync;
@@ -906,7 +902,6 @@
                     details.appendChild(textContent); 
                     page.appendChild(details);
                 } else { 
-                    // Для не-сворачиваемых страниц просто устанавливаем высоту как раньше
                     if (pageData.customHeight) {
                         page.style.height = pageData.customHeight;
                     }
@@ -995,12 +990,23 @@
         
         playPauseBtn.addEventListener('click', () => {
             if (isFeedMode && isCoverActive) {
-                isPlaying = true; isCoverActive = false; scrollToPage(1);
+                isPlaying = true;
+                isCoverActive = false;
+                scrollToPage(1);
                 const firstPage = document.querySelector('.page[data-page-number="1"] details');
-                if (firstPage) firstPage.open = true;
+                if (firstPage && !firstPage.open) {
+                    firstPage.open = true;
+                }
+                // <<< ИСПРАВЛЕНИЕ ЗДЕСЬ
+                audioPlayer.currentTime = 0; // Принудительно ставим на начало
                 audioPlayer.play();
             } else if (!isFeedMode && isCoverActive) {
-                coverView.style.display = 'none'; bookView.style.display = 'flex'; isCoverActive = false; showPage(1); audioPlayer.currentTime = 0; audioPlayer.play();
+                coverView.style.display = 'none';
+                bookView.style.display = 'flex';
+                isCoverActive = false;
+                showPage(1);
+                audioPlayer.currentTime = 0;
+                audioPlayer.play();
             } else {
                 isPlaying ? audioPlayer.pause() : audioPlayer.play();
             }
@@ -1083,6 +1089,7 @@
     </script>
 </body>
 </html>
+
 
 
 
