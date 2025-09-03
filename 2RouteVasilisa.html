@@ -109,9 +109,10 @@
             100% { opacity: 0; }
         }
         
+        /* *** ИЗМЕНЕНИЕ 1: Селектор ID #route-dropdown-menu заменен на класс .route-dropdown-menu, чтобы меню можно было создавать многократно *** */
         .route-dropdown-menu {
             position: absolute;
-            z-index: 100; 
+            z-index: 100; /* Увеличил z-index, чтобы меню на странице было поверх других элементов */
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.3);
@@ -146,6 +147,7 @@
             padding: 20px; box-sizing: border-box;
             opacity: 0; visibility: hidden; transition: opacity 0.5s ease-in-out;
             background: white;
+            /* *** ДОПОЛНЕНИЕ: Это нужно, чтобы кнопка позиционировалась внутри страницы, а не всего экрана *** */
             position: relative; 
         }
         .page.active { opacity: 1; visibility: visible; }
@@ -479,6 +481,7 @@
                     collapsible: false,
                     text: `<h2> О маршруте. </h2><p>Название: Маршрут 2. Дневной яхтенный тур под парусом Мармарис-Кумлубюк с обедом на яхте. Продолжительность: 1 день. Время: 9:30 – 18:15. Аудитория: от 1 до 6 гостей, включая детей от 6 лет. Стоимость: 1000 долларов США (стандартный обед)/1300 долларов США (обед-гриль). Особенности: Эксклюзивный однодневный круиз, сочетающий панорамные виды побережья, долгий отдых с купанием в живописной бухте Кумлубюк и изысканный обед, приготовленный для вас прямо на борту яхты.</p>`,
                     narrationEndTime: 40,
+                    // *** ИЗМЕНЕНИЕ 2: Вот ваша новая кнопка. Вы добавили ее правильно. ***
                     customDropdowns: [
                         {
                             visible: true,
@@ -521,22 +524,11 @@
                     collapsedOnLoad: true,
                     text: `<h2>Фото и Видео о маршруте.</h2><p>К данной странице мы рекомендуем вам вернуться после завершения прослушивания и подробно ознакомиться с представленными фотографиями и видео о маршруте.</p>`,
                     narrationEndTime: 284,
-                    // *** ИЗМЕНЕНИЕ 1: Пример кастомизации для mainVideo. Добавлены buttonText и цвета. ***
-                    mainVideo: { 
-                        type: 'iframe', 
-                        buttonText: 'Видео о Марине', // Уникальное название
-                        buttonColor: '#FF5722',      // Уникальный цвет кнопки
-                        buttonTextColor: '#FFFFFF',  // Уникальный цвет текста
-                        url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQSe6WT-_Nt4QYem_P3qEx_3Abn7W0p9009H02uPVTxShdI', 
-                        headerText: 'Видео: Выход из Мармарис Яхт Марины', 
-                        footerText: '' 
-                    },
+                    mainVideo: { type: 'iframe', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQSe6WT-_Nt4QYem_P3qEx_3Abn7W0p9009H02uPVTxShdI', headerText: 'Видео: Выход из Мармарис Яхт Марины', footerText: '' },
                     extraMedia: [
                         {
                             type: 'carousel',
-                            buttonText: 'Галерея', 
-                            buttonColor: '#E91E63',
-                            buttonTextColor: '#FFFFFF',
+                            buttonText: 'Фото нашего маршрута',
                             headerText: 'Фотографии',
                             images: [
                                 { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'BAVARIA C45 - Фото 1', width: 1513, height: 951 },
@@ -546,32 +538,16 @@
                                 { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'BAVARIA C45 - Фото 5', width: 1513, height: 951 }
                             ]
                         },
-                        { 
-                            type: 'iframe', 
-                            buttonText: 'Видеообзор',
-                            buttonColor: '#00BCD4',
-                            url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0', 
-                            headerText: 'Кумлюбюк', 
-                            footerText: '' 
-                        }
+                        { type: 'iframe', buttonText: 'Видеообзор яхты', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0', headerText: 'Кумлюбюк', footerText: '' }
                     ],
                 },
                 {
                     published: true,
                     collapsible: true,
                     collapsedOnLoad: true,
-                    text: `<h2> О яхте Bavaria C45. </h2><p>Яхта произведена. ..</p>`,
+                    text: `<h2> О яхте Bavaria C45. </h2><p>Яхта произведена в Германии в 2022 году. Модель BAVARIA C45. На площади более 60 м² организовано уютное пространство для путешествий. Три каюты, в каждой из них кровать 140 см на 200 см. Такое же спальное место (140 см на 200 см) можно организовать в салоне (стол трансформер). В кокпите так же столы трансформируются в лежаки, где два взрослых человека комфортно разместятся на ночёвку и вахту. Итого 10 спальных мест. Холодная и горячая вода присутствует. Два туалета с электрической системой слива оборудованы баком-накопителем по 70 литров каждый. Две душевые кабинки и один открытый душ на откидной платформе для купания. Два холодильника и отдельная морозильная камера, газовая плита, духовой шкаф, посудомоечная машина, посуда, кухонная техника с кофемашиной - к услугам тех, кто хочет отличиться на кухне и удивить команду. Так же возможно приготовление блюд нашей командой. Для дальних переходов на яхте имеется генератор и солнечные панели. Две зоны отдыха под навесами, а так же открытые зоны для загара на палубе яхты. Для купания откидная платформа имеет удобную систему спуска в воду. Технические данные Общая длина 14,06 м. Ширина корпуса 4,49 м. Осадка (Киль) 2,60 м. Вес балласта (киль) 2,984 кг. Топливный бак 250 литров. Резервуар для воды 650 литров. Паруса: Грот (закрутка) 51,0 м². Кливер 45,0 м². Генуя 52,0 м². Длина мачты (макс.) от ватерлинии 22,00 м. Район плавания Категория CE А10/Б14/С16 (неограниченно). Дизайн яхты Cossutti. Безопасность на яхте обеспечена необходимым комплектом из: двенадцати спасательных жилетов, спасательного плота на 10 человек, динги с мотором на 6 человек и другим спасательным оборудованием по регламенту. Так же на борту имеются: надувные каяк, сап-борд, "ватрушка" и маски для подводного плавания, применяемые для водных развлечений.</p>`,
                     narrationEndTime: 439,
-                    // *** ИЗМЕНЕНИЕ 2: Еще один пример кастомизации для mainVideo. ***
-                    mainVideo: { 
-                        type: 'video',
-                        buttonText: 'Обзор Яхты',      // Уникальное название
-                        buttonColor: '#8BC34A',      // Уникальный цвет кнопки
-                        buttonTextColor: '#212121',  // Уникальный цвет текста
-                        url: 'https://www.youtube.com/embed/Dp2g78eqw18', 
-                        headerText: 'Видео: Bavaria C45 - яхта для вашего путешествия', 
-                        footerText: 'BAVARIA C45 на площади более 60 м² организовано уютное пространство для путешествий.' 
-                    },
+                    mainVideo: { url: 'https://www.youtube.com/embed/Dp2g78eqw18', headerText: 'Видео: Bavaria C45 - яхта для вашего путешествия', footerText: 'BAVARIA C45 на площади более 60 м² организовано уютное пространство для путешествий.' },
                     extraMedia: [
                         {
                             type: 'carousel',
@@ -625,17 +601,25 @@
             document.documentElement.style.setProperty('--pulse-total-duration', `${totalDuration}s`);
         }
         
+        // *** ИЗМЕНЕНИЕ 3: НОВАЯ УНИВЕРСАЛЬНАЯ ФУНКЦИЯ для создания кнопок с выпадающим меню ***
         function createDropdownButton(config, parentElement) {
             if (!config || !config.visible) return;
+
             const viewContainer = parentElement.closest('.content-view, body');
             const tooltipBox = document.getElementById('tooltip-box');
+
             function showTooltip(element, text) { if (!text) return; tooltipBox.textContent = text; const rect = element.getBoundingClientRect(); tooltipBox.style.left = `${rect.left + rect.width / 2}px`; tooltipBox.style.top = `${rect.top - 10}px`; tooltipBox.style.transform = 'translate(-50%, -100%)'; tooltipBox.classList.add('visible'); }
             function hideTooltip() { tooltipBox.classList.remove('visible'); }
+
             const menuBtn = document.createElement('button');
             menuBtn.className = 'cover-button route-selector-btn';
+            
+            // ВАЖНО: для кнопок на страницах, которые не являются .content-view,
+            // нужно явно задавать position: absolute, так как у родителя .page оно уже есть.
             if (!parentElement.classList.contains('content-view')) {
-                menuBtn.style.position = 'absolute';
+                 menuBtn.style.position = 'absolute';
             }
+            
             menuBtn.style.top = config.top;
             menuBtn.style.left = config.left;
             menuBtn.innerHTML = config.icon;
@@ -644,11 +628,13 @@
             if ((CONFIG.pulsingEffect?.enabled && config.pulsing !== false) || config.pulsing === true) {
                 menuBtn.classList.add('pulsing');
             }
+
             const dropdown = document.createElement('div');
             dropdown.className = 'route-dropdown-menu';
             dropdown.style.top = `calc(${config.top} - 10px)`;
             dropdown.style.left = config.left;
             dropdown.style.transform = 'translate(-50%, -100%)';
+
             config.routes.forEach(route => {
                 const link = document.createElement('a');
                 link.href = route.url;
@@ -659,14 +645,19 @@
                 }
                 dropdown.appendChild(link);
             });
+            
+            // Добавляем сразу два элемента, чтобы они были рядом в DOM
             parentElement.append(menuBtn, dropdown);
+
             menuBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                // Закрываем все другие открытые меню перед открытием этого
                 document.querySelectorAll('.route-dropdown-menu.visible').forEach(menu => {
                     if (menu !== dropdown) menu.classList.remove('visible');
                 });
                 dropdown.classList.toggle('visible');
             });
+
             document.addEventListener('click', (e) => {
                 if (!dropdown.contains(e.target) && !menuBtn.contains(e.target)) {
                     dropdown.classList.remove('visible');
@@ -697,6 +688,7 @@
                 });
             }
             
+            // *** ИЗМЕНЕНИЕ 4: Старый код создания кнопки заменен на вызов новой функции ***
             if (CONFIG.routeSelector) {
                 createDropdownButton(CONFIG.routeSelector, coverView);
             }
@@ -716,15 +708,7 @@
                 
                 const allMedia = []; 
                 if (pageData.mainVideo && pageData.mainVideo.url) { 
-                    // *** ГЛАВНОЕ ИЗМЕНЕНИЕ ЛОГИКИ ЗДЕСЬ ***
-                    // Теперь mainVideo использует свой buttonText из конфига, если он есть.
-                    // Если его нет, используется текст по умолчанию "Показать видео".
-                    const mainVideoButtonConfig = { 
-                        ...pageData.mainVideo, 
-                        type: pageData.mainVideo.type || 'video', 
-                        buttonText: pageData.mainVideo.buttonText || 'Показать видео' 
-                    };
-                    allMedia.push(mainVideoButtonConfig);
+                    allMedia.push({ ...pageData.mainVideo, type: pageData.mainVideo.type || 'video', buttonText: 'Показать видео' }); 
                 } 
                 if (pageData.extraMedia) { 
                     allMedia.push(...pageData.extraMedia); 
@@ -737,15 +721,6 @@
                         const btnClass = (media.type === 'iframe') ? 'iframe-btn' : `${media.type}-btn`; 
                         btn.className = `page-btn ${btnClass}`; 
                         btn.textContent = media.buttonText; 
-
-                        // Эта логика теперь будет работать и для mainVideo, и для extraMedia
-                        if (media.buttonColor) {
-                            btn.style.backgroundColor = media.buttonColor;
-                        }
-                        if (media.buttonTextColor) {
-                            btn.style.color = media.buttonTextColor;
-                        }
-
                         btn.onclick = () => openMediaModal(media); 
                         buttonsContainer.appendChild(btn); 
                     } else if (isAdmin) { 
@@ -784,8 +759,11 @@
                 
                 pageViewer.appendChild(page);
                 
+                // *** ИЗМЕНЕНИЕ 5: Добавлена логика для создания кастомных кнопок на странице ***
                 if (pageData.customDropdowns && Array.isArray(pageData.customDropdowns)) {
                     pageData.customDropdowns.forEach(dropdownConfig => {
+                        // Для каждой конфигурации вызываем нашу универсальную функцию,
+                        // передавая в качестве родителя саму страницу (div.page)
                         createDropdownButton(dropdownConfig, page);
                     });
                 }
@@ -823,7 +801,8 @@
         
         function showPage(pageNumber) {
             if (pageNumber < 1 || pageNumber > publishedPages.length) return;
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            pages.forEach(p => p.classList.remove('active'));
+            // Важно: нужно пересоздать `pages`, так как они создаются динамически.
             document.querySelector(`.page[data-page-number="${pageNumber}"]`).classList.add('active');
             currentPage = pageNumber;
             updateButtonsAndIndicator();
@@ -928,6 +907,7 @@
     </script>
 </body>
 </html>
+
 
 
 
