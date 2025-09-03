@@ -521,14 +521,22 @@
                     collapsedOnLoad: true,
                     text: `<h2>Фото и Видео о маршруте.</h2><p>К данной странице мы рекомендуем вам вернуться после завершения прослушивания и подробно ознакомиться с представленными фотографиями и видео о маршруте.</p>`,
                     narrationEndTime: 284,
-                    mainVideo: { type: 'iframe', buttonText: 'Видео Марина', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQSe6WT-_Nt4QYem_P3qEx_3Abn7W0p9009H02uPVTxShdI', headerText: 'Видео: Выход из Мармарис Яхт Марины', footerText: '' },
+                    // *** ИЗМЕНЕНИЕ 1: Пример кастомизации для mainVideo. Добавлены buttonText и цвета. ***
+                    mainVideo: { 
+                        type: 'iframe', 
+                        buttonText: 'Видео о Марине', // Уникальное название
+                        buttonColor: '#FF5722',      // Уникальный цвет кнопки
+                        buttonTextColor: '#FFFFFF',  // Уникальный цвет текста
+                        url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQSe6WT-_Nt4QYem_P3qEx_3Abn7W0p9009H02uPVTxShdI', 
+                        headerText: 'Видео: Выход из Мармарис Яхт Марины', 
+                        footerText: '' 
+                    },
                     extraMedia: [
-                        // *** ИЗМЕНЕНИЕ 1: Пример кастомизации кнопки. Изменено название и добавлены цвета. ***
                         {
                             type: 'carousel',
-                            buttonText: 'Галерея', // Можно менять название
-                            buttonColor: '#E91E63',           // Можно задать свой цвет фона
-                            buttonTextColor: '#FFFFFF',        // Можно задать свой цвет текста
+                            buttonText: 'Галерея', 
+                            buttonColor: '#E91E63',
+                            buttonTextColor: '#FFFFFF',
                             headerText: 'Фотографии',
                             images: [
                                 { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'BAVARIA C45 - Фото 1', width: 1513, height: 951 },
@@ -538,11 +546,10 @@
                                 { url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview', caption: 'BAVARIA C45 - Фото 5', width: 1513, height: 951 }
                             ]
                         },
-                        // *** ИЗМЕНЕНИЕ 2: Еще один пример. Изменено только название и цвет фона. ***
                         { 
                             type: 'iframe', 
-                            buttonText: 'Видеообзор', // Изменено название
-                            buttonColor: '#00BCD4',              // Задан другой цвет фона
+                            buttonText: 'Видеообзор',
+                            buttonColor: '#00BCD4',
                             url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0', 
                             headerText: 'Кумлюбюк', 
                             footerText: '' 
@@ -553,9 +560,18 @@
                     published: true,
                     collapsible: true,
                     collapsedOnLoad: true,
-                    text: `<h2> О яхте Bavaria C45. </h2><p>Яхта произведена в Германии в 2022 году. Модель BAVARIA C45. На площади более 60 м² организовано уютное пространство для путешествий. Три каюты, в каждой из них кровать 140 см на 200 см. Такое же спальное место (140 см на 200 см) можно организовать в салоне (стол трансформер). В кокпите так же столы трансформируются в лежаки, где два взрослых человека комфортно разместятся на ночёвку и вахту. Итого 10 спальных мест. Холодная и горячая вода присутствует. Два туалета с электрической системой слива оборудованы баком-накопителем по 70 литров каждый. Две душевые кабинки и один открытый душ на откидной платформе для купания. Два холодильника и отдельная морозильная камера, газовая плита, духовой шкаф, посудомоечная машина, посуда, кухонная техника с кофемашиной - к услугам тех, кто хочет отличиться на кухне и удивить команду. Так же возможно приготовление блюд нашей командой. Для дальних переходов на яхте имеется генератор и солнечные панели. Две зоны отдыха под навесами, а так же открытые зоны для загара на палубе яхты. Для купания откидная платформа имеет удобную систему спуска в воду. Технические данные Общая длина 14,06 м. Ширина корпуса 4,49 м. Осадка (Киль) 2,60 м. Вес балласта (киль) 2,984 кг. Топливный бак 250 литров. Резервуар для воды 650 литров. Паруса: Грот (закрутка) 51,0 м². Кливер 45,0 м². Генуя 52,0 м². Длина мачты (макс.) от ватерлинии 22,00 м. Район плавания Категория CE А10/Б14/С16 (неограниченно). Дизайн яхты Cossutti. Безопасность на яхте обеспечена необходимым комплектом из: двенадцати спасательных жилетов, спасательного плота на 10 человек, динги с мотором на 6 человек и другим спасательным оборудованием по регламенту. Так же на борту имеются: надувные каяк, сап-борд, "ватрушка" и маски для подводного плавания, применяемые для водных развлечений.</p>`,
+                    text: `<h2> О яхте Bavaria C45. </h2><p>Яхта произведена. ..</p>`,
                     narrationEndTime: 439,
-                    mainVideo: { url: 'https://www.youtube.com/embed/Dp2g78eqw18', headerText: 'Видео: Bavaria C45 - яхта для вашего путешествия', footerText: 'BAVARIA C45 на площади более 60 м² организовано уютное пространство для путешествий.' },
+                    // *** ИЗМЕНЕНИЕ 2: Еще один пример кастомизации для mainVideo. ***
+                    mainVideo: { 
+                        type: 'video',
+                        buttonText: 'Обзор Яхты',      // Уникальное название
+                        buttonColor: '#8BC34A',      // Уникальный цвет кнопки
+                        buttonTextColor: '#212121',  // Уникальный цвет текста
+                        url: 'https://www.youtube.com/embed/Dp2g78eqw18', 
+                        headerText: 'Видео: Bavaria C45 - яхта для вашего путешествия', 
+                        footerText: 'BAVARIA C45 на площади более 60 м² организовано уютное пространство для путешествий.' 
+                    },
                     extraMedia: [
                         {
                             type: 'carousel',
@@ -700,7 +716,15 @@
                 
                 const allMedia = []; 
                 if (pageData.mainVideo && pageData.mainVideo.url) { 
-                    allMedia.push({ ...pageData.mainVideo, type: pageData.mainVideo.type || 'video', buttonText: 'Показать видео' }); 
+                    // *** ГЛАВНОЕ ИЗМЕНЕНИЕ ЛОГИКИ ЗДЕСЬ ***
+                    // Теперь mainVideo использует свой buttonText из конфига, если он есть.
+                    // Если его нет, используется текст по умолчанию "Показать видео".
+                    const mainVideoButtonConfig = { 
+                        ...pageData.mainVideo, 
+                        type: pageData.mainVideo.type || 'video', 
+                        buttonText: pageData.mainVideo.buttonText || 'Показать видео' 
+                    };
+                    allMedia.push(mainVideoButtonConfig);
                 } 
                 if (pageData.extraMedia) { 
                     allMedia.push(...pageData.extraMedia); 
@@ -714,12 +738,10 @@
                         btn.className = `page-btn ${btnClass}`; 
                         btn.textContent = media.buttonText; 
 
-                        // *** ИЗМЕНЕНИЕ 3: Логика для применения кастомных стилей к кнопкам ***
-                        // Если в конфигурации для этой кнопки задан цвет фона, применяем его
+                        // Эта логика теперь будет работать и для mainVideo, и для extraMedia
                         if (media.buttonColor) {
                             btn.style.backgroundColor = media.buttonColor;
                         }
-                        // Если задан цвет текста, применяем и его
                         if (media.buttonTextColor) {
                             btn.style.color = media.buttonTextColor;
                         }
@@ -906,6 +928,7 @@
     </script>
 </body>
 </html>
+
 
 
 
