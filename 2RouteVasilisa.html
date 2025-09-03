@@ -118,14 +118,11 @@
             min-width: 200px;
             opacity: 0;
             visibility: hidden;
-            /* *** ИЗМЕНЕНИЕ: Убираем статичный transform, он будет задаваться динамически в JS *** */
             transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
-            /* transform-origin будет задаваться в JS для корректной анимации */
         }
         .route-dropdown-menu.visible {
             opacity: 1;
             visibility: visible;
-            /* *** ИЗМЕНЕНИЕ: Transform для видимого состояния также убираем *** */
         }
         .route-dropdown-menu a {
             display: block;
@@ -448,7 +445,7 @@
         const CONFIG = {
             mobileFeedMode: true,
             feedModeForDesktop: true,
-            mainTitle: 'Маршрут 2.95 Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
+            mainTitle: 'Маршрут 2.94 Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
             audioUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisyachting/main/2RouteAudioVasilisa.mp3',
             bookingUrl: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route2',
             coverVideoUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4',
@@ -481,10 +478,10 @@
                     customDropdowns: [
                         {
                             visible: true,
-                            pulsing: false,
+                            pulsing: true,
                             icon: '<svg viewBox="0 0 90 40"><rect x="0.5" y="0.5" width="89" height="39" rx="8" fill="#4CAF50" stroke="#FFFFFF" stroke-width="1"/><text x="45" y="25" font-size="14" font-family="Arial, sans-serif" fill="white" font-weight="bold" text-anchor="middle">Связаться</text></svg>',
                             tooltip: 'Напишите нам',
-                            top: '90%',
+                            top: '96%',
                             left: '60%',
                             routes: [
                                 { name: 'Написать в WhatsApp', url: 'https://wa.me/905366140347', target: '_blank' },
@@ -610,7 +607,6 @@
         let isPlaying = false;
         let isCoverActive = true;
         
-        // *** ИЗМЕНЕНИЕ: Добавлена переменная для таймера авто-скрытия tooltip ***
         let tooltipTimeout = null;
 
 
@@ -628,7 +624,6 @@
         
         function createDropdownButton(config, parentElement) {
             if (!config || !config.visible) return;
-             // *** ИЗМЕНЕНИЕ: tooltipBox теперь не нужен внутри этой функции, он обрабатывается глобально ***
             const menuBtn = document.createElement('button');
             menuBtn.className = 'cover-button route-selector-btn';
             if (!parentElement.classList.contains('content-view')) {
@@ -638,7 +633,6 @@
             menuBtn.style.left = config.left;
             menuBtn.innerHTML = config.icon;
             
-            // Используем глобальные функции show/hide Tooltip
             menuBtn.addEventListener('mouseenter', (e) => showTooltip(e.currentTarget, config.tooltip));
             menuBtn.addEventListener('mouseleave', hideTooltip);
 
@@ -663,25 +657,31 @@
             menuBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 
-                // *** ИЗМЕНЕНИЕ: Динамическое позиционирование меню при клике ***
                 const rect = menuBtn.getBoundingClientRect();
                 const offset = 3;
+                // *** ИЗМЕНЕНИЕ: Новая логика для позиционирования ***
+                // Коэффициент "притяжения" к центру экрана. 0 = у кнопки, 1 = в центре экрана.
+                const centerPullFactor = 0.25; 
 
-                // Определяем, где открыть меню - сверху или снизу
+                const buttonCenterX = rect.left + rect.width / 2;
+                const screenCenterX = window.innerWidth / 2;
+                
+                // Рассчитываем новую горизонтальную позицию
+                const newLeft = buttonCenterX + (screenCenterX - buttonCenterX) * centerPullFactor;
+
+                // Вертикальная позиция (как и раньше, зависит от положения кнопки на экране)
                 if (rect.top < window.innerHeight / 2) {
-                    // Кнопка в верхней половине -> меню открывается вниз
                     dropdown.style.top = `${rect.bottom + offset}px`;
                     dropdown.style.transform = 'translate(-50%, 0)';
                     dropdown.style.transformOrigin = 'top center';
                 } else {
-                    // Кнопка в нижней половине -> меню открывается вверх
                     dropdown.style.top = `${rect.top - offset}px`;
                     dropdown.style.transform = 'translate(-50%, -100%)';
                     dropdown.style.transformOrigin = 'bottom center';
                 }
                 
-                // Горизонтальное позиционирование по центру кнопки
-                dropdown.style.left = `${rect.left + rect.width / 2}px`;
+                // Применяем новую горизонтальную позицию
+                dropdown.style.left = `${newLeft}px`;
 
                 document.querySelectorAll('.route-dropdown-menu.visible').forEach(menu => {
                     if (menu !== dropdown) menu.classList.remove('visible');
@@ -695,41 +695,46 @@
             });
         }
         
-        // *** ИЗМЕНЕНИЕ: Глобальные функции для управления tooltip ***
         const tooltipBox = document.getElementById('tooltip-box');
 
         function showTooltip(element, text) {
             if (!text) return;
-            clearTimeout(tooltipTimeout); // Очищаем предыдущий таймер, если он был
+            clearTimeout(tooltipTimeout);
 
             tooltipBox.textContent = text;
             const rect = element.getBoundingClientRect();
-            const offset = 2; // Отступ от кнопки
+            const offset = 1;
+            // *** ИЗМЕНЕНИЕ: Новая логика для позиционирования ***
+            // Коэффициент "притяжения" к центру экрана. 0 = у кнопки, 1 = в центре экрана.
+            const centerPullFactor = 0.25;
 
-            // Динамически определяем положение (сверху или снизу)
+            const buttonCenterX = rect.left + rect.width / 2;
+            const screenCenterX = window.innerWidth / 2;
+            
+            // Рассчитываем новую горизонтальную позицию
+            const newLeft = buttonCenterX + (screenCenterX - buttonCenterX) * centerPullFactor;
+
+            // Вертикальная позиция
             if (rect.top < window.innerHeight / 2) {
-                // Кнопка в верхней половине экрана, показываем tooltip снизу
                 tooltipBox.style.top = `${rect.bottom + offset}px`;
                 tooltipBox.style.transform = 'translate(-50%, 0)';
             } else {
-                // Кнопка в нижней половине, показываем tooltip сверху
                 tooltipBox.style.top = `${rect.top - offset}px`;
                 tooltipBox.style.transform = 'translate(-50%, -100%)';
             }
             
-            // Горизонтальное выравнивание по центру кнопки
-            tooltipBox.style.left = `${rect.left + rect.width / 2}px`;
+            // Применяем новую горизонтальную позицию
+            tooltipBox.style.left = `${newLeft}px`;
             
             tooltipBox.classList.add('visible');
 
-            // Если это мобильное устройство, запускаем таймер на авто-скрытие
             if (isMobile) {
                 tooltipTimeout = setTimeout(hideTooltip, 2000);
             }
         }
 
         function hideTooltip() {
-            clearTimeout(tooltipTimeout); // Всегда очищаем таймер при скрытии
+            clearTimeout(tooltipTimeout);
             tooltipBox.classList.remove('visible');
         }
 
@@ -988,6 +993,7 @@
     </script>
 </body>
 </html>
+
 
 
 
