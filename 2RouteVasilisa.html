@@ -141,7 +141,7 @@
             position: absolute; width: 100%; height: 100%;
             display: flex; flex-direction: column; align-items: center;
             padding: 20px; box-sizing: border-box;
-            opacity: 0; visibility: hidden; transition: opacity 0.5s ease-in-out;
+            opacity: 0; visibility: hidden; transition: opacity 0.5s ease-in-out, height 0.3s ease-in-out;
             background: white;
             position: relative; 
         }
@@ -339,6 +339,7 @@
             opacity: 1 !important;
             visibility: visible !important;
             margin-bottom: 10px;
+            height: auto; /* Ensure height can be controlled by content */
         }
         .feed-mode .page details {
             width: 100%;
@@ -447,7 +448,7 @@
             isContinuousPlayback: true, 
             mobileFeedMode: true,
             feedModeForDesktop: true,
-            mainTitle: 'Маршрут 2.222 Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
+            mainTitle: 'Маршрут 2. Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
             audioUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisyachting/main/2RouteAudioVasilisa.mp3',
             bookingUrl: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route2',
             coverVideoUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4',
@@ -818,10 +819,6 @@
                 page.dataset.pageNumber = pageNum; 
                 if (pageNum === 1) page.classList.add('active');
                 
-                if (pageData.customHeight) {
-                    page.style.height = pageData.customHeight;
-                }
-                
                 const buttonsContainer = document.createElement('div'); 
                 buttonsContainer.className = 'page-buttons-container'; 
                 
@@ -877,15 +874,26 @@
                     if (h2) h2.remove(); 
                     textContent.innerHTML = tempDiv.innerHTML; 
                     const details = document.createElement('details'); 
+                    details.open = !pageData.collapsedOnLoad; 
                     
-                    // <<< ИСПРАВЛЕНИЕ ЗДЕСЬ: ДОБАВЛЕН ОБРАБОТЧИК 'TOGGLE'
+                    // <<< ИСПРАВЛЕНИЕ ЗДЕСЬ: ЛОГИКА УПРАВЛЕНИЯ ВЫСОТОЙ
+                    // Устанавливаем начальную высоту в зависимости от состояния
+                    if (pageData.customHeight && pageData.customHeight !== 'auto') {
+                        page.style.height = details.open ? pageData.customHeight : 'auto';
+                    }
+
                     details.addEventListener('toggle', () => {
-                        // Реагируем только на открытие секции
+                        // Динамически меняем высоту при сворачивании/разворачивании
+                        if (pageData.customHeight && pageData.customHeight !== 'auto') {
+                            page.style.height = details.open ? pageData.customHeight : 'auto';
+                        }
+                        
+                        // Синхронизация аудио
                         if (details.open) {
                             const pageNumToSync = parseInt(page.dataset.pageNumber, 10);
-                            currentPage = pageNumToSync; // Обновляем текущую страницу
-                            audioPlayer.currentTime = getPageStartTime(pageNumToSync); // Перематываем аудио
-                            if (audioPlayer.paused) { // Если аудио на паузе, запускаем
+                            currentPage = pageNumToSync;
+                            audioPlayer.currentTime = getPageStartTime(pageNumToSync);
+                            if (audioPlayer.paused) {
                                 audioPlayer.play();
                             }
                         }
@@ -893,12 +901,15 @@
 
                     const summary = document.createElement('summary'); 
                     summary.innerHTML = title; 
-                    details.open = !pageData.collapsedOnLoad; 
                     details.appendChild(summary); 
                     details.appendChild(buttonsContainer); 
                     details.appendChild(textContent); 
                     page.appendChild(details);
                 } else { 
+                    // Для не-сворачиваемых страниц просто устанавливаем высоту как раньше
+                    if (pageData.customHeight) {
+                        page.style.height = pageData.customHeight;
+                    }
                     page.appendChild(buttonsContainer); 
                     page.appendChild(textContent); 
                 }
@@ -1046,7 +1057,6 @@
                         const newPageDetails = document.querySelector(`.page[data-page-number="${newPageNum}"] details`);
                         if (newPageDetails && !newPageDetails.open) newPageDetails.open = true;
                         
-                        // Плавная прокрутка больше не нужна, т.к. открытие/закрытие уже привлекает внимание
                         scrollToPage(newPageNum); 
                         
                         currentPage = newPageNum;
@@ -1073,6 +1083,7 @@
     </script>
 </body>
 </html>
+
 
 
 
