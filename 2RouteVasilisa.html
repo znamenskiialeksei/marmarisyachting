@@ -110,7 +110,7 @@
         
         .route-dropdown-menu {
             position: fixed;
-            z-index: 100; 
+            z-index: 10000; 
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.3);
@@ -131,6 +131,7 @@
             text-decoration: none;
             border-radius: 6px;
             transition: background-color 0.2s;
+            cursor: pointer;
         }
         .route-dropdown-menu a:hover {
             background-color: #f0f0f0;
@@ -445,7 +446,7 @@
         const CONFIG = {
             mobileFeedMode: true,
             feedModeForDesktop: true,
-            mainTitle: 'Маршрут 2.93 Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
+            mainTitle: 'Маршрут 2.99 Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
             audioUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisyachting/main/2RouteAudioVasilisa.mp3',
             bookingUrl: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route2',
             coverVideoUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4',
@@ -466,6 +467,8 @@
                     { name: 'Маршрут 1: Дневной тур Кумлубюк', url: 'https://www.marmarisyachting.ru/Yacht-Vasilisa-Catalog/Route1' },
                     { name: 'Маршрут 2: Дневной тур с обедом на яхте', url: 'https://www.marmarisyachting.ru/Yacht-Vasilisa-Catalog/Route2' },
                     { name: 'Маршрут 3: Дневной тур Чифтлик', url: 'https://www.marmarisyachting.ru/Yacht-Vasilisa-Catalog/Route3' },
+                    // *** ИЗМЕНЕНИЕ: Пример пункта меню, который открывает модальное окно бронирования ***
+                    { name: 'Бронировать тур', action: 'openBooking' },
                     { name: 'Недельная аренда виллы', url: 'https://www.marmarisyachting.ru/Villa-Turaman' }
                 ]
             },
@@ -481,7 +484,7 @@
                             pulsing: true,
                             icon: '<svg viewBox="0 0 90 40"><rect x="0.5" y="0.5" width="89" height="39" rx="8" fill="#4CAF50" stroke="#FFFFFF" stroke-width="1"/><text x="45" y="25" font-size="14" font-family="Arial, sans-serif" fill="white" font-weight="bold" text-anchor="middle">Связаться</text></svg>',
                             tooltip: 'Напишите нам',
-                            top: '96%',
+                            top: '94%',
                             left: '60%',
                             routes: [
                                 { name: 'Написать в WhatsApp', url: 'https://wa.me/905366140347', target: '_blank' },
@@ -626,9 +629,7 @@
             if (!config || !config.visible) return;
             const menuBtn = document.createElement('button');
             menuBtn.className = 'cover-button route-selector-btn';
-            if (!parentElement.classList.contains('content-view')) {
-                menuBtn.style.position = 'absolute';
-            }
+            
             menuBtn.style.top = config.top;
             menuBtn.style.left = config.left;
             menuBtn.innerHTML = config.icon;
@@ -644,32 +645,41 @@
 
             config.routes.forEach(route => {
                 const link = document.createElement('a');
-                link.href = route.url;
                 link.textContent = route.name;
-                if (route.target) {
-                    link.target = route.target;
-                    link.rel = 'noopener noreferrer';
+
+                // *** ИЗМЕНЕНИЕ: Проверяем, есть ли у пункта меню 'action' ***
+                if (route.action === 'openBooking') {
+                    link.href = '#'; // Используем # для элемента <a>
+                    link.onclick = (e) => {
+                        e.preventDefault(); // Отменяем стандартное поведение ссылки
+                        openBookingModal(); // Вызываем функцию открытия модального окна
+                        dropdown.classList.remove('visible'); // Скрываем меню после клика
+                    };
+                } else {
+                    // Стандартная логика для обычных ссылок
+                    link.href = route.url;
+                    if (route.target) {
+                        link.target = route.target;
+                        link.rel = 'noopener noreferrer';
+                    }
                 }
                 dropdown.appendChild(link);
             });
-            parentElement.append(menuBtn, dropdown);
+            document.body.appendChild(dropdown);
+            parentElement.appendChild(menuBtn);
 
             menuBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 
                 const rect = menuBtn.getBoundingClientRect();
-                const offset = 3;
-                // *** ИЗМЕНЕНИЕ: Новая логика для позиционирования ***
-                // Коэффициент "притяжения" к центру экрана. 0 = у кнопки, 1 = в центре экрана.
+                const offset = 5;
                 const centerPullFactor = 0.25; 
 
                 const buttonCenterX = rect.left + rect.width / 2;
                 const screenCenterX = window.innerWidth / 2;
                 
-                // Рассчитываем новую горизонтальную позицию
                 const newLeft = buttonCenterX + (screenCenterX - buttonCenterX) * centerPullFactor;
 
-                // Вертикальная позиция (как и раньше, зависит от положения кнопки на экране)
                 if (rect.top < window.innerHeight / 2) {
                     dropdown.style.top = `${rect.bottom + offset}px`;
                     dropdown.style.transform = 'translate(-50%, 0)';
@@ -680,7 +690,6 @@
                     dropdown.style.transformOrigin = 'bottom center';
                 }
                 
-                // Применяем новую горизонтальную позицию
                 dropdown.style.left = `${newLeft}px`;
 
                 document.querySelectorAll('.route-dropdown-menu.visible').forEach(menu => {
@@ -703,18 +712,14 @@
 
             tooltipBox.textContent = text;
             const rect = element.getBoundingClientRect();
-            const offset = 1;
-            // *** ИЗМЕНЕНИЕ: Новая логика для позиционирования ***
-            // Коэффициент "притяжения" к центру экрана. 0 = у кнопки, 1 = в центре экрана.
+            const offset = 3;
             const centerPullFactor = 0.25;
 
             const buttonCenterX = rect.left + rect.width / 2;
             const screenCenterX = window.innerWidth / 2;
             
-            // Рассчитываем новую горизонтальную позицию
             const newLeft = buttonCenterX + (screenCenterX - buttonCenterX) * centerPullFactor;
 
-            // Вертикальная позиция
             if (rect.top < window.innerHeight / 2) {
                 tooltipBox.style.top = `${rect.bottom + offset}px`;
                 tooltipBox.style.transform = 'translate(-50%, 0)';
@@ -723,7 +728,6 @@
                 tooltipBox.style.transform = 'translate(-50%, -100%)';
             }
             
-            // Применяем новую горизонтальную позицию
             tooltipBox.style.left = `${newLeft}px`;
             
             tooltipBox.classList.add('visible');
@@ -861,7 +865,7 @@
             if (isAdmin && adminErrors.length > 0) { let panel = document.getElementById('admin-panel'); if (!panel) { panel = document.createElement('div'); panel.id = 'admin-panel'; document.body.appendChild(panel); } let errorList = '<h4>Обнаружены ошибки конфигурации:</h4><ul>'; adminErrors.forEach(err => { errorList += `<li>${err}</li>`; }); errorList += '</ul>'; panel.innerHTML = errorList; }
         }
         
-        const pages = document.querySelectorAll('.page'); const mediaModal = document.getElementById('mediaModal'); const modalPhoto = document.getElementById('modalPhoto'); const modalVideo = document.getElementById('modalVideo'); const modalAudio = document.getElementById('modalAudio'); const modalText = document.getElementById('modalText'); const modalCarousel = document.getElementById('modalCarousel'); const modalIframe = document.getElementById('modalIframe'); const carouselPrevBtn = modalCarousel.querySelector('.prev'); const carouselNextBtn = modalCarousel.querySelector('.next'); let currentCarouselImages = []; let currentCarouselIndex = 0;
+        const mediaModal = document.getElementById('mediaModal'); const modalPhoto = document.getElementById('modalPhoto'); const modalVideo = document.getElementById('modalVideo'); const modalAudio = document.getElementById('modalAudio'); const modalText = document.getElementById('modalText'); const modalCarousel = document.getElementById('modalCarousel'); const modalIframe = document.getElementById('modalIframe'); const carouselPrevBtn = modalCarousel.querySelector('.prev'); const carouselNextBtn = modalCarousel.querySelector('.next'); let currentCarouselImages = []; let currentCarouselIndex = 0;
 
         function openMediaModal(media) {
             [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => { el.style.display = 'none'; if(el.tagName === 'VIDEO' || el.tagName === 'AUDIO') { el.src = ''; el.pause(); } else if (el.tagName === 'IMG' || el.tagName === 'IFRAME') { el.src = 'about:blank'; } });
@@ -880,10 +884,25 @@
             }
             mediaModal.style.display = 'flex';
         }
-        const bookingModal = document.getElementById('bookingModal'); const bookingFrame = document.getElementById('bookingFrame'); function closeModal(modal) { modal.style.display = 'none'; if (modal.id === 'mediaModal') { [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => { el.style.display = 'none'; if (el.tagName === 'VIDEO' || el.tagName === 'AUDIO') { el.pause(); el.src = ''; } else if (el.tagName === 'IMG' || el.tagName === 'IFRAME') { el.src = 'about:blank'; } }); } if (modal.id === 'bookingModal') { bookingFrame.src = ''; } }
+        const bookingModal = document.getElementById('bookingModal'); const bookingFrame = document.getElementById('bookingFrame'); 
+        function closeModal(modal) { modal.style.display = 'none'; if (modal.id === 'mediaModal') { [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => { el.style.display = 'none'; if (el.tagName === 'VIDEO' || el.tagName === 'AUDIO') { el.pause(); el.src = ''; } else if (el.tagName === 'IMG' || el.tagName === 'IFRAME') { el.src = 'about:blank'; } }); } if (modal.id === 'bookingModal') { bookingFrame.src = ''; } }
         mediaModal.querySelector('.modal-close').onclick = () => closeModal(mediaModal);
         bookingModal.querySelector('.modal-close').onclick = () => closeModal(bookingModal);
-        document.getElementById('bookingBtn').onclick = () => { if (!CONFIG.bookingUrl && isAdmin) { alert('URL формы бронирования не указан в CONFIG'); return; } document.getElementById('iframe-wrapper').style.height = '90vh'; bookingFrame.src = CONFIG.bookingUrl; bookingModal.style.display = 'flex'; };
+        
+        // *** ИЗМЕНЕНИЕ: Логика открытия окна бронирования вынесена в отдельную функцию ***
+        function openBookingModal() {
+            if (!CONFIG.bookingUrl && isAdmin) { 
+                alert('URL формы бронирования не указан в CONFIG'); 
+                return; 
+            }
+            document.getElementById('iframe-wrapper').style.height = '90vh';
+            bookingFrame.src = CONFIG.bookingUrl;
+            bookingModal.style.display = 'flex';
+        }
+
+        // Кнопка на панели управления теперь тоже использует новую функцию
+        document.getElementById('bookingBtn').onclick = openBookingModal;
+
         window.addEventListener('message', function(event) { if (event.data && event.data.type === 'formHeight') { const wrapper = document.getElementById('iframe-wrapper'); const padding = parseInt(getComputedStyle(wrapper).paddingTop) * 2; wrapper.style.height = (event.data.height + padding + 5) + 'px'; } });
         
         function showPage(pageNumber) {
@@ -993,6 +1012,7 @@
     </script>
 </body>
 </html>
+
 
 
 
