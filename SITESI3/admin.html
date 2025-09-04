@@ -14,6 +14,7 @@
             <p>Введите ваш GitHub Personal Access Token с правами `repo`.</p>
             <input type="password" id="github-token-input" placeholder="ghp_...">
             <button id="login-btn">Войти</button>
+            <p class="token-note">Токен сохранится в браузере и не будет виден в коде сайта.</p>
         </div>
     </div>
 
@@ -34,9 +35,9 @@
                 <button class="panel-toggle-btn" data-panel="layout-settings-panel">🎨 Макет</button>
             </div>
             <div class="toolbar-group">
-                <button class="preview-btn" data-mode="desktop">🖥️</button>
-                <button class="preview-btn" data-mode="tablet">📱</button>
-                <button class="preview-btn" data-mode="mobile">📱</button>
+                <button class="preview-btn" data-mode="desktop" title="Десктоп">🖥️</button>
+                <button class="preview-btn" data-mode="tablet" title="Планшет">📱</button>
+                <button class="preview-btn" data-mode="mobile" title="Смартфон">📱</button>
             </div>
         </div>
 
@@ -50,8 +51,8 @@
                 <div class="panel-header">
                     <span>Инспектор элемента</span>
                     <div>
-                        <button class="panel-action" data-action="minimize">➖</button>
-                        <button class="panel-action" data-action="close">❌</button>
+                        <button class="panel-action" data-action="minimize" title="Свернуть">➖</button>
+                        <button class="panel-action" data-action="close" title="Закрыть">❌</button>
                     </div>
                 </div>
                 <div class="panel-body" id="inspector-body"></div>
