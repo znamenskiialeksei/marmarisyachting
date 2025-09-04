@@ -40,16 +40,16 @@
         #canvas.mobile { width: 375px; }
 
         /* Стили для холста (визуальное представление) */
-        .canvas-column { border: 1px dashed #ccc; min-height: 100px; padding: 10px; }
+        .canvas-column { border: 1px dashed #ccc; min-height: 100px; padding: 10px; align-self: flex-start; }
         .canvas-block { position: relative; border: 1px solid #999; cursor: grab; background-color: #fff; margin-bottom: 10px; }
         .canvas-block.selected { border: 2px solid #007bff; }
-        .canvas-block-placeholder { background-color: #f0f8ff; color: #999; display: flex; justify-content: center; align-items: center; min-height: 80px; text-align: center; padding: 10px; }
+        .canvas-block-placeholder { background-color: #f0f8ff; color: #999; display: flex; justify-content: center; align-items: center; min-height: 80px; text-align: center; padding: 10px; word-break: break-all; }
         .block-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 10; } /* Для блокировки iframe */
 
         /* Плавающие панели */
         .floating-panel { position: absolute; z-index: 100; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.2); border-radius: 8px; min-width: 300px; display: flex; flex-direction: column; }
         .panel-header { padding: 10px; background: #f7f7f7; cursor: move; border-bottom: 1px solid #ddd; border-top-left-radius: 8px; border-top-right-radius: 8px; user-select: none; }
-        .panel-content { padding: 15px; overflow-y: auto; }
+        .panel-content { padding: 15px; overflow-y: auto; max-height: 60vh;}
         #inspector-panel { top: 70px; right: 20px; }
         #layout-panel { top: 70px; left: 20px; }
 
@@ -159,7 +159,8 @@ class GitHubAPI {
     async updateFile(content, message) {
         const body = {
             message: message,
-            content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))), // Правильное кодирование для UTF-8
+            // Правильное кодирование для UTF-8 (кириллицы и др. символов)
+            content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))),
             sha: currentSha
         };
         const response = await fetch(this.baseUrl, {
@@ -170,7 +171,10 @@ class GitHubAPI {
             },
             body: JSON.stringify(body)
         });
-        if (!response.ok) throw new Error(`Ошибка сохранения файла: ${response.statusText}`);
+        if (!response.ok) {
+             const errorData = await response.json();
+             throw new Error(`Ошибка сохранения: ${errorData.message || response.statusText}`);
+        }
         const data = await response.json();
         currentSha = data.content.sha; // Обновляем SHA после сохранения
         return data;
@@ -219,7 +223,7 @@ function renderCanvas() {
         config.layout.columns.forEach((col, colIndex) => {
             const colEl = document.createElement('div');
             colEl.className = 'canvas-column';
-            colEl.style.width = col.width;
+            colEl.style.flex = `1 1 ${col.width}`; // Используем flex для лучшей адаптивности
             colEl.dataset.colIndex = colIndex;
             
             if (col.blocks) {
@@ -250,7 +254,7 @@ function createEditableBlock(blockData, colIndex, blockIndex) {
     switch(blockData.type) {
         case 'iframe': placeholder.textContent = `[Маршрут] ${blockData.content.url || ''}`; break;
         case 'text': placeholder.innerHTML = `[Текст] ${(blockData.content.html || '').substring(0, 50)}...`; break;
-        case 'image': placeholder.innerHTML = `[Фото] <img src="${blockData.content.url || ''}" style="width: 50px; height: auto; vertical-align: middle; margin-left: 5px;">`; break;
+        case 'image': placeholder.innerHTML = `[Фото] <img src="${blockData.content.url || ''}" style="max-width: 50px; max-height: 40px; vertical-align: middle; margin-left: 5px;">`; break;
         case 'video': placeholder.textContent = `[Видео] ${blockData.content.url || ''}`; break;
         case 'button': placeholder.textContent = `[Кнопка] "${blockData.content.text || ''}"`; break;
     }
@@ -293,8 +297,8 @@ function showInspector(colIndex, blockIndex) {
             inputEl = document.createElement('select');
             options.choices.forEach(opt => {
                 const option = document.createElement('option');
-                option.value = opt;
-                option.textContent = opt;
+                option.value = opt.value;
+                option.textContent = opt.text;
                 inputEl.appendChild(option);
             });
         } else {
@@ -316,7 +320,7 @@ function showInspector(colIndex, blockIndex) {
                  switch(block.type) {
                     case 'iframe': placeholder.textContent = `[Маршрут] ${block.content.url || ''}`; break;
                     case 'text': placeholder.innerHTML = `[Текст] ${(block.content.html || '').substring(0, 50)}...`; break;
-                    case 'image': placeholder.innerHTML = `[Фото] <img src="${block.content.url || ''}" style="width: 50px; height: auto; vertical-align: middle; margin-left: 5px;">`; break;
+                    case 'image': placeholder.innerHTML = `[Фото] <img src="${block.content.url || ''}" style="max-width: 50px; max-height: 40px; vertical-align: middle; margin-left: 5px;">`; break;
                     case 'video': placeholder.textContent = `[Видео] ${block.content.url || ''}`; break;
                     case 'button': placeholder.textContent = `[Кнопка] "${block.content.text || ''}"`; break;
                 }
@@ -362,7 +366,7 @@ function renderLayoutEditor() {
             const colEditor = document.createElement('div');
             colEditor.style.marginBottom = '10px';
             colEditor.innerHTML = `
-                <label>Колонка ${index + 1} (ширина)</label>
+                <label>Колонка ${index + 1} (ширина, напр. 60% или 1fr)</label>
                 <input type="text" value="${col.width}" data-col-index="${index}">
                 <button data-col-index="${index}" class="remove-col-btn" style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px;">Удалить</button>
             `;
