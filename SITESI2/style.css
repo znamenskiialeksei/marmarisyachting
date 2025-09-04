@@ -23,6 +23,8 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Ro
 /* --- СТИЛИ ДЛЯ АДМИН-ПАНЕЛИ --- */
 #admin-view { background: #e9ecef; }
 .admin-container { max-width: 500px; margin: 50px auto; text-align: center; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+.admin-container input { width: 90%; padding: 10px; margin-bottom: 15px; }
+.admin-container button { padding: 10px 20px; cursor: pointer; }
 #admin-toolbar { background: #343a40; color: white; padding: 8px 15px; display: flex; align-items: center; gap: 20px; position: fixed; top: 0; left: 0; width: 100%; z-index: 1001; box-sizing: border-box; flex-wrap: wrap; }
 .toolbar-group { display: flex; align-items: center; gap: 8px; }
 #admin-toolbar button { background: #6c757d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
@@ -39,47 +41,11 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Ro
 .panel-content textarea { min-height: 100px; resize: vertical; }
 .panel-content details { margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; }
 .panel-content summary { font-weight: bold; cursor: pointer; }
-.draggable-element { border: 2px dashed rgba(0, 123, 255, 0.5); transition: box-shadow 0.2s; }
+.draggable-element { border: 2px dashed transparent; transition: box-shadow 0.2s; }
 .draggable-element:hover { box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.2); }
 .draggable-element.selected { border: 2px solid #007bff; z-index: 100 !important; }
-.sortable-column { min-height: 100px; border: 1px dashed #ccc; }
-/* Улучшения для админ-панели */
-.draggable-element {
-    position: relative; /* Важно для дочерних элементов */
-}
-.draggable-element::after { /* Слой-перехватчик кликов */
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 10;
-}
-.draggable-element.selected::after {
-    z-index: -1; /* Отключаем перехватчик у выбранного элемента для редактирования текста */
-}
-.type-reels {
-    max-width: 350px; /* Ограничиваем ширину для Reels */
-    margin: 0 auto;
-}
-#inspector-content input[type="text"],
-#inspector-content textarea {
-    width: 95%;
-}
-/* Стили для защитного слоя на iframe в админке */
-.draggable-element .iframe-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 20; /* Должен быть выше iframe */
-    cursor: move;
-    background: rgba(0, 123, 255, 0.1); /* Слегка подсветим для наглядности */
-}
+.sortable-column { min-height: 100px; border: 1px dashed #ccc; padding: 10px; box-sizing: border-box; }
 
-/* Когда элемент выбран, слой становится прозрачнее и не мешает */
-.draggable-element.selected .iframe-overlay {
-    background: transparent;
-}
+.draggable-element .iframe-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; cursor: move; }
+.draggable-element.selected .iframe-overlay { display: none; }
+.type-reels { max-width: 350px; margin: 0 auto; }

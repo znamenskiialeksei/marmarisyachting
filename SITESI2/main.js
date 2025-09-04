@@ -1,31 +1,26 @@
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        // Добавляем случайный параметр, чтобы избежать кэширования конфига
         const response = await fetch('config.json?cachebust=' + new Date().getTime());
         if (!response.ok) throw new Error('Не удалось загрузить конфигурацию!');
         const config = await response.json();
 
-        // --- Глобальные настройки ---
         document.title = config.globalSettings.pageTitle;
 
-        // --- Настройка фона ---
         setupBackground(document.getElementById('main-header'), config.layout.header.background);
-        setupBackground(document.body, config.layout.main.background); // ИСПРАВЛЕНО: передаем элемент
+        setupBackground(document.body, config.layout.main.background);
         setupBackground(document.getElementById('main-footer'), config.layout.footer.background);
 
-        // --- Заполнение контента ---
         document.getElementById('main-header').innerHTML += config.layout.header.content;
         document.getElementById('main-footer').innerHTML += config.layout.footer.content;
         
         const menuContainer = document.getElementById('main-menu');
         if (config.menuItems && menuContainer) {
-            menuContainer.innerHTML = ''; // Очищаем перед добавлением
+            menuContainer.innerHTML = '';
             config.menuItems.forEach(item => {
                 menuContainer.innerHTML += `<a href="${item.link}">${item.text}</a>`;
             });
         }
         
-        // --- Рендеринг всех элементов ---
         const container = document.getElementById('element-container');
         container.innerHTML = ''; 
 
@@ -101,7 +96,6 @@ function createElement(elementData) {
 function setupBackground(element, bgConfig) {
     if (!element || !bgConfig) return;
     
-    // Удаляем старый фон, если он есть
     const existingBg = element.querySelector(':scope > .background-layer');
     if (existingBg) existingBg.remove();
 

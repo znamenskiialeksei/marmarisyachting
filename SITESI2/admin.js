@@ -66,7 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${currentConfig.layout[part].content !== undefined ? `<label>HTML контент:</label><textarea data-layout-part="${part}" data-prop="content">${currentConfig.layout[part].content}</textarea>` : ''}
                     <label>Тип фона:</label>
                     <select class="bg-type-selector" data-layout-part="${part}">
-                        <option value="color">Цвет</option><option value="image">Изображение</option><option value="video">Видео</option>
+                        <option value="color">Цвет</option>
+                        <option value="image">Изображение</option>
+                        <option value="video">Видео</option>
                     </select>
                     <label>Значение (цвет HEX или URL):</label>
                     <input type="text" class="bg-url-input" data-layout-part="${part}">
@@ -108,13 +110,12 @@ document.addEventListener('DOMContentLoaded', () => {
         elWrapper.className = `element-wrapper draggable-element type-${elementData.type}`;
         elWrapper.id = elementData.id;
         elWrapper.dataset.elementId = elementData.id;
-    
+
         if (elementData.height) elWrapper.style.height = elementData.height;
         if (elementData.style) Object.assign(elWrapper.style, elementData.style);
-    
-        // Добавляем защитный слой для iframe, чтобы он не перехватывал клики
+
         const overlay = '<div class="iframe-overlay"></div>';
-    
+
         switch (elementData.type) {
             case 'player':
                 elWrapper.innerHTML = `${overlay}<iframe src="${elementData.url}" scrolling="no"></iframe>`;
@@ -134,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 elWrapper.innerHTML = `<button style="pointer-events:none; width:100%; height:100%; background:${elementData.style?.backgroundColor}; color:${elementData.style?.color}; font-size:${elementData.style?.fontSize}; border-radius:${elementData.style?.borderRadius}; border:none;">${elementData.text || 'Кнопка'}</button>`;
                 break;
         }
-    
+
         elWrapper.addEventListener('click', (e) => {
             e.stopPropagation();
             selectElement(elWrapper);
@@ -148,13 +149,18 @@ document.addEventListener('DOMContentLoaded', () => {
             new Sortable(col, { group: 'shared', animation: 150, handle: '.element-wrapper' });
         });
 
-        interact('.draggable-element').resizable({
-            edges: { bottom: true },
+        interact('.draggable-element.type-player, .draggable-element.type-textBlock, .draggable-element.type-photo, .draggable-element.type-reels, .draggable-element.type-videoBlock')
+        .resizable({
+            edges: { bottom: true, top: false, left: false, right: false },
             listeners: {
                 move(event) {
                     const target = event.target;
                     target.style.height = `${event.rect.height}px`;
-                    updateElementFromInspector(); // Обновляем инспектор
+                    if (target.id === selectedElementId) {
+                       const heightInput = inspectorContent.querySelector('[data-prop="height"]');
+                       if(heightInput) heightInput.value = target.style.height;
+                       updateElementFromInspector();
+                    }
                 }
             }
         });
@@ -163,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function makePanelsInteractive() {
         interact('.floating-panel').draggable({
             allowFrom: '.panel-header',
-            ignoreFrom: '.panel-content, input, textarea, select, button'
+            ignoreFrom: '.panel-content, input, textarea, select, button',
         }).styleCursor(false);
     }
 
@@ -281,13 +287,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!elementData) return;
 
         inspectorContent.querySelectorAll('[data-prop]').forEach(input => {
-            const prop = input.dataset.prop;
-            elementData[prop] = input.type === 'checkbox' ? input.checked : input.value;
+            elementData[input.dataset.prop] = input.value;
         });
         if (!elementData.style) elementData.style = {};
         inspectorContent.querySelectorAll('[data-style-prop]').forEach(input => {
-            const prop = input.dataset.styleProp;
-            elementData.style[prop] = input.type === 'checkbox' ? input.checked : input.value;
+            elementData.style[input.dataset.styleProp] = input.value;
         });
 
         const elementOnCanvas = document.getElementById(selectedElementId);
@@ -311,10 +315,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- 6. ЛОГИКА СОХРАНЕНИЯ ---
     saveBtn.addEventListener('click', async () => {
-        // 1. Собрать глобальные настройки
         currentConfig.globalSettings.pageTitle = document.querySelector('[data-config-key="globalSettings.pageTitle"]').value;
         
-        // 2. Собрать настройки макета
         ['header', 'main', 'footer'].forEach(part => {
              const panel = layoutSettingsPanel;
              if(currentConfig.layout[part].content !== undefined) {
@@ -332,7 +334,6 @@ document.addEventListener('DOMContentLoaded', () => {
              }
         });
         
-        // 3. Собрать новую структуру колонок из DOM
         const newColumns = [];
         document.querySelectorAll('.layout-column').forEach(columnEl => {
             newColumns.push({
@@ -343,7 +344,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         currentConfig.layout.main.columns = newColumns;
 
-        // 4. Отправить на GitHub API
         const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/config.json`;
         saveBtn.textContent = 'Сохранение...';
         saveBtn.disabled = true;
@@ -352,6 +352,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const fileResponse = await fetch(url, { headers: { 'Authorization': `token ${githubToken}` } });
             const fileData = await fileResponse.json();
             
+            if (!fileResponse.ok) throw new Error(fileData.message);
+
             const response = await fetch(url, {
                 method: 'PUT',
                 headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
