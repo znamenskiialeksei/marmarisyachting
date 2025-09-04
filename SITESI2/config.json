@@ -31,16 +31,14 @@
           "id": "column1_1678886400",
           "width": "60%",
           "elements": [
-            "route1_player",
-            "welcome_text_1667823456"
+            "externalBlock_1678886402"
           ]
         },
         {
           "id": "column2_1678886401",
           "width": "40%",
           "elements": [
-            "promo_photo_1667823457",
-            "route2_player"
+            "photo_1678886403"
           ]
         }
       ]
@@ -48,52 +46,27 @@
   },
   "elements": [
     {
-      "id": "route1_player",
+      "id": "externalBlock_1678886402",
       "type": "externalBlock",
       "title": "Маршрут 1: Дневной тур",
       "url": "https://znamenskiialeksei.github.io/marmarisyachting/1RouteVasilisa.html",
-      "height": "650px",
       "visible": true,
       "style": {
+        "height": "650px",
         "borderRadius": "12px",
         "boxShadow": "0 10px 25px rgba(0,0,0,0.2)"
       }
     },
     {
-      "id": "welcome_text_1667823456",
-      "type": "textBlock",
-      "title": "Текст: Приветствие",
-      "content": "<h2>Добро пожаловать!</h2><p>Это полностью настраиваемый текстовый блок. Вы можете менять его содержимое, размер, положение и стиль в панели администратора.</p>",
-      "visible": true,
-      "style": {
-        "backgroundColor": "#ffffff",
-        "color": "#333333",
-        "fontSize": "16px",
-        "borderRadius": "8px",
-        "padding": "20px"
-      }
-    },
-    {
-      "id": "promo_photo_1667823457",
+      "id": "photo_1678886403",
       "type": "photo",
       "title": "Фото: Яхта",
       "url": "https://images.pexels.com/photos/163236/yacht-luxury-yacht-yacht-charter-sailing-163236.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
       "visible": true,
       "style": {
+        "height": "400px",
         "objectFit": "cover",
         "borderRadius": "8px"
-      }
-    },
-    {
-      "id": "route2_player",
-      "type": "externalBlock",
-      "title": "Маршрут 2: Тур с обедом",
-      "url": "https://znamenskiialeksei.github.io/marmarisyachting/2RouteVasilisa.html",
-      "height": "650px",
-      "visible": true,
-      "style": {
-        "borderRadius": "12px",
-        "boxShadow": "0 10px 25px rgba(0,0,0,0.2)"
       }
     }
   ]

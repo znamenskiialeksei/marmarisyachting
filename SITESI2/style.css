@@ -34,78 +34,25 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Ro
 #admin-canvas.tablet-view { max-width: 768px; }
 #admin-canvas.mobile-view { max-width: 420px; }
 .floating-panel { position: fixed; background: #fdfdfd; border: 1px solid #ccc; box-shadow: 0 5px 15px rgba(0,0,0,0.2); border-radius: 8px; z-index: 1002; min-width: 320px; }
-.panel-header { background: #f1f1f1; padding: 10px; cursor: move; border-bottom: 1px solid #ccc; font-weight: bold; user-select: none; border-radius: 8px 8px 0 0; }
+.panel-header { display: flex; justify-content: space-between; align-items: center; background: #f1f1f1; padding: 10px; cursor: move; border-bottom: 1px solid #ccc; font-weight: bold; user-select: none; border-radius: 8px 8px 0 0; }
+.panel-controls button { background: none; border: none; cursor: pointer; font-size: 14px; padding: 2px 5px; }
+.floating-panel.collapsed .panel-content { display: none; }
+.floating-panel.collapsed { min-height: 0 !important; height: auto !important; }
 .panel-content { padding: 15px; max-height: 70vh; overflow-y: auto; }
 .panel-content label { display: block; margin-top: 12px; font-weight: 500; font-size: 14px; color: #555; }
 .panel-content input, .panel-content textarea, .panel-content select { width: 95%; padding: 8px; margin-top: 4px; border: 1px solid #ccc; border-radius: 4px; }
 .panel-content textarea { min-height: 100px; resize: vertical; }
 .panel-content details { margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; }
 .panel-content summary { font-weight: bold; cursor: pointer; }
-.draggable-element { border: 2px dashed transparent; transition: box-shadow 0.2s; position: relative; }
+.draggable-element { border: 2px dashed transparent; transition: box-shadow 0.2s; box-sizing: border-box; }
 .draggable-element:hover { box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.2); }
 .draggable-element.selected { border: 2px solid #007bff; z-index: 100 !important; }
 .sortable-column { min-height: 100px; border: 1px dashed #ccc; padding: 10px; box-sizing: border-box; }
-
 .admin-element-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: move; }
 .draggable-element.selected .admin-element-overlay { display: none; }
-
 .column-controls { margin-top: 15px; }
 .column-editor { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
 .column-editor input { width: 80px; }
 .column-editor button { background: #dc3545; color: white; border: none; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
 #add-column-btn { width: 100%; margin-top: 10px; padding: 8px; background: #007bff; color: white; border: none; cursor: pointer; }
 .type-reels { max-width: 350px; margin: 0 auto; }
-/* Добавьте в конец style.css */
-.panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.panel-controls button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    padding: 2px 5px;
-}
-.floating-panel.collapsed .panel-content {
-    display: none;
-}
-.admin-element-overlay {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 10;
-    cursor: move;
-}
-.draggable-element.selected .admin-element-overlay {
-    display: none;
-}
-
-.column-controls { margin-top: 15px; }
-.column-editor { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
-.column-editor input { width: 80px; }
-.column-editor button { background: #dc3545; color: white; border: none; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
-#add-column-btn { width: 100%; margin-top: 10px; padding: 8px; background: #007bff; color: white; border: none; cursor: pointer; }
-.panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.panel-controls button {
-    background: none; border: none; cursor: pointer; font-size: 14px; padding: 2px 5px;
-}
-.floating-panel.collapsed .panel-content,
-.floating-panel.collapsed #columns-editor,
-.floating-panel.collapsed details {
-    display: none;
-}
-.floating-panel.collapsed {
-    min-height: 0 !important;
-    height: auto !important;
-}
-.column-controls { margin-top: 15px; }
-.column-editor { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
-.column-editor input { width: 80px; }
-.column-editor button { background: #dc3545; color: white; border: none; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
-#add-column-btn { width: 100%; margin-top: 10px; padding: 8px; background: #007bff; color: white; border: none; cursor: pointer; }

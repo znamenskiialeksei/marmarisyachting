@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- НАСТРОЙКИ ---
     const GITHUB_USER = 'znamenskiialeksei';
     const GITHUB_REPO = 'marmarisyachting';
 
+    // --- DOM ЭЛЕМЕНТЫ ---
     const loginView = document.getElementById('login-view');
     const adminView = document.getElementById('admin-view');
     const loginBtn = document.getElementById('login-btn');
@@ -167,6 +169,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             }
+        }).on('resizemove', event => {
+            const target = event.target;
+            if (target.id !== selectedElementId) return;
+            const elementData = currentConfig.elements.find(el => el.id === selectedElementId);
+            if (!elementData.style) elementData.style = {};
+            elementData.style.width = target.style.width;
+            elementData.style.height = target.style.height;
+            renderInspector();
         });
     }
 
@@ -199,6 +209,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        layoutSettingsPanel.addEventListener('input', (e) => {
+             if (e.target.classList.contains('column-width-input')) {
+                const colId = e.target.dataset.colId;
+                const column = currentConfig.layout.main.columns.find(c => c.id === colId);
+                if(column) column.width = e.target.value;
+                renderElementsOnCanvas();
+             }
+        });
+        
         layoutSettingsPanel.addEventListener('click', (e) => {
             if (e.target.id === 'add-column-btn') {
                 currentConfig.layout.main.columns.push({
@@ -226,15 +245,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const newElement = {
             id: type + '_' + Date.now(), type, title: `Новый ${type}`, visible: true, style: {},
             ...({
-                externalBlock: { height: '650px', url: '' },
-                textBlock: { content: '<p>Новый текстовый блок</p>' },
-                photo: { url: 'https://via.placeholder.com/400x300', style: { objectFit: 'cover' } },
-                reels: { height: '600px', url: '' },
-                videoBlock: { height: '300px', url: '' },
-                button: { text: 'Кнопка', style: { backgroundColor: '#007bff', color: '#ffffff', fontSize: '16px', borderRadius: '8px' } }
+                externalBlock: { style: { height: '650px'}, url: '' },
+                textBlock: { content: '<p>Новый текстовый блок</p>', style: {height: '200px'} },
+                photo: { url: 'https://via.placeholder.com/400x300', style: { objectFit: 'cover', height: '300px' } },
+                reels: { style: { height: '600px'}, url: '' },
+                videoBlock: { style: { height: '300px'}, url: '' },
+                button: { text: 'Кнопка', style: { backgroundColor: '#007bff', color: '#ffffff', fontSize: '16px', borderRadius: '8px', height: '50px' } }
             }[type] || {})
         };
         currentConfig.elements.push(newElement);
+        if(!currentConfig.layout.main.columns.length) {
+            currentConfig.layout.main.columns.push({id: 'column_' + Date.now(), width: '1fr', elements: []});
+            renderLayoutAndSettings();
+        }
         currentConfig.layout.main.columns[0].elements.push(newElement.id);
         renderElementsOnCanvas();
         selectElement(document.getElementById(newElement.id));
@@ -276,20 +299,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 content += `<label>Текст кнопки</label><input type="text" data-prop="text" value="${elementData.text || ''}">`; break;
         }
 
-        content += `<hr><details open><summary>Размеры и Стиль</summary>
-            <label>Ширина (н-р, 100% или 300px)</label><input type="text" data-style-prop="width" value="${elementData.style?.width || '100%'}">
-            <label>Высота (н-р, 650px или auto)</label><input type="text" data-style-prop="height" value="${elementData.style?.height || 'auto'}">
+        content += `<hr><details open><summary>Стилизация</summary>
+            <label>Ширина (н-р, 100% или 300px)</label><input type="text" data-style-prop="width" value="${elementData.style?.width || ''}">
+            <label>Высота (н-р, 650px или auto)</label><input type="text" data-style-prop="height" value="${elementData.style?.height || ''}">
             <label>Цвет фона</label><input type="text" data-style-prop="backgroundColor" value="${elementData.style?.backgroundColor || ''}">
             <label>Цвет текста</label><input type="text" data-style-prop="color" value="${elementData.style?.color || ''}">
             <label>Размер шрифта (н-р, 16px)</label><input type="text" data-style-prop="fontSize" value="${elementData.style?.fontSize || ''}">
             <label>Скругление углов (н-р, 8px)</label><input type="text" data-style-prop="borderRadius" value="${elementData.style?.borderRadius || ''}">
             <label>Тень (CSS)</label><input type="text" data-style-prop="boxShadow" value="${elementData.style?.boxShadow || ''}">
+            <label>Внутренние отступы (padding)</label><input type="text" data-style-prop="padding" value="${elementData.style?.padding || ''}">
             ${elementData.type === 'photo' ? `<label>Вписывание фото (object-fit)</label><select data-style-prop="objectFit"><option value="cover">cover</option><option value="contain">contain</option></select>` : ''}
         </details>`;
         
         inspectorContent.innerHTML = content;
 
-        if(elementData.type === 'photo') inspectorContent.querySelector('[data-style-prop="objectFit"]').value = elementData.style?.objectFit || 'cover';
+        if(elementData.type === 'photo' && inspectorContent.querySelector('[data-style-prop="objectFit"]')) {
+            inspectorContent.querySelector('[data-style-prop="objectFit"]').value = elementData.style?.objectFit || 'cover';
+        }
 
         document.getElementById('delete-element-btn').onclick = deleteSelectedElement;
         inspectorContent.querySelectorAll('input, textarea, select').forEach(input => {
@@ -297,30 +323,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function updateElementFromInspector(fromResize = false) {
+    function updateElementFromInspector() {
         if (!selectedElementId) return;
         const elementData = currentConfig.elements.find(el => el.id === selectedElementId);
         if (!elementData) return;
-        const elementOnCanvas = document.getElementById(selectedElementId);
 
-        if(fromResize) {
-            if (!elementData.style) elementData.style = {};
-            elementData.style.width = elementOnCanvas.style.width;
-            elementData.style.height = elementOnCanvas.style.height;
-        } else {
-            inspectorContent.querySelectorAll('[data-prop]').forEach(input => {
-                elementData[input.dataset.prop] = input.value;
-            });
-            if (!elementData.style) elementData.style = {};
-            inspectorContent.querySelectorAll('[data-style-prop]').forEach(input => {
-                elementData.style[input.dataset.styleProp] = input.value;
-            });
+        inspectorContent.querySelectorAll('[data-prop]').forEach(input => {
+            elementData[input.dataset.prop] = input.value;
+        });
+        if (!elementData.style) elementData.style = {};
+        inspectorContent.querySelectorAll('[data-style-prop]').forEach(input => {
+            elementData.style[input.dataset.styleProp] = input.value;
+        });
+
+        const elementOnCanvas = document.getElementById(selectedElementId);
+        if (elementOnCanvas) {
+            const updatedElement = createAndSetupElement(elementData);
+            elementOnCanvas.replaceWith(updatedElement);
+            selectElement(updatedElement);
         }
-        
-        // Re-render the single element on canvas to reflect changes
-        const updatedElementVisual = createAndSetupElement(elementData);
-        elementOnCanvas.replaceWith(updatedElementVisual);
-        selectElement(updatedElementVisual);
     }
     
     function deleteSelectedElement() {
@@ -336,8 +357,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- 6. ЛОГИКА СОХРАНЕНИЯ ---
     saveBtn.addEventListener('click', async () => {
-        // 1. Собрать все данные из UI в currentConfig
+        // 1. Собираем данные
         currentConfig.globalSettings.pageTitle = document.querySelector('[data-config-key="globalSettings.pageTitle"]').value;
+        
         ['header', 'main', 'footer'].forEach(part => {
              const panel = layoutSettingsPanel;
              if(currentConfig.layout[part].content !== undefined) {
@@ -355,22 +377,19 @@ document.addEventListener('DOMContentLoaded', () => {
              }
         });
         
-        currentConfig.layout.main.columns.forEach(col => {
-            const colInput = layoutSettingsPanel.querySelector(`.column-width-input[data-col-id="${col.id}"]`);
-            if (colInput) col.width = colInput.value;
-        });
-        
         const newColumns = [];
         document.querySelectorAll('.layout-column').forEach(columnEl => {
+            const colId = columnEl.dataset.columnId;
+            const colWidthInput = layoutSettingsPanel.querySelector(`.column-width-input[data-col-id="${colId}"]`);
             newColumns.push({
-                id: columnEl.dataset.columnId,
-                width: columnEl.style.flexBasis,
+                id: colId,
+                width: colWidthInput ? colWidthInput.value : '1fr',
                 elements: Array.from(columnEl.querySelectorAll('.element-wrapper')).map(el => el.dataset.elementId)
             });
         });
         currentConfig.layout.main.columns = newColumns;
 
-        // 2. Отправить на GitHub API
+        // 2. Отправляем на GitHub API
         const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/config.json`;
         saveBtn.textContent = 'Сохранение...';
         saveBtn.disabled = true;
