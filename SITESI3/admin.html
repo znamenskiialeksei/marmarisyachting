@@ -147,13 +147,23 @@ class GitHubAPI {
         const response = await fetch(this.baseUrl, {
             headers: { 
                 'Authorization': `token ${this.token}`,
-                'Cache-Control': 'no-cache' // Предотвращение кэширования
+                'Accept': 'application/vnd.github.v3+json',
+                'Cache-Control': 'no-cache'
             }
         });
-        if (!response.ok) throw new Error(`Ошибка загрузки файла: ${response.statusText}`);
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Ошибка загрузки файла: ${response.status} ${response.statusText}. Ответ сервера: ${errorText}`);
+        }
         const data = await response.json();
         currentSha = data.sha;
-        return JSON.parse(atob(data.content));
+        try {
+            // Корректное декодирование UTF-8 контента из base64
+            return JSON.parse(decodeURIComponent(escape(window.atob(data.content))));
+        } catch (e) {
+            console.error("Ошибка парсинга JSON из config.json", e);
+            throw new Error("Не удалось разобрать содержимое файла config.json. Возможно, он поврежден.");
+        }
     }
 
     async updateFile(content, message) {
@@ -167,12 +177,13 @@ class GitHubAPI {
             method: 'PUT',
             headers: {
                 'Authorization': `token ${this.token}`,
+                'Accept': 'application/vnd.github.v3+json',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(body)
         });
         if (!response.ok) {
-             const errorData = await response.json();
+             const errorData = await response.json().catch(() => ({ message: 'Не удалось получить тело ошибки от сервера' }));
              throw new Error(`Ошибка сохранения: ${errorData.message || response.statusText}`);
         }
         const data = await response.json();
