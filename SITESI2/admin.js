@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedElementId = null;
 
     // --- 1. ЛОГИКА ВХОДА И ЗАГРУЗКИ ---
+
     loginBtn.addEventListener('click', () => {
         const token = tokenInput.value.trim();
         if (!token) return alert('Пожалуйста, введите ваш токен доступа GitHub.');
@@ -53,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- 2. ФУНКЦИИ РЕНДЕРИНГА (ОТОБРАЖЕНИЯ) ---
+
     function renderLayoutAndSettings() {
         globalSettingsPanel.querySelector('.panel-content').innerHTML = `
             <label>Заголовок сайта (Title)</label>
@@ -111,6 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
         elWrapper.id = elementData.id;
         elWrapper.dataset.elementId = elementData.id;
 
+        // ИСПРАВЛЕНО: Удалены старые строки, которые читали position и size.
+        // Новые стили применяются ниже.
+
         if (elementData.height) elWrapper.style.height = elementData.height;
         if (elementData.style) Object.assign(elWrapper.style, elementData.style);
 
@@ -162,10 +167,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('view-desktop').onclick = () => { canvas.className = ''; canvas.style.maxWidth = '100%'; };
         document.getElementById('view-tablet').onclick = () => { canvas.className = 'tablet-view'; canvas.style.maxWidth = '768px'; };
         document.getElementById('view-mobile').onclick = () => { canvas.className = 'mobile-view'; canvas.style.maxWidth = '420px'; };
-        
+
         document.querySelector('#admin-toolbar').addEventListener('click', (e) => {
-            const type = e.target.dataset.type;
-            if (type) addNewElement(type);
+            if (e.target.tagName === 'BUTTON' && e.target.dataset.type) {
+                addNewElement(e.target.dataset.type);
+            }
         });
     }
 
@@ -187,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 photo: { url: 'https://via.placeholder.com/400x300' },
                 reels: { height: '600px', url: '' },
                 videoBlock: { height: '300px', url: '' },
-                button: { text: 'Нажми меня', style: { backgroundColor: '#007bff', color: '#ffffff', fontSize: '16px', borderRadius: '8px' } }
+                button: { text: 'Кнопка', style: { backgroundColor: '#007bff', color: '#ffffff', fontSize: '16px', borderRadius: '8px' } }
             }[type] || {})
         };
         currentConfig.elements.push(newElement);
@@ -215,13 +221,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         inspectorPanel.style.display = 'block';
         document.getElementById('inspector-element-id').textContent = `(${elementData.title || elementData.id})`;
-        
+
         let content = `
             <button id="delete-element-btn">Удалить элемент</button><hr>
             <label>ID (не изменять)</label><input type="text" data-prop="id" value="${elementData.id}" readonly>
             <label>Заголовок (для админки)</label><input type="text" data-prop="title" value="${elementData.title || ''}">
         `;
-        
+
         switch (elementData.type) {
             case 'player': case 'videoBlock': case 'reels': case 'photo':
                 content += `<label>URL контента</label><input type="text" data-prop="url" value="${elementData.url || ''}">`;
@@ -250,9 +256,13 @@ document.addEventListener('DOMContentLoaded', () => {
             <label>Тень (CSS)</label><input type="text" data-style-prop="boxShadow" value="${elementData.style?.boxShadow || ''}">
             ${elementData.type === 'photo' ? `<label>Вписывание фото (object-fit)</label><select data-style-prop="objectFit"><option value="cover">cover</option><option value="contain">contain</option></select>` : ''}
         </details>`;
-        
+
         inspectorContent.innerHTML = content;
-        
+
+        // Восстанавливаем значения для select
+        if(elementData.type === 'button') inspectorContent.querySelector('[data-prop="action"]').value = elementData.action || 'openLink';
+        if(elementData.type === 'photo') inspectorContent.querySelector('[data-style-prop="objectFit"]').value = elementData.style?.objectFit || 'cover';
+
         document.getElementById('delete-element-btn').onclick = deleteSelectedElement;
         inspectorContent.querySelectorAll('input, textarea, select').forEach(input => {
             input.addEventListener('input', updateElementFromInspector);
@@ -281,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
             selectElement(updatedElement);
         }
     }
-    
+
     function deleteSelectedElement() {
         if (!selectedElementId || !confirm('Удалить этот элемент?')) return;
         currentConfig.elements = currentConfig.elements.filter(el => el.id !== selectedElementId);
@@ -292,11 +302,11 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedElementId = null;
         renderElementsOnCanvas();
     }
-    
+
     // --- 6. ЛОГИКА СОХРАНЕНИЯ ---
     saveBtn.addEventListener('click', async () => {
         // 1. Собрать глобальные настройки
-        currentConfig.globalSettings.pageTitle = document.getElementById('global-title').value;
+        currentConfig.globalSettings.pageTitle = document.querySelector('[data-config-key="globalSettings.pageTitle"]').value;
         
         // 2. Собрать настройки макета
         ['header', 'main', 'footer'].forEach(part => {
