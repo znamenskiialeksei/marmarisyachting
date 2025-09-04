@@ -55,10 +55,22 @@
             <div class="panel-header">🎨 Настройки макета</div>
             <div class="panel-content"></div>
         </div>
-        <div id="element-inspector-panel" class="floating-panel" style="display:none; top: 70px; right: 20px;">
-            <div class="panel-header">⚙️ Настройки элемента <span id="inspector-element-id"></span></div>
-            <div class="panel-content" id="inspector-content"></div>
+        <div class="panel-controls">
+            <button class="panel-collapse-btn">➖</button>
+            <button class="panel-close-btn">❌</button>
         </div>
+        </div>
+          <div class="panel-content"></div>
+        </div>
+        <div id="element-inspector-panel" class="floating-panel" style="display:none; top: 70px; right: 20px;">
+        <div class="panel-header">
+        <span>⚙️ Настройки элемента <span id="inspector-element-id"></span></span>
+        <div class="panel-controls">
+            <button class="panel-collapse-btn">➖</button>
+            <button class="panel-close-btn">❌</button>
+        </div>
+        </div>
+         <div class="panel-content" id="inspector-content"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>

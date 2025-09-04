@@ -1,9 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- НАСТРОЙКИ ---
     const GITHUB_USER = 'znamenskiialeksei';
     const GITHUB_REPO = 'marmarisyachting';
 
-    // --- DOM ЭЛЕМЕНТЫ ---
     const loginView = document.getElementById('login-view');
     const adminView = document.getElementById('admin-view');
     const loginBtn = document.getElementById('login-btn');
@@ -20,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let githubToken = '';
     let selectedElementId = null;
 
-    // --- 1. ЛОГИКА ВХОДА И ЗАГРУЗКИ ---
     loginBtn.addEventListener('click', () => {
         const token = tokenInput.value.trim();
         if (!token) return alert('Пожалуйста, введите ваш токен доступа GitHub.');
@@ -51,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- 2. ФУНКЦИИ РЕНДЕРИНГА (ОТОБРАЖЕНИЯ) ---
     function renderLayoutAndSettings() {
         globalSettingsPanel.querySelector('.panel-content').innerHTML = `
             <label>Заголовок сайта (Title)</label>
@@ -95,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="column-editor">
                     <span>Колонка ${index + 1}:</span>
                     <input type="text" value="${col.width}" data-col-id="${col.id}" class="column-width-input" placeholder="н.р. 50% или 1fr">
-                    <button data-col-id="${col.id}" class="delete-column-btn">❌</button>
+                    <button data-col-id="${col.id}" class="delete-column-btn" title="Удалить колонку">❌</button>
                 </div>
             `;
         });
@@ -130,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (elementData.height) elWrapper.style.height = elementData.height;
         if (elementData.style) Object.assign(elWrapper.style, elementData.style);
 
-        const overlay = `<div class="admin-element-overlay"></div>`;
+        const overlay = '<div class="admin-element-overlay"></div>';
 
         switch (elementData.type) {
             case 'externalBlock': case 'player':
@@ -158,22 +154,20 @@ document.addEventListener('DOMContentLoaded', () => {
         return elWrapper;
     }
 
-    // --- 3. ИНТЕРАКТИВНОСТЬ ---
     function initInteractivity() {
         document.querySelectorAll('.sortable-column').forEach(col => {
             new Sortable(col, { group: 'shared', animation: 150, handle: '.admin-element-overlay' });
         });
 
         interact('.draggable-element').resizable({
-            edges: { bottom: true },
+            edges: { top: true, left: true, bottom: true, right: true },
             listeners: {
                 move(event) {
                     const target = event.target;
+                    target.style.width = `${event.rect.width}px`;
                     target.style.height = `${event.rect.height}px`;
                     if (target.id === selectedElementId) {
-                       const heightInput = inspectorContent.querySelector('[data-prop="height"]');
-                       if(heightInput) heightInput.value = target.style.height;
-                       updateElementFromInspector();
+                       updateElementFromInspector(); // Обновляем данные в конфиге
                     }
                 }
             }
@@ -181,13 +175,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function makePanelsInteractive() {
-        interact('.floating-panel').draggable({
-            allowFrom: '.panel-header',
-            ignoreFrom: '.panel-content, input, textarea, select, button',
-        }).styleCursor(false);
+        document.querySelectorAll('.floating-panel').forEach(panel => {
+            interact(panel).draggable({
+                allowFrom: '.panel-header',
+                ignoreFrom: '.panel-content, input, textarea, select, button'
+            }).styleCursor(false);
+            
+            panel.querySelector('.panel-close-btn').onclick = () => panel.style.display = 'none';
+            panel.querySelector('.panel-collapse-btn').onclick = () => panel.classList.toggle('collapsed');
+        });
     }
 
-    // --- 4. УПРАВЛЕНИЕ С ТУЛБАРА И ПАНЕЛЕЙ ---
     function setupToolbarActions() {
         document.getElementById('toggle-global-settings').onclick = () => togglePanel('global-settings-panel');
         document.getElementById('toggle-layout-settings').onclick = () => togglePanel('layout-settings-panel');
@@ -204,9 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
         layoutSettingsPanel.addEventListener('click', (e) => {
             if (e.target.id === 'add-column-btn') {
                 currentConfig.layout.main.columns.push({
-                    id: 'column_' + Date.now(),
-                    width: '1fr',
-                    elements: []
+                    id: 'column_' + Date.now(), width: '1fr', elements: []
                 });
                 renderLayoutAndSettings();
                 renderElementsOnCanvas();
@@ -243,7 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
         selectElement(document.getElementById(newElement.id));
     }
     
-    // --- 5. УПРАВЛЕНИЕ ИНСПЕКТОРОМ ---
     function selectElement(element) {
         document.querySelectorAll('.draggable-element.selected').forEach(el => el.classList.remove('selected'));
         if (element) {
@@ -271,25 +266,19 @@ document.addEventListener('DOMContentLoaded', () => {
         
         switch (elementData.type) {
             case 'externalBlock': case 'player': case 'videoBlock': case 'reels': case 'photo':
-                content += `<label>URL контента</label><input type="text" data-prop="url" value="${elementData.url || ''}">`;
-                break;
+                content += `<label>URL контента</label><input type="text" data-prop="url" value="${elementData.url || ''}">`; break;
             case 'textBlock':
-                content += `<label>HTML контент</label><textarea data-prop="content">${elementData.content || ''}</textarea>`;
-                break;
+                content += `<label>HTML контент</label><textarea data-prop="content">${elementData.content || ''}</textarea>`; break;
             case 'button':
-                content += `
-                    <label>Текст кнопки</label><input type="text" data-prop="text" value="${elementData.text || ''}">
-                    <label>Действие</label>
-                    <select data-prop="action"><option value="openLink">Открыть ссылку</option><option value="openModal">Модальное окно</option></select>
-                    <label>Ссылка (для openLink)</label><input type="text" data-prop="link" value="${elementData.link || ''}">
-                    <label>Контент модального окна</label><textarea data-prop="modalContent">${elementData.modalContent || ''}</textarea>
-                `;
-                break;
+                content += `<label>Текст кнопки</label><input type="text" data-prop="text" value="${elementData.text || ''}">`; break;
         }
 
-        content += `<label>Высота (н-р, 650px или auto)</label><input type="text" data-prop="height" value="${elementData.height || 'auto'}">`;
+        content += `<hr><details open><summary>Размеры</summary>
+            <label>Ширина (н-р, 100% или 300px)</label><input type="text" data-style-prop="width" value="${elementData.style?.width || '100%'}">
+            <label>Высота (н-р, 650px или auto)</label><input type="text" data-prop="height" value="${elementData.height || 'auto'}">
+        </details>`;
 
-        content += `<hr><details open><summary>Стилизация</summary>
+        content += `<details open><summary>Стилизация</summary>
             <label>Цвет фона</label><input type="text" data-style-prop="backgroundColor" value="${elementData.style?.backgroundColor || ''}">
             <label>Цвет текста</label><input type="text" data-style-prop="color" value="${elementData.style?.color || ''}">
             <label>Размер шрифта (н-р, 16px)</label><input type="text" data-style-prop="fontSize" value="${elementData.style?.fontSize || ''}">
@@ -300,7 +289,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         inspectorContent.innerHTML = content;
 
-        if(elementData.type === 'button') inspectorContent.querySelector('[data-prop="action"]').value = elementData.action || 'openLink';
         if(elementData.type === 'photo') inspectorContent.querySelector('[data-style-prop="objectFit"]').value = elementData.style?.objectFit || 'cover';
 
         document.getElementById('delete-element-btn').onclick = deleteSelectedElement;
@@ -340,7 +328,6 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedElementId = null;
         renderElementsOnCanvas();
     }
-    
     // --- 6. ЛОГИКА СОХРАНЕНИЯ ---
     saveBtn.addEventListener('click', async () => {
         currentConfig.globalSettings.pageTitle = document.querySelector('[data-config-key="globalSettings.pageTitle"]').value;
