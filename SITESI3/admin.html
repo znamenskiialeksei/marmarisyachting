@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель</title>
+    <!-- Библиотеки для интерактивности -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <style>
+        /* Общие стили */
+        body, html { height: 100%; margin: 0; font-family: sans-serif; background-color: #f0f2f5; overflow: hidden; }
+        * { box-sizing: border-box; }
+        button { cursor: pointer; }
+        input, select, textarea { width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ccc; }
+
+        /* Экран входа */
+        #login-screen { display: flex; justify-content: center; align-items: center; height: 100%; }
+        .login-box { padding: 40px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 100%; max-width: 400px; }
+        .login-box h1 { text-align: center; margin-top: 0; }
+        .login-box label { font-weight: bold; }
+        .login-box button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; }
+
+        /* Контейнер редактора */
+        #editor-container { display: none; height: 100vh; flex-direction: column; }
+
+        /* Верхняя панель */
+        #top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #fff; border-bottom: 1px solid #ddd; }
+        #view-controls button, #tool-controls button { padding: 8px 12px; border: 1px solid #ccc; background: #f7f7f7; border-radius: 4px; margin: 0 5px; }
+        #view-controls button.active { background-color: #007bff; color: white; }
+        #save-button { background-color: #28a745; color: white; border: none; font-weight: bold; }
+        #save-status { font-size: 14px; color: #666; }
+
+        /* Основная область редактора */
+        #editor-main { flex-grow: 1; display: flex; position: relative; overflow: hidden; }
+        #canvas-wrapper { flex-grow: 1; overflow: auto; padding: 20px; background-color: #e9ebee; text-align: center; }
+        #canvas { background: white; margin: 0 auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); transition: width 0.3s ease; }
+        #canvas.desktop { width: 100%; }
+        #canvas.tablet { width: 768px; }
+        #canvas.mobile { width: 375px; }
+
+        /* Стили для холста (визуальное представление) */
+        .canvas-column { border: 1px dashed #ccc; min-height: 100px; padding: 10px; }
+        .canvas-block { position: relative; border: 1px solid #999; cursor: grab; background-color: #fff; margin-bottom: 10px; }
+        .canvas-block.selected { border: 2px solid #007bff; }
+        .canvas-block-placeholder { background-color: #f0f8ff; color: #999; display: flex; justify-content: center; align-items: center; min-height: 80px; text-align: center; padding: 10px; }
+        .block-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 10; } /* Для блокировки iframe */
+
+        /* Плавающие панели */
+        .floating-panel { position: absolute; z-index: 100; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.2); border-radius: 8px; min-width: 300px; display: flex; flex-direction: column; }
+        .panel-header { padding: 10px; background: #f7f7f7; cursor: move; border-bottom: 1px solid #ddd; border-top-left-radius: 8px; border-top-right-radius: 8px; user-select: none; }
+        .panel-content { padding: 15px; overflow-y: auto; }
+        #inspector-panel { top: 70px; right: 20px; }
+        #layout-panel { top: 70px; left: 20px; }
+
+        /* Стили инспектора */
+        .inspector-group { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .inspector-group h4 { margin-top: 0; }
+        #inspector-content { min-height: 100px; }
+    </style>
+</head>
+<body>
+
+    <!-- Экран входа -->
+    <div id="login-screen">
+        <div class="login-box">
+            <h1>Вход в админ-панель</h1>
+            <label for="github-user">Пользователь GitHub</label>
+            <input type="text" id="github-user" placeholder="например, octocat">
+            <label for="github-repo">Репозиторий</label>
+            <input type="text" id="github-repo" placeholder="например, my-awesome-site">
+            <label for="github-token">Personal Access Token</label>
+            <input type="password" id="github-token">
+            <button id="login-button">Войти</button>
+            <p id="login-error" style="color: red;"></p>
+        </div>
+    </div>
+
+    <!-- Редактор -->
+    <div id="editor-container">
+        <div id="top-bar">
+            <div id="tool-controls">
+                <button id="layout-toggle-btn">Макет</button>
+                <button id="inspector-toggle-btn">Инспектор</button>
+            </div>
+            <div id="view-controls">
+                <button data-view="desktop" class="active">Десктоп</button>
+                <button data-view="tablet">Планшет</button>
+                <button data-view="mobile">Смартфон</button>
+            </div>
+            <div>
+                <span id="save-status">Изменения не сохранены</span>
+                <button id="save-button">Сохранить</button>
+            </div>
+        </div>
+        <main id="editor-main">
+            <div id="canvas-wrapper">
+                <div id="canvas" class="desktop"></div>
+            </div>
+
+            <!-- Панель макета -->
+            <div id="layout-panel" class="floating-panel">
+                <div class="panel-header">Управление макетом</div>
+                <div class="panel-content" id="layout-content">
+                    <h4>Колонки</h4>
+                    <div id="columns-editor"></div>
+                    <button id="add-column-btn">Добавить колонку</button>
+                </div>
+            </div>
+
+            <!-- Панель инспектора -->
+            <div id="inspector-panel" class="floating-panel">
+                <div class="panel-header">Инспектор</div>
+                <div class="panel-content" id="inspector-content">
+                    <p>Выберите блок для редактирования.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+<script>
+// Глобальные переменные
+let config = {};
+let githubApi = null;
+let selectedBlockElement = null;
+let currentSha = null;
+
+// DOM элементы
+const loginScreen = document.getElementById('login-screen');
+const editorContainer = document.getElementById('editor-container');
+const loginButton = document.getElementById('login-button');
+const loginError = document.getElementById('login-error');
+const canvas = document.getElementById('canvas');
+const saveButton = document.getElementById('save-button');
+const saveStatus = document.getElementById('save-status');
+
+// --- Класс для работы с GitHub API ---
+class GitHubAPI {
+    constructor(user, repo, token) {
+        this.user = user;
+        this.repo = repo;
+        this.token = token;
+        this.baseUrl = `https://api.github.com/repos/${this.user}/${this.repo}/contents/config.json`;
+    }
+
+    async getFile() {
+        const response = await fetch(this.baseUrl, {
+            headers: { 
+                'Authorization': `token ${this.token}`,
+                'Cache-Control': 'no-cache' // Предотвращение кэширования
+            }
+        });
+        if (!response.ok) throw new Error(`Ошибка загрузки файла: ${response.statusText}`);
+        const data = await response.json();
+        currentSha = data.sha;
+        return JSON.parse(atob(data.content));
+    }
+
+    async updateFile(content, message) {
+        const body = {
+            message: message,
+            content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))), // Правильное кодирование для UTF-8
+            sha: currentSha
+        };
+        const response = await fetch(this.baseUrl, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${this.token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+        if (!response.ok) throw new Error(`Ошибка сохранения файла: ${response.statusText}`);
+        const data = await response.json();
+        currentSha = data.content.sha; // Обновляем SHA после сохранения
+        return data;
+    }
+}
+
+// --- Логика входа ---
+loginButton.addEventListener('click', async () => {
+    const user = document.getElementById('github-user').value;
+    const repo = document.getElementById('github-repo').value;
+    const token = document.getElementById('github-token').value;
+
+    if (!user || !repo || !token) {
+        loginError.textContent = 'Все поля обязательны.';
+        return;
+    }
+
+    localStorage.setItem('githubCreds', JSON.stringify({ user, repo, token }));
+    await initializeEditor(user, repo, token);
+});
+
+async function initializeEditor(user, repo, token) {
+    githubApi = new GitHubAPI(user, repo, token);
+    try {
+        config = await githubApi.getFile();
+        loginScreen.style.display = 'none';
+        editorContainer.style.display = 'flex';
+        renderCanvas();
+        updateSaveStatus(true);
+    } catch (error) {
+        console.error('Ошибка инициализации:', error);
+        loginError.textContent = `Ошибка: ${error.message}. Проверьте данные и права токена.`;
+        localStorage.removeItem('githubCreds');
+    }
+}
+
+// --- Логика рендеринга ---
+function renderCanvas() {
+    canvas.innerHTML = '';
+    const mainContent = document.createElement('div');
+    mainContent.style.display = 'flex';
+    mainContent.style.gap = '20px';
+    mainContent.style.alignItems = 'flex-start';
+
+    if (config.layout && config.layout.columns) {
+        config.layout.columns.forEach((col, colIndex) => {
+            const colEl = document.createElement('div');
+            colEl.className = 'canvas-column';
+            colEl.style.width = col.width;
+            colEl.dataset.colIndex = colIndex;
+            
+            if (col.blocks) {
+                col.blocks.forEach((block, blockIndex) => {
+                    const blockEl = createEditableBlock(block, colIndex, blockIndex);
+                    colEl.appendChild(blockEl);
+                });
+            }
+            mainContent.appendChild(colEl);
+        });
+    }
+
+    canvas.appendChild(mainContent);
+    initDragAndDrop();
+    renderLayoutEditor();
+}
+
+function createEditableBlock(blockData, colIndex, blockIndex) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'canvas-block';
+    wrapper.dataset.colIndex = colIndex;
+    wrapper.dataset.blockIndex = blockIndex;
+
+    const placeholder = document.createElement('div');
+    placeholder.className = 'canvas-block-placeholder';
+    
+    // Показываем заглушку вместо реального контента
+    switch(blockData.type) {
+        case 'iframe': placeholder.textContent = `[Маршрут] ${blockData.content.url || ''}`; break;
+        case 'text': placeholder.innerHTML = `[Текст] ${(blockData.content.html || '').substring(0, 50)}...`; break;
+        case 'image': placeholder.innerHTML = `[Фото] <img src="${blockData.content.url || ''}" style="width: 50px; height: auto; vertical-align: middle; margin-left: 5px;">`; break;
+        case 'video': placeholder.textContent = `[Видео] ${blockData.content.url || ''}`; break;
+        case 'button': placeholder.textContent = `[Кнопка] "${blockData.content.text || ''}"`; break;
+    }
+    
+    // Overlay для iframe
+    if (blockData.type === 'iframe') {
+        const overlay = document.createElement('div');
+        overlay.className = 'block-overlay';
+        wrapper.appendChild(overlay);
+    }
+    
+    wrapper.appendChild(placeholder);
+    wrapper.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (selectedBlockElement) {
+            selectedBlockElement.classList.remove('selected');
+        }
+        selectedBlockElement = wrapper;
+        selectedBlockElement.classList.add('selected');
+        showInspector(colIndex, blockIndex);
+    });
+    return wrapper;
+}
+
+// --- Инспектор свойств ---
+function showInspector(colIndex, blockIndex) {
+    const block = config.layout.columns[colIndex].blocks[blockIndex];
+    const inspector = document.getElementById('inspector-content');
+    inspector.innerHTML = '';
+
+    const addField = (label, type, value, onChange, options = {}) => {
+        const labelEl = document.createElement('label');
+        labelEl.textContent = label;
+        let inputEl;
+        
+        if (type === 'textarea') {
+            inputEl = document.createElement('textarea');
+            inputEl.rows = options.rows || 5;
+        } else if (type === 'select') {
+            inputEl = document.createElement('select');
+            options.choices.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt;
+                option.textContent = opt;
+                inputEl.appendChild(option);
+            });
+        } else {
+            inputEl = document.createElement('input');
+            inputEl.type = type;
+        }
+        
+        inputEl.value = value;
+        if (type === 'checkbox') inputEl.checked = value;
+
+        inputEl.addEventListener('input', (e) => {
+            const newValue = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+            onChange(newValue);
+            // Не перерисовываем весь холст, а только обновляем заглушку
+            const blockElement = document.querySelector(`.canvas-block[data-col-index='${colIndex}'][data-block-index='${blockIndex}']`);
+            if (blockElement) {
+                const placeholder = blockElement.querySelector('.canvas-block-placeholder');
+                // Обновляем текст в заглушке
+                 switch(block.type) {
+                    case 'iframe': placeholder.textContent = `[Маршрут] ${block.content.url || ''}`; break;
+                    case 'text': placeholder.innerHTML = `[Текст] ${(block.content.html || '').substring(0, 50)}...`; break;
+                    case 'image': placeholder.innerHTML = `[Фото] <img src="${block.content.url || ''}" style="width: 50px; height: auto; vertical-align: middle; margin-left: 5px;">`; break;
+                    case 'video': placeholder.textContent = `[Видео] ${block.content.url || ''}`; break;
+                    case 'button': placeholder.textContent = `[Кнопка] "${block.content.text || ''}"`; break;
+                }
+            }
+            updateSaveStatus(false);
+        });
+        
+        inspector.appendChild(labelEl);
+        inspector.appendChild(inputEl);
+    };
+    
+    // Контентные поля
+    const contentGroup = document.createElement('div');
+    contentGroup.className = 'inspector-group';
+    contentGroup.innerHTML = '<h4>Контент</h4>';
+    for (const key in block.content) {
+        let type = 'text';
+        if (key.includes('html')) type = 'textarea';
+        if (typeof block.content[key] === 'boolean') type = 'checkbox';
+        addField(key, type, block.content[key], (newValue) => block.content[key] = newValue);
+    }
+    inspector.appendChild(contentGroup);
+    
+    // Стили
+    const styleGroup = document.createElement('div');
+    styleGroup.className = 'inspector-group';
+    styleGroup.innerHTML = '<h4>Стили (CSS)</h4>';
+    block.styles = block.styles || {};
+    addField('backgroundColor', 'color', block.styles.backgroundColor || '#ffffff', (v) => block.styles.backgroundColor = v);
+    addField('color', 'color', block.styles.color || '#000000', (v) => block.styles.color = v);
+    addField('padding', 'text', block.styles.padding || '0px', (v) => block.styles.padding = v);
+    
+    inspector.appendChild(styleGroup);
+}
+
+
+// --- Редактор макета ---
+function renderLayoutEditor() {
+    const editor = document.getElementById('columns-editor');
+    editor.innerHTML = '';
+    if (config.layout && config.layout.columns) {
+        config.layout.columns.forEach((col, index) => {
+            const colEditor = document.createElement('div');
+            colEditor.style.marginBottom = '10px';
+            colEditor.innerHTML = `
+                <label>Колонка ${index + 1} (ширина)</label>
+                <input type="text" value="${col.width}" data-col-index="${index}">
+                <button data-col-index="${index}" class="remove-col-btn" style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px;">Удалить</button>
+            `;
+            editor.appendChild(colEditor);
+        });
+    }
+
+    editor.querySelectorAll('input').forEach(input => {
+        input.addEventListener('change', (e) => {
+            const index = e.target.dataset.colIndex;
+            config.layout.columns[index].width = e.target.value;
+            renderCanvas();
+            updateSaveStatus(false);
+        });
+    });
+
+    editor.querySelectorAll('.remove-col-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const index = e.target.dataset.colIndex;
+            if (confirm(`Вы уверены, что хотите удалить колонку ${parseInt(index) + 1}? Все блоки в ней будут также удалены.`)) {
+                config.layout.columns.splice(index, 1);
+                renderCanvas();
+                updateSaveStatus(false);
+            }
+        });
+    });
+}
+
+document.getElementById('add-column-btn').addEventListener('click', () => {
+    if (!config.layout.columns) {
+        config.layout.columns = [];
+    }
+    config.layout.columns.push({ width: '1fr', blocks: [] });
+    renderCanvas();
+    updateSaveStatus(false);
+});
+
+
+// --- Drag-and-Drop ---
+function initDragAndDrop() {
+    const columns = document.querySelectorAll('.canvas-column');
+    columns.forEach(col => {
+        new Sortable(col, {
+            group: 'shared',
+            animation: 150,
+            onEnd: (evt) => {
+                const block = config.layout.columns[evt.from.dataset.colIndex].blocks.splice(evt.oldIndex, 1)[0];
+                config.layout.columns[evt.to.dataset.colIndex].blocks.splice(evt.newIndex, 0, block);
+                renderCanvas();
+                updateSaveStatus(false);
+            }
+        });
+    });
+}
+
+// --- Управление панелями и видами ---
+document.getElementById('view-controls').addEventListener('click', (e) => {
+    if (e.target.tagName === 'BUTTON') {
+        const view = e.target.dataset.view;
+        canvas.className = view;
+        document.querySelector('#view-controls .active').classList.remove('active');
+        e.target.classList.add('active');
+    }
+});
+
+// Перетаскивание панелей
+interact('.floating-panel')
+  .draggable({
+    allowFrom: '.panel-header',
+    modifiers: [
+      interact.modifiers.restrictRect({
+        restriction: 'parent',
+        endOnly: true
+      })
+    ],
+    inertia: true
+  })
+  .on('dragmove', function (event) {
+    var target = event.target
+    var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
+    var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
+    target.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
+    target.setAttribute('data-x', x)
+    target.setAttribute('data-y', y)
+});
+
+// Показ/скрытие панелей
+document.getElementById('layout-toggle-btn').addEventListener('click', () => {
+    document.getElementById('layout-panel').style.display = document.getElementById('layout-panel').style.display === 'none' ? 'flex' : 'none';
+});
+document.getElementById('inspector-toggle-btn').addEventListener('click', () => {
+    document.getElementById('inspector-panel').style.display = document.getElementById('inspector-panel').style.display === 'none' ? 'flex' : 'none';
+});
+
+
+// --- Сохранение ---
+function updateSaveStatus(isSaved) {
+    if (isSaved) {
+        saveStatus.textContent = 'Все изменения сохранены';
+        saveStatus.style.color = 'green';
+        saveButton.disabled = true;
+    } else {
+        saveStatus.textContent = 'Изменения не сохранены';
+        saveStatus.style.color = 'orange';
+        saveButton.disabled = false;
+    }
+}
+
+saveButton.addEventListener('click', async () => {
+    saveStatus.textContent = 'Сохранение...';
+    try {
+        await githubApi.updateFile(config, 'Обновление конфигурации сайта');
+        updateSaveStatus(true);
+    } catch (error) {
+        console.error('Ошибка сохранения:', error);
+        saveStatus.textContent = `Ошибка: ${error.message}`;
+        saveStatus.style.color = 'red';
+    }
+});
+
+
+// --- Инициализация при загрузке ---
+document.addEventListener('DOMContentLoaded', () => {
+    const creds = localStorage.getItem('githubCreds');
+    if (creds) {
+        const { user, repo, token } = JSON.parse(creds);
+        document.getElementById('github-user').value = user;
+        document.getElementById('github-repo').value = repo;
+        document.getElementById('github-token').value = token;
+        initializeEditor(user, repo, token);
+    }
+});
+</script>
+
+</body>
+</html>

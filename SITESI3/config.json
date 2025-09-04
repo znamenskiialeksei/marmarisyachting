@@ -1,0 +1,89 @@
+{
+  "settings": {
+    "pageTitle": "Marmaris Yachting",
+    "header": {
+      "backgroundType": "color",
+      "backgroundColor": "#ffffff",
+      "backgroundImage": "",
+      "backgroundVideo": ""
+    },
+    "main": {
+      "backgroundType": "color",
+      "backgroundColor": "#f0f2f5",
+      "backgroundImage": "",
+      "backgroundVideo": ""
+    },
+    "footer": {
+      "backgroundType": "color",
+      "backgroundColor": "#333333",
+      "backgroundImage": "",
+      "backgroundVideo": ""
+    }
+  },
+  "layout": {
+    "columns": [
+      {
+        "width": "65%",
+        "blocks": [
+          {
+            "type": "iframe",
+            "content": {
+              "url": "https://example.com/tour-player"
+            },
+            "styles": {
+              "height": "600px"
+            }
+          },
+          {
+            "type": "text",
+            "content": {
+              "html": "<h2>Добро пожаловать на борт!</h2><p>Мы предлагаем незабываемые морские прогулки по живописным бухтам Мармариса. Откройте для себя красоту Эгейского моря вместе с нами.</p>"
+            },
+            "styles": {
+              "padding": "20px",
+              "backgroundColor": "#ffffff"
+            }
+          }
+        ]
+      },
+      {
+        "width": "35%",
+        "blocks": [
+          {
+            "type": "image",
+            "content": {
+              "url": "https://images.unsplash.com/photo-1599640842225-85d111c60e6b?q=80&w=2574&auto=format&fit=crop",
+              "alt": "Яхта в море",
+              "fit": "cover"
+            },
+            "styles": {
+              "height": "250px"
+            }
+          },
+          {
+            "type": "video",
+            "content": {
+              "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+            },
+            "styles": {}
+          },
+          {
+            "type": "button",
+            "content": {
+              "text": "Забронировать тур",
+              "url": "https://example.com/booking",
+              "newTab": true
+            },
+            "styles": {
+              "backgroundColor": "#007bff",
+              "color": "#ffffff",
+              "width": "100%",
+              "textAlign": "center",
+              "padding": "15px 0"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
