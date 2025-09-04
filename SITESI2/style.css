@@ -1,161 +1,45 @@
-body { margin: 0; font-family: sans-serif; background-color: #f0f2f5; }
-header, footer, nav { padding: 15px; text-align: center; }
-nav a { margin: 0 15px; text-decoration: none; color: #007bff; }
-main { position: relative; width: 100%; min-height: 120vh; }
-.route-window {
-    border: 1px solid #ccc;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-    border-radius: 8px;
-    background-color: white;
-}
-.background-layer {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: -1;
-    background-size: cover;
-    background-position: center;
-}
-.background-layer video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+/* --- ОБЩИЕ СТИЛИ --- */
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+.layout-section { position: relative; padding: 20px; box-sizing: border-box; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+#main-header, #main-footer { text-align: center; }
+#main-menu { text-align: center; padding: 10px; background: rgba(255,255,255,0.9); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+#main-menu a { margin: 0 15px; text-decoration: none; color: #007bff; font-weight: bold; }
+#element-container { display: flex; flex-wrap: wrap; padding: 20px; gap: 20px; align-items: flex-start; }
+.background-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-size: cover; background-position: center; overflow: hidden; }
+.background-layer video { width: 100%; height: 100%; object-fit: cover; }
+.layout-column { flex-grow: 1; display: flex; flex-direction: column; gap: 20px; }
+.element-wrapper { position: relative; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; background-color: #ffffff; }
+.element-wrapper iframe, .element-wrapper img { display: block; width: 100%; height: 100%; border: 0; }
+.type-textBlock { padding: 20px; box-sizing: border-box; }
+.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); justify-content: center; align-items: center; }
+#custom-modal-content { background: white; padding: 30px; border-radius: 8px; max-width: 80%; position: relative; }
+.modal-close { position: absolute; top: 10px; right: 20px; font-size: 30px; cursor: pointer; color: #333; }
+
+@media (max-width: 900px) {
+    #element-container { flex-direction: column; }
+    .layout-column { flex-basis: 100% !important; }
 }
 
-/* Стили для новых элементов */
-.element-wrapper {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    box-sizing: border-box;
-}
-.type-textBlock {
-    border: 1px solid #e0e0e0;
-}
-
-/* Стили для модального окна */
-.modal {
-    display: none; position: fixed; z-index: 1000;
-    left: 0; top: 0; width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.7);
-    justify-content: center; align-items: center;
-}
-#custom-modal-content {
-    background: white; padding: 30px; border-radius: 8px;
-    max-width: 80%; position: relative;
-}
-.modal-close {
-    position: absolute; top: 10px; right: 20px;
-    font-size: 30px; cursor: pointer;
-}
-/* ... ваши старые стили ... */
-
-/* --- Стили для админ-панели --- */
-.admin-container { max-width: 500px; margin: 50px auto; text-align: center; }
-.admin-container input { width: 90%; padding: 10px; margin-bottom: 15px; }
-.admin-container button { padding: 10px 20px; cursor: pointer; }
-
-.admin-main { display: flex; height: 100vh; }
-.admin-canvas { flex-grow: 1; position: relative; background: #f0f2f5; overflow: auto; }
-.admin-sidebar { width: 350px; flex-shrink: 0; background: #fff; overflow-y: auto; border-left: 1px solid #ddd; }
-
-#add-element-toolbar { background: #343a40; color: white; padding: 10px; text-align: center; }
-#add-element-toolbar button { margin: 0 5px; }
-
-.layout-section { position: relative; z-index: 1; }
-#element-container { min-height: 100%; }
-
-.save-panel { padding: 15px; border-bottom: 1px solid #ddd; }
-#save-btn { width: 100%; padding: 15px; font-size: 1.1em; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
-
-.sidebar-section { padding: 15px; border-bottom: 1px solid #ddd; }
-.sidebar-section h3 { margin-top: 0; }
-.sidebar-section label { display: block; margin-top: 10px; font-weight: bold; font-size: 0.9em; }
-.sidebar-section input, .sidebar-section textarea, .sidebar-section select { width: calc(100% - 16px); padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; }
-.sidebar-section textarea { min-height: 120px; }
-
-.element-wrapper { box-sizing: border-box; } /* Это важно для interact.js */
-.draggable-element { cursor: move; border: 2px dashed transparent; }
-.draggable-element.selected { border-color: #007bff; z-index: 100 !important; }
-
-.type-fields { display: none; }
-/* --- НОВЫЕ СТИЛИ ДЛЯ АДМИН-ПАНЕЛИ --- */
-
-/* Убираем старый двухколоночный макет */
-.admin-main { display: block; }
-.admin-sidebar { display: none; } /* Старый сайдбар больше не нужен */
-
-/* Верхняя панель инструментов */
-#admin-toolbar {
-    background: #343a40;
-    color: white;
-    padding: 8px 15px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1001;
-    box-sizing: border-box;
-}
+/* --- СТИЛИ ДЛЯ АДМИН-ПАНЕЛИ --- */
+#admin-view { background: #e9ecef; }
+.admin-container { max-width: 500px; margin: 50px auto; text-align: center; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+#admin-toolbar { background: #343a40; color: white; padding: 8px 15px; display: flex; align-items: center; gap: 20px; position: fixed; top: 0; left: 0; width: 100%; z-index: 1001; box-sizing: border-box; flex-wrap: wrap; }
 .toolbar-group { display: flex; align-items: center; gap: 8px; }
 #admin-toolbar button { background: #6c757d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
 #admin-toolbar button:hover { background: #5a6268; }
 #save-btn { background-color: #28a745 !important; font-weight: bold; }
-
-/* Холст для редактирования */
-#admin-canvas {
-    margin: 60px auto 20px auto; /* Отступ от тулбара */
-    width: 100%;
-    max-width: 1280px; /* Симуляция десктопного вида */
-    height: 2000px; /* Даем пространство для работы */
-    background: #ffffff;
-    box-shadow: 0 0 20px rgba(0,0,0,0.15);
-    position: relative;
-    transform-origin: top center;
-    transition: all 0.3s ease-in-out;
-}
+#admin-canvas { margin: 60px auto 20px auto; width: 100%; max-width: 1280px; min-height: 1500px; background: #ffffff; box-shadow: 0 0 20px rgba(0,0,0,0.15); position: relative; transform-origin: top center; transition: all 0.3s ease-in-out; }
 #admin-canvas.tablet-view { max-width: 768px; }
 #admin-canvas.mobile-view { max-width: 420px; }
-
-/* Плавающие окна */
-.floating-panel {
-    position: fixed; /* Используем fixed для плавания поверх всего */
-    background: #fdfdfd;
-    border: 1px solid #ccc;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    border-radius: 8px;
-    z-index: 1002;
-    min-width: 320px;
-}
-.panel-header {
-    background: #f1f1f1;
-    padding: 10px;
-    cursor: move;
-    border-bottom: 1px solid #ccc;
-    font-weight: bold;
-    user-select: none;
-    border-radius: 8px 8px 0 0;
-}
-.panel-content {
-    padding: 15px;
-    max-height: 70vh;
-    overflow-y: auto;
-}
-
-/* Стили для элементов на холсте */
-.draggable-element {
-    border: 2px dashed rgba(0, 123, 255, 0.5);
-    transition: box-shadow 0.2s;
-    box-sizing: border-box;
-}
-.draggable-element:hover {
-    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.2);
-}
-.draggable-element.selected {
-    border-style: solid;
-    border-color: #007bff;
-    z-index: 100 !important;
-}
+.floating-panel { position: fixed; background: #fdfdfd; border: 1px solid #ccc; box-shadow: 0 5px 15px rgba(0,0,0,0.2); border-radius: 8px; z-index: 1002; min-width: 320px; }
+.panel-header { background: #f1f1f1; padding: 10px; cursor: move; border-bottom: 1px solid #ccc; font-weight: bold; user-select: none; border-radius: 8px 8px 0 0; }
+.panel-content { padding: 15px; max-height: 70vh; overflow-y: auto; }
+.panel-content label { display: block; margin-top: 12px; font-weight: 500; font-size: 14px; color: #555; }
+.panel-content input, .panel-content textarea, .panel-content select { width: 95%; padding: 8px; margin-top: 4px; border: 1px solid #ccc; border-radius: 4px; }
+.panel-content textarea { min-height: 100px; resize: vertical; }
+.panel-content details { margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; }
+.panel-content summary { font-weight: bold; cursor: pointer; }
+.draggable-element { border: 2px dashed rgba(0, 123, 255, 0.5); transition: box-shadow 0.2s; }
+.draggable-element:hover { box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.2); }
+.draggable-element.selected { border: 2px solid #007bff; z-index: 100 !important; }
+.sortable-column { min-height: 100px; border: 1px dashed #ccc; }

@@ -1,16 +1,19 @@
 document.addEventListener('DOMContentLoaded', async () => {
     try {
+        // Добавляем случайный параметр, чтобы избежать кэширования конфига
         const response = await fetch('config.json?cachebust=' + new Date().getTime());
         if (!response.ok) throw new Error('Не удалось загрузить конфигурацию!');
         const config = await response.json();
 
+        // --- Глобальные настройки ---
         document.title = config.globalSettings.pageTitle;
-        document.body.className = `view-mode-${config.globalSettings.defaultViewMode}`;
 
+        // --- Настройка фона ---
         setupBackground('main-header', config.layout.header.background);
-        setupBackground('element-container', config.layout.main.background);
+        setupBackground(document.body, config.layout.main.background); // Фон для всей страницы
         setupBackground('main-footer', config.layout.footer.background);
 
+        // --- Заполнение контента ---
         document.getElementById('main-header').innerHTML += config.layout.header.content;
         document.getElementById('main-footer').innerHTML += config.layout.footer.content;
         
@@ -21,71 +24,93 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
         
+        // --- Рендеринг всех элементов ---
         const container = document.getElementById('element-container');
-        config.elements.forEach(element => {
-            if (!element.visible) return;
+        container.innerHTML = ''; 
 
-            const elWrapper = document.createElement('div');
-            elWrapper.className = `element-wrapper type-${element.type}`;
-            elWrapper.id = element.id;
-            
-            Object.assign(elWrapper.style, {
-                position: 'absolute',
-                left: `${element.position.x}px`,
-                top: `${element.position.y}px`,
-                width: `${element.size.width}px`,
-                height: `${element.size.height}px`
+        // Создаем колонки
+        if (config.layout.main.columns) {
+            config.layout.main.columns.forEach(columnData => {
+                const columnEl = document.createElement('div');
+                columnEl.className = 'layout-column';
+                columnEl.style.flexBasis = columnData.width;
+                
+                // Наполняем колонку элементами
+                columnData.elements.forEach(elementId => {
+                    const elementData = config.elements.find(el => el.id === elementId);
+                    if (elementData && elementData.visible) {
+                        const elWrapper = createElement(elementData);
+                        columnEl.appendChild(elWrapper);
+                    }
+                });
+                container.appendChild(columnEl);
             });
-
-            switch (element.type) {
-                case 'player':
-                    elWrapper.innerHTML = `<iframe src="${element.url}" style="width:100%; height:100%; border:0;"></iframe>`;
-                    break;
-                case 'textBlock':
-                    elWrapper.innerHTML = element.content;
-                    break;
-                case 'videoBlock':
-                    elWrapper.innerHTML = `<iframe src="${element.url}" style="width:100%; height:100%; border:0;" allowfullscreen></iframe>`;
-                    break;
-                case 'button':
-                    const btn = document.createElement('button');
-                    btn.textContent = element.text;
-                    Object.assign(btn.style, {
-                        width: '100%', height: '100%', cursor: 'pointer',
-                        backgroundColor: element.style.backgroundColor,
-                        color: element.style.textColor,
-                        border: 'none', fontSize: '1.2em'
-                    });
-                    if (element.style.pulsing) btn.classList.add('pulsing');
-                    
-                    btn.onclick = () => {
-                        if (element.action === 'openLink') {
-                            window.open(element.link, '_blank');
-                        } else if (element.action === 'openModal') {
-                            openCustomModal(element.modalContent);
-                        }
-                    };
-                    elWrapper.appendChild(btn);
-                    break;
-            }
-            container.appendChild(elWrapper);
-        });
+        }
 
     } catch (error) {
         console.error(error);
-        document.body.innerHTML = `<h1>Ошибка загрузки:</h1><p>${error.message}</p>`;
+        document.body.innerHTML = `<h1>Ошибка загрузки страницы</h1><p>${error.message}</p>`;
     }
 });
 
-function setupBackground(elementId, bgConfig) {
-    const element = document.getElementById(elementId);
+function createElement(elementData) {
+    const elWrapper = document.createElement('div');
+    elWrapper.className = `element-wrapper type-${elementData.type}`;
+    elWrapper.id = elementData.id;
+
+    if (elementData.height) elWrapper.style.height = elementData.height;
+    if (elementData.style) Object.assign(elWrapper.style, elementData.style);
+
+    switch (elementData.type) {
+        case 'player':
+            elWrapper.innerHTML = `<iframe src="${elementData.url}" scrolling="no"></iframe>`;
+            break;
+        case 'textBlock':
+            elWrapper.innerHTML = elementData.content;
+            break;
+        case 'photo':
+            elWrapper.innerHTML = `<img src="${elementData.url}" alt="${elementData.title || ''}">`;
+            break;
+        case 'videoBlock':
+        case 'reels':
+            elWrapper.innerHTML = `<iframe src="${elementData.url}" allowfullscreen></iframe>`;
+            if (elementData.type === 'reels') elWrapper.style.aspectRatio = '9 / 16';
+            break;
+        case 'button':
+            const btn = document.createElement('button');
+            btn.textContent = elementData.text || 'Кнопка';
+            Object.assign(btn.style, {
+                width: '100%', height: '100%', cursor: 'pointer',
+                border: 'none',
+                backgroundColor: elementData.style.backgroundColor,
+                color: elementData.style.color,
+                fontSize: elementData.style.fontSize,
+                fontWeight: elementData.style.fontWeight,
+                borderRadius: elementData.style.borderRadius
+            });
+            
+            btn.onclick = () => {
+                if (elementData.action === 'openLink' && elementData.link) {
+                    window.open(elementData.link, '_blank');
+                } else if (elementData.action === 'openModal' && elementData.modalContent) {
+                    openCustomModal(elementData.modalContent);
+                }
+            };
+            elWrapper.appendChild(btn);
+            break;
+    }
+    return elWrapper;
+}
+
+
+function setupBackground(element, bgConfig) {
     if (!element || !bgConfig) return;
     
     const existingBg = element.querySelector('.background-layer');
     if (existingBg) existingBg.remove();
 
     if (bgConfig.type === 'color') {
-        element.style.backgroundColor = bgConfig.color || bgConfig.url;
+        element.style.backgroundColor = bgConfig.color || bgConfig.url || 'transparent';
     } else {
         element.style.backgroundColor = 'transparent';
         const bgLayer = document.createElement('div');
