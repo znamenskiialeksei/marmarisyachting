@@ -1,36 +1,32 @@
 {
   "github": {
-    "user": "YOUR_GITHUB_USERNAME",
-    "repo": "YOUR_REPOSITORY_NAME"
+    "user": "znamenskiialeksei",  // <-- Проверить, что здесь ваш юзернейм
+    "repo": "marmarisyachting"    // <-- Проверить, что здесь имя репозитория
   },
   "admin": {
-    "passwordHash": "хэш_вашего_пароля" 
+    // ВАЖНО: Вместо сложного хэша пока используем простой пароль для входа в admin.html
+    "password": "0901" 
   },
   "globalSettings": {
-    "pageTitle": "Все маршруты | Marmaris Yachting",
-    "mobileAdaptation": true,
-    "defaultViewMode": "scroll" 
+    // Заголовок, который будет во вкладке браузера
+    "pageTitle": "Все маршруты | Marmaris Yachting" 
   },
   "layout": {
     "header": {
-      "content": "<h1>Наши туры</h1>",
-      "background": {
-        "type": "video", 
-        "url": "https://.../common_video.mp4",
-        "color": "#000000"
-      }
-    },
-    "main": {
+      // HTML-код для шапки сайта
+      "content": "<h1>Все яхтенные туры из Мармариса</h1>", 
       "background": {
         "type": "color",
-        "color": "#f0f2f5"
+        "color": "#ffffff"
       }
     },
+    "main": { /* ... */ },
     "footer": {
-      "content": "<p>Контакты</p>",
+      // HTML-код для подвала сайта
+      "content": "<p>© 2025 Znamenskii Aleksei. Все права защищены.</p>", 
       "background": {
-        "type": "image",
-        "url": "https://.../footer_bg.jpg"
+        "type": "color",
+        "color": "#f8f9fa"
       }
     }
   },
@@ -38,8 +34,9 @@
     {
       "id": "route1_player",
       "type": "player",
-      "title": "Маршрут 1",
-      "url": "https://znamenskiialeksei.github.io/marmarisyachting/1RouteVasilisa.html",
+      "title": "Маршрут 1: Дневной тур",
+      // ПРАВИЛЬНАЯ ССЫЛКА на ваш конкретный плеер
+      "url": "https://znamenskiialeksei.github.io/marmarisyachting/1RouteVasilisa.html", 
       "position": { "x": 50, "y": 150 },
       "size": { "width": 400, "height": 650 },
       "visible": true
@@ -47,43 +44,13 @@
     {
       "id": "route2_player",
       "type": "player",
-      "title": "Маршрут 2",
-      "url": "https://znamenskiialeksei.github.io/marmarisyachting/2RouteVasilisa.html",
+      "title": "Маршрут 2: Тур с обедом",
+      // ПРАВИЛЬНАЯ ССЫЛКА на второй плеер
+      "url": "https://znamenskiialeksei.github.io/marmarisyachting/2RouteVasilisa.html", 
       "position": { "x": 500, "y": 150 },
       "size": { "width": 400, "height": 650 },
       "visible": true
-    },
-    {
-      "id": "welcome_text",
-      "type": "textBlock",
-      "content": "<h2>Добро пожаловать!</h2><p>Выберите любой из наших туров ниже.</p>",
-      "position": { "x": 950, "y": 150 },
-      "size": { "width": 300, "height": 200 },
-      "visible": true
-    },
-    {
-      "id": "promo_video",
-      "type": "videoBlock",
-      "url": "https://www.youtube.com/embed/your_video_id",
-      "position": { "x": 950, "y": 400 },
-      "size": { "width": 300, "height": 169 },
-      "visible": true
-    },
-    {
-      "id": "call_to_action_button",
-      "type": "button",
-      "text": "Забронировать сейчас!",
-      "link": "#",
-      "action": "openModal", 
-      "modalContent": "<h2>Окно бронирования</h2><p>...</p>",
-      "style": {
-          "backgroundColor": "#28a745",
-          "textColor": "#ffffff",
-          "pulsing": true
-      },
-      "position": { "x": 950, "y": 600 },
-      "size": { "width": 300, "height": 50 },
-      "visible": true
     }
+    // ... и так далее для всех ваших элементов
   ]
 }
