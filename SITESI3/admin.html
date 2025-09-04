@@ -501,6 +501,29 @@ saveButton.addEventListener('click', async () => {
 
 // --- Инициализация при загрузке ---
 document.addEventListener('DOMContentLoaded', () => {
+    // !!ВАЖНАЯ ПРОВЕРКА!!
+    if (window.location.protocol === 'file:') {
+        document.body.innerHTML = `
+            <div style="padding: 40px; text-align: center; font-family: sans-serif; color: #333;">
+                <h1 style="color: #d9534f;">Ошибка запуска</h1>
+                <p style="font-size: 1.2em;">
+                    Админ-панель не может работать при открытии как локальный файл (через <code>file://</code>).
+                </p>
+                <p>
+                    Для корректной работы, пожалуйста, запустите ее через веб-сервер.
+                </p>
+                <p style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+                    <strong>Самый простой способ:</strong> используйте GitHub Pages. Просто поместите этот файл в ваш репозиторий, и он будет доступен по адресу:<br>
+                    <code>https://<strong>ВАШ-ЛОГИН</strong>.github.io/<strong>ВАШ-РЕПОЗИТОРИЙ</strong>/admin.html</code>
+                </p>
+                <p>
+                    Это требование безопасности современных браузеров, чтобы скрипты на странице могли отправлять запросы в интернет.
+                </p>
+            </div>
+        `;
+        return;
+    }
+
     const creds = localStorage.getItem('githubCreds');
     if (creds) {
         const { user, repo, token } = JSON.parse(creds);
