@@ -4,29 +4,31 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!response.ok) throw new Error('Не удалось загрузить конфигурацию!');
         const config = await response.json();
 
-        // --- Глобальные настройки ---
         document.title = config.globalSettings.pageTitle;
         document.body.className = `view-mode-${config.globalSettings.defaultViewMode}`;
 
-        // --- Настройка фона ---
         setupBackground('main-header', config.layout.header.background);
         setupBackground('element-container', config.layout.main.background);
         setupBackground('main-footer', config.layout.footer.background);
 
-        // --- Заполнение контента ---
         document.getElementById('main-header').innerHTML += config.layout.header.content;
         document.getElementById('main-footer').innerHTML += config.layout.footer.content;
-
-        // --- Рендеринг всех элементов ---
+        
+        const menuContainer = document.getElementById('main-menu');
+        if (config.menuItems && menuContainer) {
+            config.menuItems.forEach(item => {
+                menuContainer.innerHTML += `<a href="${item.link}">${item.text}</a>`;
+            });
+        }
+        
         const container = document.getElementById('element-container');
         config.elements.forEach(element => {
-            if (!element.visible) return; // Пропускаем скрытые элементы
+            if (!element.visible) return;
 
             const elWrapper = document.createElement('div');
             elWrapper.className = `element-wrapper type-${element.type}`;
             elWrapper.id = element.id;
             
-            // Стилизация и позиционирование
             Object.assign(elWrapper.style, {
                 position: 'absolute',
                 left: `${element.position.x}px`,
@@ -35,15 +37,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 height: `${element.size.height}px`
             });
 
-            // Создание контента в зависимости от типа элемента
             switch (element.type) {
                 case 'player':
                     elWrapper.innerHTML = `<iframe src="${element.url}" style="width:100%; height:100%; border:0;"></iframe>`;
                     break;
                 case 'textBlock':
                     elWrapper.innerHTML = element.content;
-                    elWrapper.style.padding = '15px';
-                    elWrapper.style.overflow = 'auto';
                     break;
                 case 'videoBlock':
                     elWrapper.innerHTML = `<iframe src="${element.url}" style="width:100%; height:100%; border:0;" allowfullscreen></iframe>`;
@@ -57,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         color: element.style.textColor,
                         border: 'none', fontSize: '1.2em'
                     });
-                    if (element.style.pulsing) btn.classList.add('pulsing'); // Нужен CSS для .pulsing
+                    if (element.style.pulsing) btn.classList.add('pulsing');
                     
                     btn.onclick = () => {
                         if (element.action === 'openLink') {
@@ -78,19 +77,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Функция для установки фона (цвет/картинка/видео)
 function setupBackground(elementId, bgConfig) {
     const element = document.getElementById(elementId);
     if (!element || !bgConfig) return;
     
-    // Сброс старых фонов
     const existingBg = element.querySelector('.background-layer');
     if (existingBg) existingBg.remove();
 
     if (bgConfig.type === 'color') {
-        element.style.backgroundColor = bgConfig.color;
+        element.style.backgroundColor = bgConfig.color || bgConfig.url;
     } else {
-        element.style.backgroundColor = bgConfig.color || 'transparent';
+        element.style.backgroundColor = 'transparent';
         const bgLayer = document.createElement('div');
         bgLayer.className = 'background-layer';
         
@@ -103,12 +100,13 @@ function setupBackground(elementId, bgConfig) {
     }
 }
 
-// Функции для модального окна
 const customModal = document.getElementById('custom-modal');
-const customModalContent = document.getElementById('custom-modal-content');
-customModal.querySelector('.modal-close').onclick = () => customModal.style.display = 'none';
+if (customModal) {
+    const customModalContent = document.getElementById('custom-modal-content');
+    customModal.querySelector('.modal-close').onclick = () => customModal.style.display = 'none';
 
-function openCustomModal(content) {
-    customModalContent.innerHTML = content;
-    customModal.style.display = 'flex';
+    function openCustomModal(content) {
+        customModalContent.innerHTML = content;
+        customModal.style.display = 'flex';
+    }
 }
