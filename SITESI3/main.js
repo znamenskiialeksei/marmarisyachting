@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Добавляем случайный параметр для обхода кэша браузера при загрузке конфига
+    // Добавляем случайный параметр для обхода кэша браузера
     const cacheBust = `?v=${new Date().getTime()}`;
 
     fetch(`config.json${cacheBust}`)
@@ -13,26 +13,22 @@ document.addEventListener('DOMContentLoaded', () => {
             renderPage(config);
         })
         .catch(error => {
-            console.error("Ошибка: Не удалось загрузить конфигурацию сайта.", error);
-            document.body.innerHTML = '<h1 style="text-align: center; margin-top: 50px;">Ошибка загрузки сайта</h1>';
+            console.error("Не удалось загрузить конфигурацию:", error);
+            document.body.innerHTML = '<h1>Ошибка загрузки сайта. Пожалуйста, попробуйте позже.</h1>';
         });
 });
 
-/**
- * Главная функция рендеринга страницы
- * @param {object} config - Объект конфигурации сайта
- */
 function renderPage(config) {
-    // 1. Установка глобальных настроек
+    // 1. Устанавливаем глобальные настройки
     document.title = config.globalSettings.pageTitle;
 
-    // 2. Рендеринг секций: шапка и подвал
+    // 2. Настраиваем секции
     setupSection('page-header', config.layout.header);
     setupSection('page-footer', config.layout.footer);
     
-    // 3. Рендеринг основного контента (колонки и элементы)
+    // 3. Рендерим основное содержимое
     const elementContainer = document.getElementById('element-container');
-    elementContainer.innerHTML = ''; // Очищаем на всякий случай
+    elementContainer.innerHTML = ''; // Очищаем контейнер
 
     config.layout.main.columns.forEach(column => {
         const columnDiv = document.createElement('div');
@@ -49,42 +45,31 @@ function renderPage(config) {
         elementContainer.appendChild(columnDiv);
     });
     
-    // 4. Настройка интерактивности для модальных окон
+    // 4. Настраиваем интерактивность для модальных окон
     setupModalInteraction();
 }
 
-/**
- * Настраивает шапку или подвал
- * @param {string} elementId - ID секции ('page-header' или 'page-footer')
- * @param {object} sectionConfig - Конфигурация для этой секции
- */
 function setupSection(elementId, sectionConfig) {
     const element = document.getElementById(elementId);
-    if (!element || !sectionConfig) return;
-    
-    element.innerHTML = sectionConfig.content;
-    
-    // Применение фона
-    if (sectionConfig.background) {
-        if (sectionConfig.background.type === 'color') {
-            element.style.backgroundColor = sectionConfig.background.value;
-        } else if (sectionConfig.background.type === 'image') {
-            element.style.backgroundImage = `url('${sectionConfig.background.value}')`;
-            element.style.backgroundSize = 'cover';
-            element.style.backgroundPosition = 'center';
+    if (element && sectionConfig) {
+        element.innerHTML = sectionConfig.content;
+        // Применяем фон
+        if (sectionConfig.background) {
+            if (sectionConfig.background.type === 'color') {
+                element.style.backgroundColor = sectionConfig.background.value;
+            } else if (sectionConfig.background.type === 'image') {
+                element.style.backgroundImage = `url('${sectionConfig.background.value}')`;
+                element.style.backgroundSize = 'cover';
+                element.style.backgroundPosition = 'center';
+            }
         }
-    }
-    // Применение кастомных стилей
-    if (sectionConfig.styles) {
-        Object.assign(element.style, sectionConfig.styles);
+        // Применяем кастомные стили
+        if (sectionConfig.styles) {
+            Object.assign(element.style, sectionConfig.styles);
+        }
     }
 }
 
-/**
- * "Фабрика" для создания HTML-элементов на основе данных
- * @param {object} elementData - Объект с описанием элемента
- * @returns {HTMLElement} Готовый для вставки DOM-узел
- */
 function createElement(elementData) {
     const wrapper = document.createElement('div');
     wrapper.className = `element-wrapper type-${elementData.type}`;
@@ -111,7 +96,7 @@ function createElement(elementData) {
         case 'button':
             element = document.createElement('button');
             element.textContent = elementData.content.text;
-            if (elementData.content.action === 'openLink' && elementData.content.url) {
+            if (elementData.content.action === 'openLink') {
                 element.onclick = () => window.open(elementData.content.url, '_blank');
             } else if (elementData.content.action === 'openModal') {
                 element.classList.add('modal-trigger-btn');
@@ -120,23 +105,19 @@ function createElement(elementData) {
             break;
         default:
             element = document.createElement('div');
-            element.textContent = `Неизвестный тип элемента: ${elementData.type}`;
+            element.textContent = 'Неизвестный тип элемента';
     }
 
-    if (element) {
-        // Применение стилей к созданному элементу
-        if (elementData.styles) {
-            Object.assign(element.style, elementData.styles);
-        }
-        wrapper.appendChild(element);
+    // Применяем стили к элементу
+    if (elementData.styles) {
+        Object.assign(element.style, elementData.styles);
     }
-    
+
+    wrapper.appendChild(element);
     return wrapper;
 }
 
-/**
- * Настраивает логику открытия и закрытия модального окна
- */
+
 function setupModalInteraction() {
     const modalOverlay = document.getElementById('modal-overlay');
     const modalBody = document.getElementById('modal-body');
@@ -144,7 +125,7 @@ function setupModalInteraction() {
 
     document.querySelectorAll('.modal-trigger-btn').forEach(button => {
         button.addEventListener('click', () => {
-            modalBody.innerHTML = button.dataset.modalContent || '<p>Контент не задан.</p>';
+            modalBody.innerHTML = button.dataset.modalContent;
             modalOverlay.classList.add('active');
         });
     });
@@ -155,7 +136,6 @@ function setupModalInteraction() {
 
     closeModalBtn.addEventListener('click', closeModal);
     modalOverlay.addEventListener('click', (event) => {
-        // Закрываем, только если клик был по самому оверлею, а не по его содержимому
         if (event.target === modalOverlay) {
             closeModal();
         }

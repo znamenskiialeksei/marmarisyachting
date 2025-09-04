@@ -4,37 +4,36 @@
     "repo": "marmarisyachting.github.io"
   },
   "globalSettings": {
-    "pageTitle": "Marmaris Yachting - Аренда яхт в Турции"
+    "pageTitle": "Marmaris Yachting - Главная страница"
   },
   "layout": {
     "header": {
-      "content": "<h1>Marmaris Yachting</h1><p>Ваше незабываемое путешествие начинается здесь</p>",
+      "content": "<h1>Добро пожаловать в Marmaris Yachting</h1>",
       "background": {
         "type": "color",
         "value": "#2c3e50"
       },
       "styles": {
         "color": "#ffffff",
-        "padding": "30px",
-        "textAlign": "center"
+        "padding": "20px"
       }
     },
     "main": {
       "columns": [
         {
-          "id": "col-16623211",
-          "width": "65%",
+          "id": "col-1",
+          "width": "60%",
           "elements": [
-            "el-16623322",
-            "el-16623455"
+            "el-1",
+            "el-3"
           ]
         },
         {
-          "id": "col-16623212",
-          "width": "35%",
+          "id": "col-2",
+          "width": "40%",
           "elements": [
-            "el-16623344",
-            "el-16623566"
+            "el-2",
+            "el-4"
           ]
         }
       ]
@@ -47,63 +46,61 @@
       },
       "styles": {
         "color": "#ecf0f1",
-        "padding": "20px",
-        "textAlign": "center"
+        "padding": "15px"
       }
     }
   },
   "elements": [
     {
-      "id": "el-16623322",
-      "adminTitle": "Главное фото яхты",
-      "type": "photo",
+      "id": "el-1",
+      "adminTitle": "Основной маршрут",
+      "type": "externalBlock",
       "content": {
-        "url": "https://images.unsplash.com/photo-1598890982464-843461a28a13?q=80&w=2070&auto=format&fit=crop"
+        "url": "https://www.example.com"
       },
       "styles": {
         "width": "100%",
+        "height": "500px",
         "borderRadius": "8px",
-        "boxShadow": "0 4px 15px rgba(0,0,0,0.1)",
-        "objectFit": "cover",
-        "height": "400px"
+        "boxShadow": "0 4px 8px rgba(0,0,0,0.1)"
       }
     },
     {
-      "id": "el-16623344",
-      "adminTitle": "Описание предложения",
+      "id": "el-2",
+      "adminTitle": "Описание тура",
       "type": "textBlock",
       "content": {
-        "html": "<h2>Эксклюзивный тур</h2><p>Откройте для себя скрытые бухты и кристально чистые воды Эгейского моря на борту наших премиальных яхт. Мы предлагаем индивидуальные маршруты и первоклассный сервис.</p>"
+        "html": "<h2>Наше лучшее предложение</h2><p>Отправляйтесь в незабываемое путешествие по Средиземному морю. Мы предлагаем комфортабельные яхты и эксклюзивные маршруты.</p>"
       },
       "styles": {
         "padding": "20px",
         "backgroundColor": "#ffffff",
+        "color": "#333",
         "borderRadius": "8px",
-        "boxShadow": "0 4px 15px rgba(0,0,0,0.1)"
+        "boxShadow": "0 4px 8px rgba(0,0,0,0.1)"
       }
     },
     {
-      "id": "el-16623455",
-      "adminTitle": "Видео-обзор",
-      "type": "videoBlock",
+      "id": "el-3",
+      "adminTitle": "Галерея",
+      "type": "photo",
       "content": {
-        "url": "https://www.youtube.com/embed/dQw4w9WgXcQ"
+        "url": "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?q=80&w=2070"
       },
       "styles": {
         "width": "100%",
-        "height": "350px",
-        "borderRadius": "8px",
-        "border": "none"
+        "objectFit": "cover",
+        "borderRadius": "8px"
       }
     },
     {
-      "id": "el-16623566",
-      "adminTitle": "Кнопка запроса",
+      "id": "el-4",
+      "adminTitle": "Кнопка бронирования",
       "type": "button",
       "content": {
-        "text": "Узнать подробнее",
+        "text": "Забронировать тур",
         "action": "openLink",
-        "url": "/contacts",
+        "url": "https://www.example.com/booking",
         "modalContent": ""
       },
       "styles": {
@@ -114,7 +111,6 @@
         "textAlign": "center",
         "fontSize": "18px",
         "borderRadius": "5px",
-        "border": "none",
         "cursor": "pointer"
       }
     }
