@@ -4,135 +4,97 @@
     "repo": "marmarisyachting"
   },
   "globalSettings": {
-    "pageTitle": "Все маршруты | Marmaris Yachting",
-    "mobileAdaptation": true,
-    "defaultViewMode": "scroll"
+    "pageTitle": "Все маршруты | Marmaris Yachting"
   },
   "layout": {
     "header": {
       "content": "<h1>Наши лучшие яхтенные маршруты</h1>",
       "background": {
         "type": "video",
-        "url": "https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4",
-        "color": "#000000"
+        "url": "https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4"
+      }
+    },
+    "footer": {
+      "content": "<p>© 2025 Znamenskii Aleksei. Все права защищены. <a href='#'>Контакты</a></p>",
+      "background": {
+        "type": "image",
+        "url": "https://images.pexels.com/photos/1638324/pexels-photo-1638324.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
       }
     },
     "main": {
       "background": {
         "type": "color",
         "color": "#f0f2f5"
-      }
-    },
-    "footer": {
-      "content": "<p>© 2025 Znamenskii Aleksei. Все права защищены. <a href='#'>Контакты</a></p>",
-      "background": {
-        "type": "color",
-        "color": "#ffffff"
-      }
+      },
+      "columns": [
+        {
+          "id": "column1_1678886400",
+          "width": "60%",
+          "elements": [
+            "route1_player",
+            "welcome_text_1667823456"
+          ]
+        },
+        {
+          "id": "column2_1678886401",
+          "width": "40%",
+          "elements": [
+            "promo_photo_1667823457",
+            "route2_player"
+          ]
+        }
+      ]
     }
   },
   "elements": [
     {
       "id": "route1_player",
       "type": "player",
-      "title": "Маршрут 1",
+      "title": "Плеер: Маршрут 1",
       "url": "https://znamenskiialeksei.github.io/marmarisyachting/1RouteVasilisa.html",
-      "position": {
-        "x": 50,
-        "y": 150
-      },
-      "size": {
-        "width": 400,
-        "height": 650
-      },
-      "visible": true
+      "height": "650px",
+      "visible": true,
+      "style": {
+        "borderRadius": "12px",
+        "boxShadow": "0 10px 25px rgba(0,0,0,0.2)"
+      }
+    },
+    {
+      "id": "welcome_text_1667823456",
+      "type": "textBlock",
+      "title": "Текст: Приветствие",
+      "content": "<h2>Добро пожаловать!</h2><p>Это полностью настраиваемый текстовый блок. Вы можете менять его содержимое, размер, положение и стиль в панели администратора.</p>",
+      "visible": true,
+      "style": {
+        "backgroundColor": "#ffffff",
+        "color": "#333333",
+        "fontSize": "16px",
+        "borderRadius": "8px",
+        "padding": "20px"
+      }
+    },
+    {
+      "id": "promo_photo_1667823457",
+      "type": "photo",
+      "title": "Фото: Яхта",
+      "url": "https://images.pexels.com/photos/163236/yacht-luxury-yacht-yacht-charter-sailing-163236.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+      "visible": true,
+      "style": {
+        "objectFit": "cover",
+        "borderRadius": "8px"
+      }
     },
     {
       "id": "route2_player",
       "type": "player",
-      "title": "Маршрут 2",
+      "title": "Плеер: Маршрут 2",
       "url": "https://znamenskiialeksei.github.io/marmarisyachting/2RouteVasilisa.html",
-      "position": {
-        "x": 500,
-        "y": 150
-      },
-      "size": {
-        "width": 400,
-        "height": 650
-      },
-      "visible": true
-    },
-    {
-      "id": "player_1756981969419",
-      "type": "player",
-      "title": "Новый player",
-      "position": {
-        "x": 50,
-        "y": 50
-      },
-      "size": {
-        "width": 350,
-        "height": 250
-      },
+      "height": "650px",
       "visible": true,
-      "url": "",
-      "text": "",
-      "content": "",
-      "style": {}
-    },
-    {
-      "id": "textBlock_1756981988883",
-      "type": "textBlock",
-      "title": "Новый textBlock",
-      "position": {
-        "x": 50,
-        "y": 50
-      },
-      "size": {
-        "width": 350,
-        "height": 250
-      },
-      "visible": true,
-      "url": "",
-      "text": "",
-      "content": "",
-      "style": {}
-    },
-    {
-      "id": "button_1756982212613",
-      "type": "button",
-      "title": "Новый button",
-      "position": {
-        "x": 50,
-        "y": 50
-      },
-      "size": {
-        "width": 350,
-        "height": 250
-      },
-      "visible": true,
-      "url": "",
-      "text": "",
-      "content": "",
-      "style": {}
-    },
-    {
-      "id": "videoBlock_1756982282720",
-      "type": "videoBlock",
-      "title": "Новый videoBlock",
-      "position": {
-        "x": 50,
-        "y": 50
-      },
-      "size": {
-        "width": 350,
-        "height": 250
-      },
-      "visible": true,
-      "url": "",
-      "text": "",
-      "content": "",
-      "style": {}
+      "style": {
+        "borderRadius": "12px",
+        "boxShadow": "0 10px 25px rgba(0,0,0,0.2)"
+      }
     }
   ]
 }
