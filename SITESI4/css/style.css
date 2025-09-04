@@ -1,308 +1,75 @@
 /* --- ОБЩИЕ СТИЛИ И ПУБЛИЧНАЯ ЧАСТЬ --- */
-body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: #ecf0f1;
-    color: #333;
-    line-height: 1.6;
-}
-
-* {
-    box-sizing: border-box;
-}
-
-#app {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-header, footer {
-    padding: 20px;
-    color: white;
-    text-align: center;
-}
-
-header h1, footer p {
-    margin: 0;
-}
-
-main {
-    display: flex;
-    flex-grow: 1;
-    padding: 20px;
-    gap: 20px;
-}
-
-.column {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    min-width: 0;
-}
-
-.element {
-    overflow: hidden;
-}
-.element img, .element iframe {
-    display: block;
-    max-width: 100%;
-}
-
-.loader {
-    border: 8px solid #f3f3f3;
-    border-top: 8px solid #3498db;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 2s linear infinite;
-    margin: 100px auto;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #ecf0f1; color: #333; line-height: 1.6; }
+* { box-sizing: border-box; }
+#app { display: flex; flex-direction: column; min-height: 100vh; }
+header, footer { padding: 20px; color: white; text-align: center; }
+header h1, footer p { margin: 0; }
+main { display: flex; flex-grow: 1; padding: 20px; gap: 20px; }
+.column { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.element { overflow: hidden; }
+.element img, .element iframe { display: block; max-width: 100%; }
+.loader { border: 8px solid #f3f3f3; border-top: 8px solid #3498db; border-radius: 50%; width: 60px; height: 60px; animation: spin 2s linear infinite; margin: 100px auto; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 /* Адаптивность */
 @media (max-width: 900px) {
-    main {
-        flex-direction: column;
-    }
-    .column {
-        width: 100% !important; /* Переопределяем инлайновые стили */
-    }
+    main { flex-direction: column; }
+    .column { width: 100% !important; }
 }
 
 /* Модальное окно */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.6);
-}
-.modal-content {
-    background-color: #fefefe;
-    margin: 10% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 90%;
-    max-width: 600px;
-    position: relative;
-    border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-}
-.close-button {
-    color: #aaa;
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); }
+.modal-content { background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 600px; position: relative; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+.close-button { color: #aaa; position: absolute; top: 10px; right: 20px; font-size: 28px; font-weight: bold; cursor: pointer; }
 
 /* --- СТИЛИ АДМИН-ПАНЕЛИ --- */
-
-.screen {
-    width: 100%;
-    min-height: 100vh;
-}
+.screen { width: 100%; min-height: 100vh; }
 
 /* Экран входа */
-#login-screen {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #34495e;
-}
-.login-box {
-    background: white;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    text-align: center;
-    max-width: 500px;
-}
-.login-box input {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-.login-box button {
-    width: 100%;
-    padding: 12px;
-    background-color: #2980b9;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-}
-.login-box .small {
-    font-size: 12px;
-    color: #777;
-    margin-top: 15px;
-}
+#login-screen { display: flex; justify-content: center; align-items: center; background-color: #34495e; }
+.login-box { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; max-width: 500px; width: 90%; }
+.login-box input { display: block; width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; }
+.login-box button { width: 100%; padding: 12px; background-color: #2980b9; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+.login-box .small { font-size: 12px; color: #777; margin-top: 15px; }
 
 /* Тулбар */
-#admin-toolbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: #fff;
-    padding: 8px 20px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    z-index: 1001;
-    border-bottom: 1px solid #ddd;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
+#admin-toolbar { position: fixed; top: 0; left: 0; width: 100%; background: #fff; padding: 8px 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 20px; z-index: 1001; border-bottom: 1px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 .toolbar-group { display: flex; align-items: center; gap: 10px; }
-.toolbar-label { font-size: 14px; color: #555; }
-#admin-toolbar button {
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    background-color: #f0f0f0;
-    border-radius: 4px;
-    cursor: pointer;
-}
-#admin-toolbar button#save-btn {
-    background-color: #27ae60;
-    color: white;
-    border-color: #27ae60;
-    font-weight: bold;
-}
-#admin-toolbar button:disabled {
-    background-color: #95a5a6;
-    cursor: not-allowed;
-}
-
+.toolbar-label { font-size: 14px; color: #555; white-space: nowrap; }
+#admin-toolbar button { padding: 8px 12px; border: 1px solid #ccc; background-color: #f0f0f0; border-radius: 4px; cursor: pointer; }
+#admin-toolbar button#save-btn { background-color: #27ae60; color: white; border-color: #27ae60; font-weight: bold; }
+#admin-toolbar button:disabled { background-color: #95a5a6; cursor: not-allowed; }
+.view-btn.active { background-color: #3498db; color: white; border-color: #2980b9; }
 
 /* Холст */
-#canvas-container {
-    padding: 80px 20px 20px 20px; /* Отступ под тулбар */
-    background: #f4f7f6;
-}
-.admin-section {
-    padding: 20px;
-    border: 2px dashed #bdc3c7;
-    margin-bottom: 20px;
-    position: relative;
-}
-.admin-section-label {
-    position: absolute;
-    top: -12px;
-    left: 10px;
-    background: #f4f7f6;
-    padding: 0 10px;
-    color: #7f8c8d;
-    font-size: 14px;
-    font-weight: bold;
-}
-
-.admin-main-content {
-    display: flex;
-    gap: 20px;
-}
-
-.admin-column {
-    background: rgba(255, 255, 255, 0.7);
-    border: 1px dashed #7f8c8d;
-    padding: 10px;
-    min-height: 150px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.element-wrapper {
-    position: relative;
-    border: 2px solid transparent;
-    transition: border-color 0.2s;
-    cursor: grab;
-}
-.element-wrapper:hover {
-    border-color: #3498db;
-}
-.element-wrapper.selected {
-    border-color: #e67e22;
-    border-style: solid;
-}
-.element-wrapper iframe {
-    pointer-events: none; /* ВАЖНО: Блокирует взаимодействие с iframe */
-}
+#canvas-container { padding: 80px 20px 20px 20px; background: #f4f7f6; transition: max-width 0.4s ease-in-out; margin-left: auto; margin-right: auto; }
+#canvas-container.tablet-view .admin-main-content, #canvas-container.mobile-view .admin-main-content { flex-direction: column; }
+#canvas-container.tablet-view .admin-column, #canvas-container.mobile-view .admin-column { width: 100% !important; flex-basis: auto !important; }
+.admin-section { padding: 20px; border: 2px dashed #bdc3c7; margin-bottom: 20px; position: relative; }
+.admin-section-label { position: absolute; top: -12px; left: 10px; background: #f4f7f6; padding: 0 10px; color: #7f8c8d; font-size: 14px; font-weight: bold; }
+.admin-main-content { display: flex; gap: 20px; }
+.admin-column { background: rgba(255, 255, 255, 0.7); border: 1px dashed #7f8c8d; padding: 10px; min-height: 150px; display: flex; flex-direction: column; gap: 15px; }
+.element-wrapper { position: relative; border: 2px solid transparent; transition: border-color 0.2s; cursor: grab; }
+.element-wrapper:hover { border-color: #3498db; }
+.element-wrapper.selected { border-color: #e67e22; border-style: solid; }
+.element-wrapper iframe { pointer-events: none; }
+.element-error { color:red; border:1px solid red; padding:10px; text-align: center; }
 
 /* Плавающие панели */
-.floating-panel {
-    position: fixed; /* Fixed is better than absolute for panels */
-    background: #ffffff;
-    border: 1px solid #ccc;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    z-index: 1002;
-    border-radius: 6px;
-    width: 320px;
-    top: 80px;
-    right: 20px;
-}
-.panel-header {
-    padding: 10px 15px;
-    background: #ecf0f1;
-    cursor: move;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #ddd;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-}
-.panel-header span {
-    font-weight: bold;
-}
-.panel-controls .panel-close-btn {
-    border: none;
-    background: none;
-    font-size: 20px;
-    cursor: pointer;
-    padding: 0 5px;
-}
-
-.panel-content {
-    padding: 15px;
-    max-height: 60vh;
-    overflow-y: auto;
-}
-.inspector-group {
-    margin-bottom: 15px;
-}
-.inspector-group label {
-    display: block;
-    font-size: 13px;
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #555;
-}
-.inspector-group input[type="text"],
-.inspector-group input[type="number"],
-.inspector-group input[type="color"],
-.inspector-group select,
-.inspector-group textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-.inspector-group textarea {
-    min-height: 120px;
-    resize: vertical;
-}
+.floating-panel { position: fixed; background: #ffffff; border: 1px solid #ccc; box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 1002; border-radius: 6px; width: 320px; top: 80px; right: 20px; }
+.panel-header { padding: 10px 15px; background: #ecf0f1; cursor: move; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; border-top-left-radius: 6px; border-top-right-radius: 6px; }
+.panel-header span { font-weight: bold; }
+.panel-controls .panel-close-btn { border: none; background: none; font-size: 20px; cursor: pointer; padding: 0 5px; }
+.panel-content { padding: 15px; max-height: 70vh; overflow-y: auto; }
+.inspector-group { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+.inspector-group:last-child { border-bottom: none; margin-bottom: 0; }
+.inspector-group h4 { margin-top: 0; margin-bottom: 15px; color: #2c3e50; }
+.inspector-group label, .input-wrapper label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #555; }
+.inspector-group input, .inspector-group select, .inspector-group textarea, .input-wrapper input, .input-wrapper select, .input-wrapper textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+.inspector-group input[type="color"] { padding: 4px; min-height: 38px; }
+.inspector-group textarea { min-height: 120px; resize: vertical; }
+.input-wrapper { margin-bottom: 10px; }
+.delete-element-btn { background-color: #e74c3c; color: white; border: none; width: 100%; padding: 10px; border-radius: 4px; cursor: pointer; }
+.layout-editor-section h3 { margin-top: 0; }
+.column-editor-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.add-column-btn { margin-top: 10px; }

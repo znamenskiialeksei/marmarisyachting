@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 function renderPage(config) {
     document.title = config.globalSettings.title;
     const app = document.getElementById('app');
-    app.innerHTML = ''; // Очищаем loader
+    app.innerHTML = '';
 
     const header = createSection('header', config.layout.header);
     const main = createMain(config.layout.main, config.elements);
@@ -63,9 +63,7 @@ function createElement(elementData) {
         case 'photo':
             el.innerHTML = `<img src="${elementData.content.url}" alt="${elementData.title}" style="width:100%; height:100%;">`;
             break;
-        case 'videoBlock':
-        case 'reels':
-        case 'externalBlock':
+        case 'videoBlock': case 'reels': case 'externalBlock':
             el.innerHTML = `<iframe src="${elementData.content.url}" style="width:100%; height:100%; border:none;" allowfullscreen></iframe>`;
             break;
         case 'button':

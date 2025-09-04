@@ -15,7 +15,7 @@
             <input type="text" id="github-user" placeholder="Имя пользователя GitHub">
             <input type="text" id="github-repo" placeholder="Название репозитория">
             <button id="login-btn">Войти</button>
-            <p class="small">Токен сохранится в локальном хранилище вашего браузера и не будет виден никому.</p>
+            <p class="small">Токен сохранится в локальном хранилище вашего браузера.</p>
         </div>
     </div>
 
@@ -25,17 +25,24 @@
                 <button id="save-btn" title="Сохранить все изменения">💾 Сохранить</button>
             </div>
             <div class="toolbar-group">
-                <span class="toolbar-label">Добавить элемент:</span>
+                <span class="toolbar-label">Добавить:</span>
+                <button class="add-element-btn" data-type="externalBlock">Внешний блок</button>
                 <button class="add-element-btn" data-type="textBlock">Текст</button>
                 <button class="add-element-btn" data-type="photo">Фото</button>
                 <button class="add-element-btn" data-type="videoBlock">Видео</button>
-                <button class="add-element-btn" data-type="externalBlock">Внешний блок</button>
+                <button class="add-element-btn" data-type="reels">Reels</button>
                 <button class="add-element-btn" data-type="button">Кнопка</button>
             </div>
              <div class="toolbar-group">
                 <span class="toolbar-label">Панели:</span>
                 <button id="toggle-global-btn">🌍 Глобальные</button>
                 <button id="toggle-layout-btn">🎨 Макет</button>
+            </div>
+            <div class="toolbar-group">
+                <span class="toolbar-label">Вид холста:</span>
+                <button id="view-desktop-btn" class="view-btn active" title="Десктоп">🖥️</button>
+                <button id="view-tablet-btn" class="view-btn" title="Планшет">📱</button>
+                <button id="view-mobile-btn" class="view-btn" title="Смартфон">📱</button>
             </div>
         </div>
 
