@@ -104,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderElementsOnCanvas() {
         container.innerHTML = '';
+        if(!currentConfig.layout.main.columns) currentConfig.layout.main.columns = [];
         currentConfig.layout.main.columns.forEach(columnData => {
             const columnEl = document.createElement('div');
             columnEl.className = 'layout-column sortable-column';
@@ -165,18 +166,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     target.style.width = `${event.rect.width}px`;
                     target.style.height = `${event.rect.height}px`;
                     if (target.id === selectedElementId) {
-                       updateElementFromInspector(true);
+                       updateElementFromResize(target);
                     }
                 }
             }
-        }).on('resizemove', event => {
-            const target = event.target;
-            if (target.id !== selectedElementId) return;
-            const elementData = currentConfig.elements.find(el => el.id === selectedElementId);
-            if (!elementData.style) elementData.style = {};
-            elementData.style.width = target.style.width;
-            elementData.style.height = target.style.height;
-            renderInspector();
         });
     }
 
@@ -220,6 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         layoutSettingsPanel.addEventListener('click', (e) => {
             if (e.target.id === 'add-column-btn') {
+                if(!currentConfig.layout.main.columns) currentConfig.layout.main.columns = [];
                 currentConfig.layout.main.columns.push({
                     id: 'column_' + Date.now(), width: '1fr', elements: []
                 });
@@ -242,22 +236,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function addNewElement(type) {
+        if (!currentConfig.layout.main.columns || currentConfig.layout.main.columns.length === 0){
+            alert("Сначала добавьте хотя бы одну колонку в настройках макета!");
+            return;
+        }
         const newElement = {
-            id: type + '_' + Date.now(), type, title: `Новый ${type}`, visible: true, style: {},
+            id: type + '_' + Date.now(), type, title: `Новый ${type}`, visible: true, style: {width: '100%', height: '300px'},
             ...({
-                externalBlock: { style: { height: '650px'}, url: '' },
+                externalBlock: { style: { height: '650px' } },
                 textBlock: { content: '<p>Новый текстовый блок</p>', style: {height: '200px'} },
                 photo: { url: 'https://via.placeholder.com/400x300', style: { objectFit: 'cover', height: '300px' } },
-                reels: { style: { height: '600px'}, url: '' },
-                videoBlock: { style: { height: '300px'}, url: '' },
+                reels: { style: { height: '600px'} },
+                videoBlock: { style: { height: '300px'} },
                 button: { text: 'Кнопка', style: { backgroundColor: '#007bff', color: '#ffffff', fontSize: '16px', borderRadius: '8px', height: '50px' } }
             }[type] || {})
         };
         currentConfig.elements.push(newElement);
-        if(!currentConfig.layout.main.columns.length) {
-            currentConfig.layout.main.columns.push({id: 'column_' + Date.now(), width: '1fr', elements: []});
-            renderLayoutAndSettings();
-        }
         currentConfig.layout.main.columns[0].elements.push(newElement.id);
         renderElementsOnCanvas();
         selectElement(document.getElementById(newElement.id));
@@ -323,20 +317,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function updateElementFromInspector() {
+    function updateElementFromInspector(fromResize = false) {
         if (!selectedElementId) return;
         const elementData = currentConfig.elements.find(el => el.id === selectedElementId);
         if (!elementData) return;
-
-        inspectorContent.querySelectorAll('[data-prop]').forEach(input => {
-            elementData[input.dataset.prop] = input.value;
-        });
-        if (!elementData.style) elementData.style = {};
-        inspectorContent.querySelectorAll('[data-style-prop]').forEach(input => {
-            elementData.style[input.dataset.styleProp] = input.value;
-        });
-
         const elementOnCanvas = document.getElementById(selectedElementId);
+
+        if (!elementData.style) elementData.style = {};
+        
+        if (fromResize) {
+            elementData.style.width = elementOnCanvas.style.width;
+            elementData.style.height = elementOnCanvas.style.height;
+        } else {
+            inspectorContent.querySelectorAll('[data-prop]').forEach(input => {
+                elementData[input.dataset.prop] = input.value;
+            });
+            inspectorContent.querySelectorAll('[data-style-prop]').forEach(input => {
+                elementData.style[input.dataset.styleProp] = input.value;
+            });
+        }
+        
         if (elementOnCanvas) {
             const updatedElement = createAndSetupElement(elementData);
             elementOnCanvas.replaceWith(updatedElement);
@@ -357,7 +357,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- 6. ЛОГИКА СОХРАНЕНИЯ ---
     saveBtn.addEventListener('click', async () => {
-        // 1. Собираем данные
         currentConfig.globalSettings.pageTitle = document.querySelector('[data-config-key="globalSettings.pageTitle"]').value;
         
         ['header', 'main', 'footer'].forEach(part => {
@@ -377,19 +376,22 @@ document.addEventListener('DOMContentLoaded', () => {
              }
         });
         
+        document.querySelectorAll('.column-width-input').forEach(input => {
+            const colId = input.dataset.colId;
+            const col = currentConfig.layout.main.columns.find(c => c.id === colId);
+            if(col) col.width = input.value;
+        });
+        
         const newColumns = [];
         document.querySelectorAll('.layout-column').forEach(columnEl => {
-            const colId = columnEl.dataset.columnId;
-            const colWidthInput = layoutSettingsPanel.querySelector(`.column-width-input[data-col-id="${colId}"]`);
             newColumns.push({
-                id: colId,
-                width: colWidthInput ? colWidthInput.value : '1fr',
+                id: columnEl.dataset.columnId,
+                width: columnEl.style.flexBasis,
                 elements: Array.from(columnEl.querySelectorAll('.element-wrapper')).map(el => el.dataset.elementId)
             });
         });
         currentConfig.layout.main.columns = newColumns;
 
-        // 2. Отправляем на GitHub API
         const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/config.json`;
         saveBtn.textContent = 'Сохранение...';
         saveBtn.disabled = true;

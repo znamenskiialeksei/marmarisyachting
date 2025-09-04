@@ -53,13 +53,6 @@ function createElement(elementData) {
     elWrapper.id = elementData.id;
 
     if (elementData.style) Object.assign(elWrapper.style, elementData.style);
-    
-    // Удаляем высоту из стилей, если она есть в основном объекте, чтобы избежать дублирования
-    if (elementData.height) {
-        elWrapper.style.height = elementData.height;
-        if(elWrapper.style.height) delete elWrapper.style.height;
-    }
-
 
     switch (elementData.type) {
         case 'externalBlock':
