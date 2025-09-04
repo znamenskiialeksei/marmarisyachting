@@ -1,0 +1,265 @@
+/* --- ОБЩИЕ СТИЛИ И СБРОС --- */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f4f4f4;
+    scroll-behavior: smooth;
+}
+* { box-sizing: border-box; }
+
+/* --- СТИЛИ ПУБЛИЧНОЙ СТРАНИЦЫ (index.html) --- */
+#page-header, #page-footer {
+    text-align: center;
+}
+#element-container {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 10px;
+    gap: 20px;
+    min-height: 70vh;
+}
+.layout-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.element-wrapper {
+    width: 100%;
+}
+.element-wrapper iframe, .element-wrapper img {
+    border: none;
+    display: block;
+    width: 100%;
+}
+
+/* Модальное окно */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none; /* Скрыто по умолчанию */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal-overlay.active { display: flex; }
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    position: relative;
+    max-width: 80%;
+    max-height: 80%;
+    overflow-y: auto;
+}
+.modal-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Адаптивность */
+@media (max-width: 900px) {
+    #element-container {
+        flex-direction: column;
+    }
+    .layout-column {
+        flex-basis: 100% !important;
+        width: 100%;
+    }
+}
+
+/* --- СТИЛИ АДМИН-ПАНЕЛИ (admin.html) --- */
+
+/* Экран входа */
+#login-view {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #34495e;
+}
+.login-box {
+    background: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+}
+.login-box input {
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.login-box button {
+    width: 100%;
+    padding: 12px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+.login-box button:hover { background-color: #2980b9; }
+
+/* Основной интерфейс админки */
+#admin-view {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Тулбар */
+#admin-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    background: #2c3e50;
+    color: white;
+    flex-shrink: 0;
+}
+.toolbar-group {
+    display: flex;
+    gap: 5px;
+}
+#admin-toolbar button {
+    background: #34495e;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#admin-toolbar button:hover { background: #4a6572; }
+#save-btn { background-color: #27ae60; }
+#save-btn:hover { background-color: #229954; }
+
+/* Холст */
+#canvas-wrapper {
+    flex-grow: 1;
+    overflow: auto;
+    padding: 20px;
+    background: #bdc3c7;
+}
+#admin-canvas {
+    background: white;
+    margin: 0 auto;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    transition: width 0.3s ease;
+    /* Размеры для превью задаются из JS */
+}
+
+/* Элементы на холсте */
+.admin-element-wrapper {
+    position: relative;
+    border: 2px dashed transparent;
+}
+.admin-element-wrapper.selected {
+    border-color: #3498db;
+}
+.admin-element-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    cursor: grab;
+}
+
+/* Плавающие панели */
+.floating-panel {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    width: 320px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
+    z-index: 100;
+}
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #ecf0f1;
+    cursor: move;
+    border-bottom: 1px solid #bdc3c7;
+    border-radius: 8px 8px 0 0;
+}
+.panel-header span { font-weight: bold; }
+.panel-action {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+.panel-body {
+    padding: 15px;
+    overflow-y: auto;
+}
+
+/* Стили инспектора */
+.inspector-group {
+    margin-bottom: 20px;
+}
+.inspector-group h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    border-bottom: 1px solid #ecf0f1;
+    padding-bottom: 5px;
+}
+.inspector-field {
+    margin-bottom: 10px;
+}
+.inspector-field label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+.inspector-field input, .inspector-field select, .inspector-field textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.inspector-field textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+.inspector-field input[type="color"] {
+    padding: 0;
+    height: 35px;
+}
+#delete-element-btn {
+    width: 100%;
+    padding: 10px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#delete-element-btn:hover { background: #c0392b; }
