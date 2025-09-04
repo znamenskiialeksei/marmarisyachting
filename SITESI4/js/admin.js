@@ -4,13 +4,17 @@ class GitHubAPI {
         this.token = token;
         this.repoUrl = `https://api.github.com/repos/${username}/${repo}`;
     }
-    async getFile(path) { const response = await fetch(`${this.repoUrl}/contents/${path}`, { headers: { 'Authorization': `token ${this.token}` } }); if (!response.ok) throw new Error(`GitHub API Error: ${response.statusText}`); const data = await response.json(); const content = atob(data.content); return { content: JSON.parse(content), sha: data.sha }; }
-    
-    async updateFile(path, content, sha) {
-        // ✅ ИСПРАВЛЕНО: Добавлена обработка кириллицы и других Unicode-символов
+    async getFile(path) { 
+        const response = await fetch(`${this.repoUrl}/contents/${path}`, { headers: { 'Authorization': `token ${this.token}` } }); 
+        if (!response.ok) throw new Error(`GitHub API Error: ${response.statusText}`); 
+        const data = await response.json(); 
+        // ✅ ИСПРАВЛЕНО: Правильное чтение кириллицы
+        const content = decodeURIComponent(escape(atob(data.content)));
+        return { content: JSON.parse(content), sha: data.sha }; 
+    }
+    async updateFile(path, content, sha) { 
         const stringToEncode = JSON.stringify(content, null, 2);
         const encodedContent = btoa(unescape(encodeURIComponent(stringToEncode)));
-
         const response = await fetch(`${this.repoUrl}/contents/${path}`, { 
             method: 'PUT', 
             headers: { 'Authorization': `token ${this.token}`, 'Content-Type': 'application/json' }, 
@@ -148,4 +152,4 @@ function createSelect(label, value, options, onUpdate) { const div = document.cr
 // --- INTERACTIVITY & SAVING ---
 function initDragAndDrop() { const columns = document.querySelectorAll('.admin-column'); columns.forEach(column => { new Sortable(column, { group: 'shared', animation: 150, onEnd: (evt) => { const elementId = evt.item.dataset.elementId; const fromColId = evt.from.dataset.columnId; const toColId = evt.to.dataset.columnId; const fromColData = config.layout.main.columns.find(c => c.id === fromColId); const toColData = config.layout.main.columns.find(c => c.id === toColId); fromColData.elements.splice(evt.oldIndex, 1); toColData.elements.splice(evt.newIndex, 0, elementId); } }); }); }
 function initDraggablePanels() { interact('.floating-panel').draggable({ allowFrom: '.panel-header', inertia: true, modifiers: [interact.modifiers.restrictRect({ restriction: 'parent', endOnly: true })], listeners: { move(event) { var target = event.target; var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx; var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy; target.style.transform = 'translate(' + x + 'px, ' + y + 'px)'; target.setAttribute('data-x', x); target.setAttribute('data-y', y); } } }); }
-async function saveChanges() { const btn = document.getElementById('save-btn'); btn.textContent = 'Сохранение...'; btn.disabled = true; try { const result = await githubApi.updateFile('config.json', config, configSha); configSha = result.content.sha; alert('Изменения успешно сохранены!'); } catch (error) { console.error(error); alert(`Ошибка сохранения: ${error.message}`); } finally { btn.textContent = '💾 Сохранить'; btn.disabled = false; } }
+async function saveChanges() { const btn = document.getElementById('save-btn'); btn.textContent = 'Сохранение...'; btn.disabled = true; try { const result = await githubApi.updateFile('config.json', config, configSha); configSha = result.content.sha; alert('Изменения успешно сохранены!'); } catch (error) { console.error(error); alert(`Ошибка сохранения: ${error.message}`); } finally { btn.textContent = '💾 Сохранить'; btn.disabled = false; } }           
