@@ -198,16 +198,26 @@ const createElement = window.createElement || function(elementData) {
             el.innerHTML = elementData.content;
             break;
         case 'photo':
-            el.innerHTML = `<img src="${elementData.content.url}" alt="${elementData.title}" style="width:100%; height:100%;">`;
+            // ✅ ИСПРАВЛЕНО: Добавлена проверка
+            if (elementData.content && elementData.content.url) {
+                el.innerHTML = `<img src="${elementData.content.url}" alt="${elementData.title}" style="width:100%; height:100%;">`;
+            } else {
+                el.innerHTML = `<div style="color:red; border:1px solid red; padding:10px;">Ошибка: URL для фото не задан в config.json</div>`;
+            }
             break;
         case 'videoBlock':
         case 'reels':
         case 'externalBlock':
-            el.innerHTML = `<iframe src="${elementData.content.url}" style="width:100%; height:100%; border:none;" allowfullscreen></iframe>`;
+            // ✅ ИСПРАВЛЕНО: Добавлена проверка
+            if (elementData.content && elementData.content.url) {
+                el.innerHTML = `<iframe src="${elementData.content.url}" style="width:100%; height:100%; border:none;" allowfullscreen></iframe>`;
+            } else {
+                el.innerHTML = `<div style="color:red; border:1px solid red; padding:10px;">Ошибка: URL для этого блока не задан в config.json</div>`;
+            }
             break;
         case 'button':
             const btn = document.createElement('button');
-            btn.textContent = elementData.content.text;
+            btn.textContent = (elementData.content && elementData.content.text) ? elementData.content.text : 'Кнопка';
             el.appendChild(btn);
             break;
     }
