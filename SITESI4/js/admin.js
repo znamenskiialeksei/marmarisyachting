@@ -5,7 +5,27 @@ class GitHubAPI {
         this.repoUrl = `https://api.github.com/repos/${username}/${repo}`;
     }
     async getFile(path) { const response = await fetch(`${this.repoUrl}/contents/${path}`, { headers: { 'Authorization': `token ${this.token}` } }); if (!response.ok) throw new Error(`GitHub API Error: ${response.statusText}`); const data = await response.json(); const content = atob(data.content); return { content: JSON.parse(content), sha: data.sha }; }
-    async updateFile(path, content, sha) { const encodedContent = btoa(JSON.stringify(content, null, 2)); const response = await fetch(`${this.repoUrl}/contents/${path}`, { method: 'PUT', headers: { 'Authorization': `token ${this.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ message: `[Admin Panel] Update config.json`, content: encodedContent, sha: sha }) }); if (!response.ok) { const error = await response.json(); throw new Error(`GitHub Save Error: ${error.message}`); } return await response.json(); }
+    
+    async updateFile(path, content, sha) {
+        // ✅ ИСПРАВЛЕНО: Добавлена обработка кириллицы и других Unicode-символов
+        const stringToEncode = JSON.stringify(content, null, 2);
+        const encodedContent = btoa(unescape(encodeURIComponent(stringToEncode)));
+
+        const response = await fetch(`${this.repoUrl}/contents/${path}`, { 
+            method: 'PUT', 
+            headers: { 'Authorization': `token ${this.token}`, 'Content-Type': 'application/json' }, 
+            body: JSON.stringify({ 
+                message: `[Admin Panel] Update config.json`, 
+                content: encodedContent, 
+                sha: sha 
+            }) 
+        }); 
+        if (!response.ok) { 
+            const error = await response.json(); 
+            throw new Error(`GitHub Save Error: ${error.message}`); 
+        } 
+        return await response.json(); 
+    }
 }
 
 // --- GLOBAL STATE ---
