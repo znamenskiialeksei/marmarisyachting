@@ -42,7 +42,17 @@
           ]
         }
       ]
-    }
+    },
+    "columns": [
+      {
+        "width": "60%",
+        "blocks": []
+      },
+      {
+        "width": "40%",
+        "blocks": []
+      }
+    ]
   },
   "elements": [
     {
