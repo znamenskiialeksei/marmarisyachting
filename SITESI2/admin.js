@@ -308,6 +308,67 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- 6. ЛОГИКА СОХРАНЕНИЯ ---
     saveBtn.addEventListener('click', async () => {
-        // ... (код сохранения остается без изменений)
+        // 1. Собрать глобальные настройки
+        currentConfig.globalSettings.pageTitle = document.querySelector('[data-config-key="globalSettings.pageTitle"]').value;
+        
+        // 2. Собрать настройки макета
+        ['header', 'main', 'footer'].forEach(part => {
+             const panel = layoutSettingsPanel;
+             if(currentConfig.layout[part].content !== undefined) {
+                 currentConfig.layout[part].content = panel.querySelector(`textarea[data-layout-part="${part}"]`).value;
+             }
+             const bgType = panel.querySelector(`select[data-layout-part="${part}"]`).value;
+             const bgValue = panel.querySelector(`input[data-layout-part="${part}"]`).value;
+             currentConfig.layout[part].background.type = bgType;
+             if(bgType === 'color') {
+                 currentConfig.layout[part].background.color = bgValue;
+                 delete currentConfig.layout[part].background.url;
+             } else {
+                 currentConfig.layout[part].background.url = bgValue;
+                 delete currentConfig.layout[part].background.color;
+             }
+        });
+        
+        // 3. Собрать новую структуру колонок из DOM
+        const newColumns = [];
+        document.querySelectorAll('.layout-column').forEach(columnEl => {
+            newColumns.push({
+                id: columnEl.dataset.columnId,
+                width: columnEl.style.flexBasis,
+                elements: Array.from(columnEl.querySelectorAll('.element-wrapper')).map(el => el.dataset.elementId)
+            });
+        });
+        currentConfig.layout.main.columns = newColumns;
+
+        // 4. Отправить на GitHub API
+        const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/config.json`;
+        saveBtn.textContent = 'Сохранение...';
+        saveBtn.disabled = true;
+
+        try {
+            const fileResponse = await fetch(url, { headers: { 'Authorization': `token ${githubToken}` } });
+            const fileData = await fileResponse.json();
+            
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: `Admin Panel: Settings updated at ${new Date().toISOString()}`,
+                    content: btoa(unescape(encodeURIComponent(JSON.stringify(currentConfig, null, 2)))),
+                    sha: fileData.sha
+                })
+            });
+
+            if (response.ok) {
+                alert('Настройки успешно сохранены! Изменения появятся на сайте через 1-2 минуты.');
+            } else {
+                alert(`Ошибка сохранения: ${(await response.json()).message}`);
+            }
+        } catch (error) {
+            alert('Сетевая ошибка: ' + error.message);
+        } finally {
+            saveBtn.textContent = '💾 Сохранить все изменения';
+            saveBtn.disabled = false;
+        }
     });
 });
