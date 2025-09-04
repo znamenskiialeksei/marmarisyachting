@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель администратора</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="login-view" class="admin-container">
+        <h2>Вход в панель администратора</h2>
+        <p>Введите ваш GitHub Personal Access Token для доступа к редактированию.</p>
+        <input type="password" id="github-token" placeholder="Токен (начинается с ghp_...)">
+        <button id="login-btn">Войти</button>
+    </div>
+
+    <div id="admin-view" style="display:none;">
+        <div class="admin-main">
+            <div class="admin-canvas">
+                <div id="add-element-toolbar">
+                    <span>Добавить новый элемент:</span>
+                    <button data-type="player">Плеер</button>
+                    <button data-type="textBlock">Текст</button>
+                    <button data-type="videoBlock">Видео</button>
+                    <button data-type="button">Кнопка</button>
+                </div>
+                <header id="main-header" class="layout-section"></header>
+                <main id="element-container"></main>
+                <footer id="main-footer" class="layout-section"></footer>
+            </div>
+
+            <aside class="admin-sidebar">
+                <div class="save-panel">
+                    <button id="save-btn">Сохранить все изменения</button>
+                </div>
+
+                <div id="global-settings-panel" class="sidebar-section">
+                    <h3>Глобальные настройки</h3>
+                    <label>Заголовок сайта (Title)</label>
+                    <input type="text" data-config-key="globalSettings.pageTitle">
+                </div>
+
+                <div id="layout-settings-panel" class="sidebar-section">
+                     <h3>Настройки макета</h3>
+                     <details>
+                         <summary>Шапка (Header)</summary>
+                         <label>HTML контент:</label>
+                         <textarea data-config-key="layout.header.content"></textarea>
+                         <label>Тип фона:</label>
+                         <select data-config-key="layout.header.background.type">
+                             <option value="color">Цвет</option>
+                             <option value="image">Изображение</option>
+                             <option value="video">Видео</option>
+                         </select>
+                         <label>Значение (цвет HEX или URL):</label>
+                         <input type="text" data-config-key="layout.header.background.url">
+                     </details>
+                     </div>
+                
+                <div id="element-inspector-panel" class="sidebar-section" style="display:none;">
+                    <h3>Настройки элемента <span id="inspector-element-id"></span></h3>
+                    <button id="delete-element-btn" style="background: #dc3545;">Удалить элемент</button>
+                    <hr>
+                    <label>ID (не изменять)</label>
+                    <input type="text" data-prop="id" readonly>
+                    <label>Заголовок (для админки)</label>
+                    <input type="text" data-prop="title">
+                    <label>Видимость</label>
+                    <input type="checkbox" data-prop="visible">
+
+                    <div class="type-fields" id="player-fields">
+                        <label>URL маршрута</label>
+                        <input type="text" data-prop="url">
+                    </div>
+                    <div class="type-fields" id="textBlock-fields">
+                        <label>HTML контент</label>
+                        <textarea data-prop="content"></textarea>
+                    </div>
+                    <div class="type-fields" id="videoBlock-fields">
+                        <label>URL видео (YouTube embed)</label>
+                        <input type="text" data-prop="url">
+                    </div>
+                    <div class="type-fields" id="button-fields">
+                        <label>Текст кнопки</label>
+                        <input type="text" data-prop="text">
+                        <label>Действие</label>
+                        <select data-prop="action">
+                            <option value="openLink">Открыть ссылку</option>
+                            <option value="openModal">Открыть модальное окно</option>
+                        </select>
+                        <label>Ссылка (для openLink)</label>
+                        <input type="text" data-prop="link">
+                        <label>Контент модального окна (для openModal)</label>
+                        <textarea data-prop="modalContent"></textarea>
+                        <label>Цвет фона</label>
+                        <input type="color" data-style-prop="backgroundColor">
+                        <label>Цвет текста</label>
+                        <input type="color" data-style-prop="textColor">
+                        <label>Пульсация</label>
+                        <input type="checkbox" data-style-prop="pulsing">
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

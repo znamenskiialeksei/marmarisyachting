@@ -1,0 +1,81 @@
+body { margin: 0; font-family: sans-serif; background-color: #f0f2f5; }
+header, footer, nav { padding: 15px; text-align: center; }
+nav a { margin: 0 15px; text-decoration: none; color: #007bff; }
+main { position: relative; width: 100%; min-height: 120vh; }
+.route-window {
+    border: 1px solid #ccc;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    border-radius: 8px;
+    background-color: white;
+}
+.background-layer {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: -1;
+    background-size: cover;
+    background-position: center;
+}
+.background-layer video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Стили для новых элементов */
+.element-wrapper {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-sizing: border-box;
+}
+.type-textBlock {
+    border: 1px solid #e0e0e0;
+}
+
+/* Стили для модального окна */
+.modal {
+    display: none; position: fixed; z-index: 1000;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    justify-content: center; align-items: center;
+}
+#custom-modal-content {
+    background: white; padding: 30px; border-radius: 8px;
+    max-width: 80%; position: relative;
+}
+.modal-close {
+    position: absolute; top: 10px; right: 20px;
+    font-size: 30px; cursor: pointer;
+}
+/* ... ваши старые стили ... */
+
+/* --- Стили для админ-панели --- */
+.admin-container { max-width: 500px; margin: 50px auto; text-align: center; }
+.admin-container input { width: 90%; padding: 10px; margin-bottom: 15px; }
+.admin-container button { padding: 10px 20px; cursor: pointer; }
+
+.admin-main { display: flex; height: 100vh; }
+.admin-canvas { flex-grow: 1; position: relative; background: #f0f2f5; overflow: auto; }
+.admin-sidebar { width: 350px; flex-shrink: 0; background: #fff; overflow-y: auto; border-left: 1px solid #ddd; }
+
+#add-element-toolbar { background: #343a40; color: white; padding: 10px; text-align: center; }
+#add-element-toolbar button { margin: 0 5px; }
+
+.layout-section { position: relative; z-index: 1; }
+#element-container { min-height: 100%; }
+
+.save-panel { padding: 15px; border-bottom: 1px solid #ddd; }
+#save-btn { width: 100%; padding: 15px; font-size: 1.1em; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
+
+.sidebar-section { padding: 15px; border-bottom: 1px solid #ddd; }
+.sidebar-section h3 { margin-top: 0; }
+.sidebar-section label { display: block; margin-top: 10px; font-weight: bold; font-size: 0.9em; }
+.sidebar-section input, .sidebar-section textarea, .sidebar-section select { width: calc(100% - 16px); padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; }
+.sidebar-section textarea { min-height: 120px; }
+
+.element-wrapper { box-sizing: border-box; } /* Это важно для interact.js */
+.draggable-element { cursor: move; border: 2px dashed transparent; }
+.draggable-element.selected { border-color: #007bff; z-index: 100 !important; }
+
+.type-fields { display: none; }
