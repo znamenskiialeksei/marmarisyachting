@@ -24,6 +24,7 @@
           "id": "col-1",
           "width": "60%",
           "elements": [
+            "el-1757030055687",
             "el-1",
             "el-3"
           ]
@@ -113,6 +114,15 @@
         "borderRadius": "5px",
         "cursor": "pointer"
       }
+    },
+    {
+      "id": "el-1757030055687",
+      "adminTitle": "Новый элемент (textBlock)",
+      "type": "textBlock",
+      "content": {
+        "html": "<p>Новый текстовый блокппппввввыыммиррррр.</p>"
+      },
+      "styles": {}
     }
   ]
 }
