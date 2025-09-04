@@ -145,10 +145,12 @@ class GitHubAPI {
 
     async getFile() {
         const response = await fetch(this.baseUrl, {
+            method: 'GET',
+            mode: 'cors', // Явно указываем режим
+            cache: 'reload', // Гарантирует, что мы не используем кеш
             headers: { 
-                'Authorization': `token ${this.token}`,
+                'Authorization': `Bearer ${this.token}`, // Используем стандартный Bearer
                 'Accept': 'application/vnd.github.v3+json',
-                'Cache-Control': 'no-cache'
             }
         });
         if (!response.ok) {
@@ -175,8 +177,9 @@ class GitHubAPI {
         };
         const response = await fetch(this.baseUrl, {
             method: 'PUT',
+            mode: 'cors',
             headers: {
-                'Authorization': `token ${this.token}`,
+                'Authorization': `Bearer ${this.token}`,
                 'Accept': 'application/vnd.github.v3+json',
                 'Content-Type': 'application/json'
             },
@@ -219,10 +222,10 @@ async function initializeEditor(user, repo, token) {
         renderCanvas();
         updateSaveStatus(true);
     } catch (error) {
-        console.error('Ошибка инициализации:', error);
+        // Улучшенная диагностика
+        console.error('ПОЛНАЯ ОШИБКА ИНИЦИАЛИЗАЦИИ:', error); 
         let detailedError = error.message;
 
-        // Улучшенная диагностика для ошибки "Failed to fetch"
         if (error instanceof TypeError && error.message.toLowerCase().includes('failed to fetch')) {
             detailedError = 'Не удалось выполнить сетевой запрос (Failed to fetch).';
             loginError.innerHTML = `
@@ -235,7 +238,7 @@ async function initializeEditor(user, repo, token) {
                 </ul>
             `;
         } else {
-            loginError.textContent = `Ошибка: ${detailedError}. Проверьте данные и права токена (требуется scope 'repo').`;
+            loginError.innerHTML = `<strong>Ошибка:</strong> ${detailedError}.<br>Проверьте, что токен имеет права ('scope') <strong>repo</strong> и не истек.`;
         }
         
         localStorage.removeItem('githubCreds');
