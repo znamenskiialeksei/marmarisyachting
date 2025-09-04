@@ -144,10 +144,12 @@ class GitHubAPI {
     }
 
     async getFile() {
-        const response = await fetch(this.baseUrl, {
+        // Добавляем к URL уникальный параметр, чтобы обойти кеш. Это решает проблему с CORS.
+        const urlWithCacheBuster = `${this.baseUrl}?t=${new Date().getTime()}`;
+        const response = await fetch(urlWithCacheBuster, {
             method: 'GET',
             mode: 'cors', // Явно указываем режим
-            cache: 'reload', // Гарантирует, что мы не используем кеш
+            // cache: 'reload', // УДАЛЕНО: Эта опция вызывала ошибку CORS с API GitHub
             headers: { 
                 'Authorization': `Bearer ${this.token}`, // Используем стандартный Bearer
                 'Accept': 'application/vnd.github.v3+json',
