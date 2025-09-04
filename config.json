@@ -32,7 +32,8 @@
           "width": "60%",
           "elements": [
             "route1_player",
-            "welcome_text_1667823456"
+            "welcome_text_1667823456",
+            "player_1756990699689"
           ]
         },
         {
@@ -95,6 +96,15 @@
         "borderRadius": "12px",
         "boxShadow": "0 10px 25px rgba(0,0,0,0.2)"
       }
+    },
+    {
+      "id": "player_1756990699689",
+      "type": "player",
+      "title": "Новый player",
+      "visible": true,
+      "style": {},
+      "height": "650px",
+      "url": ""
     }
   ]
 }
