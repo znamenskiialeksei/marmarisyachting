@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Панель администратора</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="login-screen" class="screen">
+        <div class="login-box">
+            <h2>Вход в панель администратора</h2>
+            <p>Введите ваш <strong>GitHub Personal Access Token</strong>. Токен должен иметь права <code>repo</code> для чтения и записи в репозиторий.</p>
+            <input type="password" id="github-token" placeholder="ghp_...">
+            <input type="text" id="github-user" placeholder="Имя пользователя GitHub">
+            <input type="text" id="github-repo" placeholder="Название репозитория">
+            <button id="login-btn">Войти</button>
+            <p class="small">Токен сохранится в локальном хранилище вашего браузера и не будет виден никому.</p>
+        </div>
+    </div>
+
+    <div id="admin-panel" class="screen" style="display: none;">
+        <div id="admin-toolbar">
+            <div class="toolbar-group">
+                <button id="save-btn" title="Сохранить все изменения">💾 Сохранить</button>
+            </div>
+            <div class="toolbar-group">
+                <span class="toolbar-label">Добавить элемент:</span>
+                <button class="add-element-btn" data-type="textBlock">Текст</button>
+                <button class="add-element-btn" data-type="photo">Фото</button>
+                <button class="add-element-btn" data-type="videoBlock">Видео</button>
+                <button class="add-element-btn" data-type="externalBlock">Внешний блок</button>
+                <button class="add-element-btn" data-type="button">Кнопка</button>
+            </div>
+             <div class="toolbar-group">
+                <span class="toolbar-label">Панели:</span>
+                <button id="toggle-global-btn">🌍 Глобальные</button>
+                <button id="toggle-layout-btn">🎨 Макет</button>
+            </div>
+        </div>
+
+        <main id="canvas-container">
+            </main>
+
+        <div id="inspector" class="floating-panel" style="display: none;">
+            <div class="panel-header">
+                <span>Инспектор элемента</span>
+                <div class="panel-controls">
+                    <button class="panel-close-btn">×</button>
+                </div>
+            </div>
+            <div class="panel-content" id="inspector-content"></div>
+        </div>
+
+        <div id="global-settings-panel" class="floating-panel" style="display: none;">
+             <div class="panel-header">
+                <span>🌍 Глобальные настройки</span>
+                <div class="panel-controls">
+                    <button class="panel-close-btn">×</button>
+                </div>
+            </div>
+            <div class="panel-content" id="global-settings-content"></div>
+        </div>
+        
+         <div id="layout-settings-panel" class="floating-panel" style="display: none;">
+             <div class="panel-header">
+                <span>🎨 Настройки макета</span>
+                <div class="panel-controls">
+                    <button class="panel-close-btn">×</button>
+                </div>
+            </div>
+            <div class="panel-content" id="layout-settings-content"></div>
+        </div>
+    </div>
+    
+    <script src="lib/sortable.min.js"></script>
+    <script src="lib/interact.min.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

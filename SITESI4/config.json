@@ -1,0 +1,126 @@
+{
+  "github": {
+    "username": "znamenskiialeksei",
+    "repository": "marmarisyachting"
+  },
+  "globalSettings": {
+    "title": "Моя Динамическая Страница"
+  },
+  "layout": {
+    "header": {
+      "content": "<h1>Добро пожаловать на мой сайт!</h1>",
+      "background": {
+        "type": "color",
+        "value": "#2c3e50"
+      }
+    },
+    "footer": {
+      "content": "<p>© 2025. Все права защищены. Создано с помощью конструктора.</p>",
+      "background": {
+        "type": "color",
+        "value": "#34495e"
+      }
+    },
+    "main": {
+      "background": {
+        "type": "color",
+        "value": "#ecf0f1"
+      },
+      "columns": [
+        {
+          "id": "col1",
+          "width": "65%",
+          "elements": ["el1", "el5"]
+        },
+        {
+          "id": "col2",
+          "width": "35%",
+          "elements": ["el2", "el3", "el4"]
+        }
+      ]
+    }
+  },
+  "elements": [
+    {
+      "id": "el1",
+      "type": "textBlock",
+      "title": "Приветственный текст",
+      "visible": true,
+      "content": "<h2>О проекте</h2><p>Это текстовый блок, который можно редактировать. В него можно вставлять любой <strong>HTML-код</strong>, включая <em>форматирование</em>, списки и ссылки. Гибкость этого блока позволяет создавать сложные текстовые секции без каких-либо ограничений.</p><ul><li>Пункт 1</li><li>Пункт 2</li></ul>",
+      "style": {
+        "padding": "20px",
+        "backgroundColor": "#ffffff",
+        "borderRadius": "8px",
+        "boxShadow": "0 2px 4px rgba(0,0,0,0.1)"
+      }
+    },
+    {
+      "id": "el2",
+      "type": "photo",
+      "title": "Картинка природы",
+      "visible": true,
+      "content": {
+        "url": "https://images.unsplash.com/photo-1501854140801-50d01698950b"
+      },
+      "style": {
+        "width": "100%",
+        "height": "250px",
+        "object-fit": "cover",
+        "borderRadius": "8px"
+      }
+    },
+    {
+      "id": "el3",
+      "type": "externalBlock",
+      "title": "Карта",
+      "visible": true,
+      "content": {
+        "url": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.952912260219!2d3.375295414770757!3d6.527631645278465!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103b8b2ae68280c1%3A0x5df9fe847348505d!2sLagos!5e0!3m2!1sen!2sng!4v1594229189658!5m2!1sen!2sng"
+      },
+      "style": {
+        "width": "100%",
+        "height": "300px",
+        "border": "none",
+        "borderRadius": "8px"
+      }
+    },
+    {
+      "id": "el4",
+      "type": "button",
+      "title": "Кнопка с модальным окном",
+      "visible": true,
+      "content": {
+        "text": "Показать информацию",
+        "action": "openModal",
+        "link": "",
+        "modalContent": "<h3>Это модальное окно!</h3><p>Его контент также задается в файле конфигурации. Сюда можно добавить любую HTML-разметку для отображения во всплывающем окне.</p>"
+      },
+      "style": {
+        "width": "100%",
+        "padding": "15px 25px",
+        "fontSize": "16px",
+        "backgroundColor": "#3498db",
+        "color": "#ffffff",
+        "border": "none",
+        "borderRadius": "5px",
+        "cursor": "pointer"
+      }
+    },
+    {
+      "id": "el5",
+      "type": "videoBlock",
+      "title": "Видео с YouTube",
+      "visible": true,
+      "content": {
+        "url": "https://www.youtube.com/embed/dQw4w9WgXcQ"
+      },
+      "style": {
+        "width": "100%",
+        "height": "auto",
+        "aspect-ratio": "16 / 9",
+        "border": "none",
+        "borderRadius": "8px"
+      }
+    }
+  ]
+}
