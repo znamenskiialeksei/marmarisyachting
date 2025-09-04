@@ -31,58 +31,30 @@
           "id": "column1_1678886400",
           "width": "60%",
           "elements": [
-            "route1_player"
+            "el_1757022916409"
           ]
         },
         {
           "id": "column2_1678886401",
           "width": "40%",
-          "elements": [
-            "promo_photo_1667823457",
-            "route2_player"
-          ]
+          "elements": []
         }
       ]
     }
   },
   "elements": [
     {
-      "id": "route1_player",
-      "type": "externalBlock",
-      "title": "ÐÐ°ÑÑÑÑÑ 1: ÐÐ½ÐµÐ²Ð½Ð¾Ð¹ ÑÑÑ",
-      "url": "https://znamenskiialeksei.github.io/marmarisyachting/1RouteVasilisa.html",
-      "height": "650px",
+      "id": "el_1757022916409",
+      "type": "textBlock",
+      "title": "Новый блок: textBlock",
       "visible": true,
+      "content": "<h2>Новый заголовок</h2><p>Это новый текстовый блок123445.</p>",
       "style": {
-        "borderRadius": "12px",
-        "boxShadow": "0 10px 25px rgba(0,0,0,0.2)",
-        "width": "30%",
-        "backgroundColor": "",
-        "color": "",
-        "fontSize": ""
-      }
-    },
-    {
-      "id": "promo_photo_1667823457",
-      "type": "photo",
-      "title": "Ð¤Ð¾ÑÐ¾: Ð¯ÑÑÐ°",
-      "url": "https://images.pexels.com/photos/163236/yacht-luxury-yacht-yacht-charter-sailing-163236.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-      "visible": true,
-      "style": {
-        "objectFit": "cover",
+        "width": "100%",
+        "padding": "20px",
+        "backgroundColor": "#ffffff",
+        "color": "#333333",
         "borderRadius": "8px"
-      }
-    },
-    {
-      "id": "route2_player",
-      "type": "externalBlock",
-      "title": "ÐÐ°ÑÑÑÑÑ 2: Ð¢ÑÑ Ñ Ð¾Ð±ÐµÐ´Ð¾Ð¼",
-      "url": "https://znamenskiialeksei.github.io/marmarisyachting/2RouteVasilisa.html",
-      "height": "650px",
-      "visible": true,
-      "style": {
-        "borderRadius": "12px",
-        "boxShadow": "0 10px 25px rgba(0,0,0,0.2)"
       }
     }
   ]
