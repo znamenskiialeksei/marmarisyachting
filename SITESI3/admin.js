@@ -1,18 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Глобальные переменные состояния
+    // --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ СОСТОЯНИЯ ---
     let githubToken = null;
     let currentConfig = null;
     let selectedElementId = null;
 
+    // --- DOM ЭЛЕМЕНТЫ ---
     const loginView = document.getElementById('login-view');
     const adminView = document.getElementById('admin-view');
     const tokenInput = document.getElementById('github-token-input');
     const loginBtn = document.getElementById('login-btn');
     const saveBtn = document.getElementById('save-btn');
     
-    // --- ИНИЦИАЛИЗАЦИЯ ---
+    // --- ИНИЦИАЛИЗАЦИЯ (ЭТАП 2) ---
 
-    // Попытка авто-входа при загрузке
+    // Попытка авто-входа при загрузке страницы
     const savedToken = localStorage.getItem('githubToken');
     if (savedToken) {
         githubToken = savedToken;
@@ -21,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadAdminPanel();
     }
 
-    // Вход по кнопке
+    // Обработчик входа по кнопке
     loginBtn.addEventListener('click', () => {
         const token = tokenInput.value.trim();
         if (token) {
@@ -31,14 +32,14 @@ document.addEventListener('DOMContentLoaded', () => {
             adminView.style.display = 'flex';
             loadAdminPanel();
         } else {
-            alert('Пожалуйста, введите токен.');
+            alert('Пожалуйста, введите токен доступа.');
         }
     });
     
-    // Сохранение по кнопке
+    // Обработчик сохранения по кнопке (ЭТАП 5)
     saveBtn.addEventListener('click', saveConfiguration);
 
-    // --- ЗАГРУЗКА И РЕНДЕРИНГ ---
+    // --- ЗАГРУЗКА И РЕНДЕРИНГ (ЭТАП 2 и 3) ---
 
     async function loadAdminPanel() {
         const cacheBust = `?v=${new Date().getTime()}`;
@@ -50,16 +51,14 @@ document.addEventListener('DOMContentLoaded', () => {
             setupToolbarActions();
             makePanelsInteractive();
         } catch (error) {
-            console.error("Ошибка загрузки панели:", error);
-            alert("Не удалось загрузить конфигурацию. Проверьте консоль.");
+            console.error("Ошибка загрузки панели администратора:", error);
+            alert("Не удалось загрузить конфигурацию. Проверьте консоль ошибок (F12).");
         }
     }
 
     function renderCanvas() {
         const canvas = document.getElementById('admin-canvas');
-        canvas.innerHTML = ''; // Очистка
-
-        // Создаем контейнер, аналогичный публичному
+        canvas.innerHTML = '';
         const elementContainer = document.createElement('div');
         elementContainer.id = 'element-container';
         
@@ -72,15 +71,14 @@ document.addEventListener('DOMContentLoaded', () => {
             column.elements.forEach(elementId => {
                 const elementData = currentConfig.elements.find(el => el.id === elementId);
                 if (elementData) {
-                    const elementNode = createAdminElement(elementData);
-                    columnDiv.appendChild(elementNode);
+                    columnDiv.appendChild(createAdminElement(elementData));
                 }
             });
             elementContainer.appendChild(columnDiv);
         });
         
         canvas.appendChild(elementContainer);
-        initInteractivity();
+        initDragAndDrop(); // Инициализация интерактивности (ЭТАП 4)
     }
 
     function createAdminElement(elementData) {
@@ -88,25 +86,22 @@ document.addEventListener('DOMContentLoaded', () => {
         wrapper.className = 'admin-element-wrapper';
         wrapper.dataset.elementId = elementData.id;
 
-        // Создаем оверлей для перетаскивания и кликов
         const overlay = document.createElement('div');
         overlay.className = 'admin-element-overlay';
         wrapper.appendChild(overlay);
 
-        // Используем публичную фабрику для создания "внутренностей" элемента
-        const publicElement = createElement(elementData); // Функция из main.js, но нужно ее скопировать сюда
+        const publicElement = createElement(elementData); // Используем фабрику
         
-        // Для iframe добавляем sandbox для безопасности
         const iframe = publicElement.querySelector('iframe');
         if (iframe) {
-            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
-            iframe.style.pointerEvents = 'none'; // Предотвращает "кражу" кликов
+            // Изолируем iframe для безопасности и удобства
+            iframe.setAttribute('sandbox', '');
+            iframe.style.pointerEvents = 'none';
         }
 
         wrapper.appendChild(publicElement);
         
-        // Добавляем обработчик клика для выбора элемента
-        wrapper.addEventListener('click', (e) => {
+        wrapper.addEventListener('click', e => {
             e.stopPropagation();
             selectElement(elementData.id);
         });
@@ -114,15 +109,15 @@ document.addEventListener('DOMContentLoaded', () => {
         return wrapper;
     }
     
-    // --- ИНТЕРАКТИВНОСТЬ ---
+    // --- ИНТЕРАКТИВНОСТЬ (ЭТАП 4) ---
 
-    function initInteractivity() {
-        // Инициализация SortableJS для колонок
+    function initDragAndDrop() {
         const columns = document.querySelectorAll('.sortable-column');
         columns.forEach(col => {
             new Sortable(col, {
-                group: 'shared',
+                group: 'shared-elements',
                 animation: 150,
+                ghostClass: 'sortable-ghost',
                 onEnd: updateStructureFromDOM,
             });
         });
@@ -132,33 +127,40 @@ document.addEventListener('DOMContentLoaded', () => {
         interact('.floating-panel')
             .draggable({
                 allowFrom: '.panel-header',
+                inertia: true,
                 modifiers: [
                     interact.modifiers.restrictRect({
                         restriction: 'parent',
                         endOnly: true
                     })
                 ],
-                inertia: true,
-                onmove: (event) => {
-                    const target = event.target;
-                    const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-                    const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-
-                    target.style.transform = `translate(${x}px, ${y}px)`;
-                    target.setAttribute('data-x', x);
-                    target.setAttribute('data-y', y);
+                autoScroll: true,
+                listeners: {
+                    move(event) {
+                        const target = event.target;
+                        const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+                        const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+                        target.style.transform = `translate(${x}px, ${y}px)`;
+                        target.setAttribute('data-x', x);
+                        target.setAttribute('data-y', y);
+                    }
                 }
             });
+
+        document.querySelectorAll('.panel-action').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const panel = this.closest('.floating-panel');
+                const action = this.dataset.action;
+                if (action === 'close') panel.style.display = 'none';
+                if (action === 'minimize') panel.querySelector('.panel-body').classList.toggle('minimized');
+            });
+        });
     }
 
-    // --- УПРАВЛЕНИЕ ЭЛЕМЕНТАМИ И ИНСПЕКТОР ---
+    // --- УПРАВЛЕНИЕ ЭЛЕМЕНТАМИ И ИНСПЕКТОР (ЭТАП 3) ---
     
     function selectElement(elementId) {
-        // Снимаем выделение с предыдущего
-        const oldSelected = document.querySelector('.admin-element-wrapper.selected');
-        if (oldSelected) oldSelected.classList.remove('selected');
-        
-        // Выделяем новый
+        document.querySelector('.admin-element-wrapper.selected')?.classList.remove('selected');
         const newSelected = document.querySelector(`.admin-element-wrapper[data-element-id="${elementId}"]`);
         if (newSelected) {
             newSelected.classList.add('selected');
@@ -171,133 +173,87 @@ document.addEventListener('DOMContentLoaded', () => {
         const elementData = currentConfig.elements.find(el => el.id === elementId);
         if (!elementData) return;
 
-        const inspectorPanel = document.getElementById('inspector-panel');
         const inspectorBody = document.getElementById('inspector-body');
-        inspectorBody.innerHTML = ''; // Очистка
-
-        let fieldsHtml = `
+        inspectorBody.innerHTML = `
             <div class="inspector-group">
-                <h4>ДЕЙСТВИЯ С БЛОКОМ</h4>
+                <h4>Действия</h4>
                 <button id="delete-element-btn">Удалить элемент</button>
             </div>
             <div class="inspector-group">
-                <h4>ОБЩИЕ</h4>
-                <div class="inspector-field">
-                    <label>ID (не изменять)</label>
-                    <input type="text" value="${elementData.id}" readonly>
-                </div>
-                <div class="inspector-field">
-                    <label>Заголовок (для админки)</label>
-                    <input type="text" data-key="adminTitle" value="${elementData.adminTitle || ''}">
-                </div>
+                <h4>Общие</h4>
+                <div class="inspector-field"><label>ID</label><input type="text" value="${elementData.id}" readonly></div>
+                <div class="inspector-field"><label>Заголовок (в админке)</label><input type="text" data-key="adminTitle" value="${elementData.adminTitle || ''}"></div>
             </div>
-            <div class="inspector-group">
-                <h4>СОДЕРЖИМОЕ</h4>
-                ${generateContentFields(elementData)}
-            </div>
-            <div class="inspector-group">
-                <h4>РАЗМЕРЫ И СТИЛЬ</h4>
-                ${generateStyleFields(elementData.styles)}
-            </div>
-        `;
+            <div class="inspector-group"><h4>Содержимое</h4>${generateContentFields(elementData)}</div>
+            <div class="inspector-group"><h4>Стили</h4>${generateStyleFields(elementData.styles || {})}</div>`;
         
-        inspectorBody.innerHTML = fieldsHtml;
-        inspectorPanel.style.display = 'block';
-
-        // Добавляем обработчики
+        document.getElementById('inspector-panel').style.display = 'block';
+        
         inspectorBody.querySelectorAll('input, textarea, select').forEach(input => {
             input.addEventListener('input', updateElementFromInspector);
         });
-        
         document.getElementById('delete-element-btn').addEventListener('click', deleteSelectedElement);
     }
     
     function generateContentFields(element) {
         switch(element.type) {
-            case 'externalBlock':
-            case 'photo':
-            case 'videoBlock':
-                return `<div class="inspector-field">
-                          <label>URL контента</label>
-                          <input type="text" data-content-key="url" value="${element.content.url || ''}">
-                        </div>`;
+            case 'externalBlock': case 'photo': case 'videoBlock':
+                return `<div class="inspector-field"><label>URL контента</label><input type="text" data-content-key="url" value="${element.content.url || ''}"></div>`;
             case 'textBlock':
-                return `<div class="inspector-field">
-                          <label>HTML контент</label>
-                          <textarea data-content-key="html">${element.content.html || ''}</textarea>
-                        </div>`;
+                return `<div class="inspector-field"><label>HTML контент</label><textarea data-content-key="html">${element.content.html || ''}</textarea></div>`;
             case 'button':
-                return `<div class="inspector-field">
-                           <label>Текст кнопки</label>
-                           <input type="text" data-content-key="text" value="${element.content.text || ''}">
-                        </div>
-                        <div class="inspector-field">
-                           <label>Действие</label>
-                           <select data-content-key="action">
-                               <option value="openLink" ${element.content.action === 'openLink' ? 'selected' : ''}>Открыть ссылку</option>
-                               <option value="openModal" ${element.content.action === 'openModal' ? 'selected' : ''}>Модальное окно</option>
-                           </select>
-                        </div>
-                        <div class="inspector-field">
-                           <label>Ссылка (URL)</label>
-                           <input type="text" data-content-key="url" value="${element.content.url || ''}">
-                        </div>
-                        <div class="inspector-field">
-                           <label>Контент модального окна (HTML)</label>
-                           <textarea data-content-key="modalContent">${element.content.modalContent || ''}</textarea>
-                        </div>`;
-            default: return '';
+                return `
+                    <div class="inspector-field"><label>Текст кнопки</label><input type="text" data-content-key="text" value="${element.content.text || ''}"></div>
+                    <div class="inspector-field"><label>Действие</label><select data-content-key="action">
+                        <option value="openLink" ${element.content.action === 'openLink' ? 'selected' : ''}>Открыть ссылку</option>
+                        <option value="openModal" ${element.content.action === 'openModal' ? 'selected' : ''}>Модальное окно</option>
+                    </select></div>
+                    <div class="inspector-field"><label>URL ссылки</label><input type="text" data-content-key="url" value="${element.content.url || ''}"></div>
+                    <div class="inspector-field"><label>Контент модального окна (HTML)</label><textarea data-content-key="modalContent">${element.content.modalContent || ''}</textarea></div>`;
+            default: return '<p>Нет настраиваемого контента.</p>';
         }
     }
     
     function generateStyleFields(styles) {
-        // Пример полей. Можно расширить для всех нужных свойств CSS
         return `
             <div class="inspector-field"><label>Ширина (width)</label><input type="text" data-style-key="width" value="${styles.width || ''}"></div>
             <div class="inspector-field"><label>Высота (height)</label><input type="text" data-style-key="height" value="${styles.height || ''}"></div>
-            <div class="inspector-field"><label>Цвет фона (backgroundColor)</label><input type="color" data-style-key="backgroundColor" value="${styles.backgroundColor || '#ffffff'}"></div>
-            <div class="inspector-field"><label>Цвет текста (color)</label><input type="color" data-style-key="color" value="${styles.color || '#000000'}"></div>
-            <div class="inspector-field"><label>Внутренние отступы (padding)</label><input type="text" data-style-key="padding" value="${styles.padding || ''}"></div>
-            <div class="inspector-field"><label>Скругление углов (borderRadius)</label><input type="text" data-style-key="borderRadius" value="${styles.borderRadius || ''}"></div>
-            <div class="inspector-field"><label>Тень (boxShadow)</label><input type="text" data-style-key="boxShadow" value="${styles.boxShadow || ''}"></div>
-        `;
+            <div class="inspector-field"><label>Цвет фона</label><input type="color" data-style-key="backgroundColor" value="${styles.backgroundColor || '#ffffff'}"></div>
+            <div class="inspector-field"><label>Цвет текста</label><input type="color" data-style-key="color" value="${styles.color || '#000000'}"></div>
+            <div class="inspector-field"><label>Отступы (padding)</label><input type="text" data-style-key="padding" value="${styles.padding || ''}"></div>
+            <div class="inspector-field"><label>Скругление (borderRadius)</label><input type="text" data-style-key="borderRadius" value="${styles.borderRadius || ''}"></div>
+            <div class="inspector-field"><label>Тень (boxShadow)</label><input type="text" data-style-key="boxShadow" value="${styles.boxShadow || ''}"></div>`;
     }
 
     function updateElementFromInspector(event) {
         if (!selectedElementId) return;
-
         const elementData = currentConfig.elements.find(el => el.id === selectedElementId);
         const input = event.target;
+        const value = input.value;
         
-        if (input.dataset.key) {
-            elementData[input.dataset.key] = input.value;
-        } else if (input.dataset.contentKey) {
-            elementData.content[input.dataset.contentKey] = input.value;
-        } else if (input.dataset.styleKey) {
-            elementData.styles[input.dataset.styleKey] = input.value;
+        if (input.dataset.key) elementData[input.dataset.key] = value;
+        else if (input.dataset.contentKey) elementData.content[input.dataset.contentKey] = value;
+        else if (input.dataset.styleKey) {
+            if (!elementData.styles) elementData.styles = {};
+            elementData.styles[input.dataset.styleKey] = value;
         }
         
-        // Перерисовываем измененный элемент на холсте
+        // Перерисовываем только измененный элемент для производительности
         const oldElement = document.querySelector(`.admin-element-wrapper[data-element-id="${selectedElementId}"]`);
         if(oldElement) {
-            const newElement = createAdminElement(elementData);
-            oldElement.replaceWith(newElement);
-            newElement.classList.add('selected'); // Сохраняем выделение
+            oldElement.replaceWith(createAdminElement(elementData));
+            document.querySelector(`.admin-element-wrapper[data-element-id="${selectedElementId}"]`).classList.add('selected');
         }
     }
     
     function deleteSelectedElement() {
-        if (!selectedElementId || !confirm('Вы уверены, что хотите удалить этот элемент?')) return;
+        if (!selectedElementId || !confirm('Вы уверены, что хотите удалить этот элемент? Действие необратимо.')) return;
         
-        // Удаляем из массива elements
         currentConfig.elements = currentConfig.elements.filter(el => el.id !== selectedElementId);
-        
-        // Удаляем из всех колонок в layout
         currentConfig.layout.main.columns.forEach(col => {
             col.elements = col.elements.filter(id => id !== selectedElementId);
         });
         
-        // Скрываем инспектор и перерисовываем холст
         document.getElementById('inspector-panel').style.display = 'none';
         selectedElementId = null;
         renderCanvas();
@@ -305,34 +261,31 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function addNewElement(type) {
         if (currentConfig.layout.main.columns.length === 0) {
-            alert('Сначала добавьте хотя бы одну колонку в макете!');
-            return;
+            return alert('Сначала нужно добавить хотя бы одну колонку в макете!');
         }
-        
         const newElement = {
-            id: `el-${new Date().getTime()}`,
-            adminTitle: `Новый элемент (${type})`,
+            id: `el-${Date.now()}`,
+            adminTitle: `Новый ${type}`,
             type: type,
             content: {},
             styles: {}
         };
-        
-        // Задаем базовый контент в зависимости от типа
-        switch(type) {
-            case 'textBlock': newElement.content.html = '<p>Новый текстовый блок.</p>'; break;
-            case 'photo': newElement.content.url = 'https://via.placeholder.com/400x200'; break;
-            case 'button': newElement.content.text = 'Нажми меня'; newElement.styles.padding = '10px'; break;
+        // Базовый контент для новых элементов
+        if (type === 'textBlock') newElement.content.html = '<p>Введите ваш текст здесь.</p>';
+        if (type === 'photo') newElement.content.url = 'https://via.placeholder.com/600x400.png?text=Новое+фото';
+        if (type === 'button') {
+            newElement.content.text = 'Новая кнопка';
+            newElement.styles = { padding: '15px', backgroundColor: '#3498db', color: '#ffffff', border: 'none', cursor: 'pointer' };
         }
         
         currentConfig.elements.push(newElement);
-        // Добавляем в начало первой колонки
         currentConfig.layout.main.columns[0].elements.unshift(newElement.id);
         
         renderCanvas();
         selectElement(newElement.id);
     }
     
-    // --- УПРАВЛЕНИЕ СТРУКТУРОЙ ---
+    // --- УПРАВЛЕНИЕ СТРУКТУРОЙ И ТУЛБАРОМ ---
 
     function setupToolbarActions() {
         document.querySelectorAll('.add-element-btn').forEach(btn => {
@@ -342,105 +295,90 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.preview-btn').forEach(btn => {
             btn.onclick = () => {
                 const canvas = document.getElementById('admin-canvas');
-                if (btn.dataset.mode === 'desktop') canvas.style.width = '100%';
-                if (btn.dataset.mode === 'tablet') canvas.style.width = '768px';
-                if (btn.dataset.mode === 'mobile') canvas.style.width = '375px';
+                const wrapper = document.getElementById('canvas-wrapper');
+                const mode = btn.dataset.mode;
+                if (mode === 'desktop') canvas.style.width = '100%';
+                if (mode === 'tablet') canvas.style.width = '768px';
+                if (mode === 'mobile') canvas.style.width = '375px';
+                wrapper.scrollTo({ top: 0, behavior: 'smooth' });
             }
         });
     }
 
     function updateStructureFromDOM() {
-        const newColumns = [];
+        const newColumnsData = [];
         document.querySelectorAll('.sortable-column').forEach(columnDiv => {
             const columnId = columnDiv.dataset.columnId;
             const originalColumn = currentConfig.layout.main.columns.find(c => c.id === columnId);
-            
-            const elementIds = Array.from(columnDiv.querySelectorAll('.admin-element-wrapper'))
-                                  .map(el => el.dataset.elementId);
-            
-            newColumns.push({
-                ...originalColumn,
-                elements: elementIds
-            });
+            const elementIds = Array.from(columnDiv.querySelectorAll('.admin-element-wrapper')).map(el => el.dataset.elementId);
+            newColumnsData.push({ ...originalColumn, elements: elementIds });
         });
-        currentConfig.layout.main.columns = newColumns;
-        console.log("Структура обновлена после перетаскивания.");
+        currentConfig.layout.main.columns = newColumnsData;
+        console.log("Структура DOM обновлена в объекте currentConfig.");
     }
     
-    // --- СОХРАНЕНИЕ НА GITHUB ---
+    // --- СОХРАНЕНИЕ НА GITHUB (ЭТАП 5) ---
     
     async function saveConfiguration() {
         saveBtn.textContent = 'Сохранение...';
         saveBtn.disabled = true;
-
-        // Перед сохранением убедимся, что структура актуальна
-        updateStructureFromDOM();
+        updateStructureFromDOM(); // Финальная синхронизация структуры
         
         const { username, repo } = currentConfig.github;
         const filePath = 'config.json';
         const url = `https://api.github.com/repos/${username}/${repo}/contents/${filePath}`;
 
         try {
-            // 1. Получаем текущий SHA файла
-            const getFileResponse = await fetch(url, {
-                headers: { 'Authorization': `token ${githubToken}` }
-            });
-            if (!getFileResponse.ok) throw new Error('Не удалось получить SHA файла.');
+            // 1. Получаем текущий SHA файла (обязательно для обновления)
+            const getFileResponse = await fetch(url, { headers: { 'Authorization': `token ${githubToken}` } });
+            if (!getFileResponse.ok) throw new Error('Не удалось получить SHA файла. Проверьте токен и имя репозитория.');
             const fileData = await getFileResponse.json();
-            const sha = fileData.sha;
-
+            
             // 2. Готовим данные для отправки
             const contentToSave = JSON.stringify(currentConfig, null, 2);
-            const encodedContent = btoa(unescape(encodeURIComponent(contentToSave))); // Кодируем в Base64 с поддержкой UTF-8
+            // Корректное кодирование UTF-8 в Base64
+            const encodedContent = btoa(unescape(encodeURIComponent(contentToSave)));
             
-            const body = JSON.stringify({
+            const body = {
                 message: `[Admin Panel] Update config.json at ${new Date().toISOString()}`,
                 content: encodedContent,
-                sha: sha
-            });
+                sha: fileData.sha
+            };
             
-            // 3. Отправляем PUT-запрос
+            // 3. Отправляем PUT-запрос на обновление
             const saveResponse = await fetch(url, {
                 method: 'PUT',
-                headers: {
-                    'Authorization': `token ${githubToken}`,
-                    'Content-Type': 'application/json'
-                },
-                body: body
+                headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
             });
             
             if (saveResponse.ok) {
-                alert('Конфигурация успешно сохранена!');
+                alert('Конфигурация успешно сохранена! Изменения появятся на сайте через минуту.');
             } else {
                 const errorData = await saveResponse.json();
-                throw new Error(`Ошибка сохранения: ${errorData.message}`);
+                throw new Error(`Ошибка сохранения на GitHub: ${errorData.message}`);
             }
 
         } catch (error) {
-            console.error('Ошибка сохранения на GitHub:', error);
-            alert(`Произошла ошибка при сохранении: ${error.message}`);
+            console.error(error);
+            alert(`Произошла ошибка: ${error.message}`);
         } finally {
             saveBtn.textContent = '💾 Сохранить';
             saveBtn.disabled = false;
         }
     }
     
-    
-    // --- КОПИЯ ФАБРИКИ ЭЛЕМЕНТОВ (для админки) ---
-    // Это нужно, чтобы admin.js был независим от main.js
+    // Копия фабрики элементов из main.js для независимости админки
     function createElement(elementData) {
+        // ... (Код идентичен функции createElement из main.js, но можно добавить специфичную логику для админки) ...
         const wrapper = document.createElement('div');
         wrapper.className = `element-wrapper type-${elementData.type}`;
-        wrapper.id = elementData.id;
-
         let element;
-        switch (elementData.type) {
-            case 'externalBlock':
-            case 'videoBlock':
+        // ... (полностью копируется логика switch/case) ...
+         switch (elementData.type) {
+            case 'externalBlock': case 'videoBlock':
                 element = document.createElement('iframe');
                 element.src = elementData.content.url;
-                element.setAttribute('frameborder', '0');
-                element.setAttribute('allowfullscreen', '');
                 break;
             case 'textBlock':
                 element = document.createElement('div');
@@ -454,18 +392,15 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'button':
                 element = document.createElement('button');
                 element.textContent = elementData.content.text;
-                // В админке кнопки неактивны
-                element.style.pointerEvents = 'none';
+                element.style.pointerEvents = 'none'; // Делаем кнопку неактивной в редакторе
                 break;
             default:
                 element = document.createElement('div');
-                element.textContent = 'Неизвестный тип элемента';
+                element.textContent = `Неизвестный тип элемента`;
         }
-
         if (elementData.styles) {
             Object.assign(element.style, elementData.styles);
         }
-
         wrapper.appendChild(element);
         return wrapper;
     }
