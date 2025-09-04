@@ -108,13 +108,16 @@ document.addEventListener('DOMContentLoaded', () => {
         elWrapper.className = `element-wrapper draggable-element type-${elementData.type}`;
         elWrapper.id = elementData.id;
         elWrapper.dataset.elementId = elementData.id;
-
+    
         if (elementData.height) elWrapper.style.height = elementData.height;
         if (elementData.style) Object.assign(elWrapper.style, elementData.style);
-
+    
+        // Добавляем защитный слой для iframe, чтобы он не перехватывал клики
+        const overlay = '<div class="iframe-overlay"></div>';
+    
         switch (elementData.type) {
             case 'player':
-                elWrapper.innerHTML = `<div class="iframe-overlay"></div><iframe src="${elementData.url}" scrolling="no"></iframe>`;
+                elWrapper.innerHTML = `${overlay}<iframe src="${elementData.url}" scrolling="no"></iframe>`;
                 break;
             case 'textBlock':
                 elWrapper.innerHTML = elementData.content;
@@ -124,14 +127,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case 'videoBlock':
             case 'reels':
-                elWrapper.innerHTML = `<div class="iframe-overlay"></div><iframe src="${elementData.url}" allowfullscreen></iframe>`;
+                elWrapper.innerHTML = `${overlay}<iframe src="${elementData.url}" allowfullscreen></iframe>`;
                 if (elementData.type === 'reels') elWrapper.style.aspectRatio = '9 / 16';
                 break;
             case 'button':
                 elWrapper.innerHTML = `<button style="pointer-events:none; width:100%; height:100%; background:${elementData.style?.backgroundColor}; color:${elementData.style?.color}; font-size:${elementData.style?.fontSize}; border-radius:${elementData.style?.borderRadius}; border:none;">${elementData.text || 'Кнопка'}</button>`;
                 break;
         }
-
+    
         elWrapper.addEventListener('click', (e) => {
             e.stopPropagation();
             selectElement(elWrapper);

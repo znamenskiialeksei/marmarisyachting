@@ -67,3 +67,19 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Ro
 #inspector-content textarea {
     width: 95%;
 }
+/* Стили для защитного слоя на iframe в админке */
+.draggable-element .iframe-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 20; /* Должен быть выше iframe */
+    cursor: move;
+    background: rgba(0, 123, 255, 0.1); /* Слегка подсветим для наглядности */
+}
+
+/* Когда элемент выбран, слой становится прозрачнее и не мешает */
+.draggable-element.selected .iframe-overlay {
+    background: transparent;
+}
