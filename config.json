@@ -97,6 +97,42 @@
       "text": "",
       "content": "",
       "style": {}
+    },
+    {
+      "id": "button_1756982212613",
+      "type": "button",
+      "title": "Новый button",
+      "position": {
+        "x": 50,
+        "y": 50
+      },
+      "size": {
+        "width": 350,
+        "height": 250
+      },
+      "visible": true,
+      "url": "",
+      "text": "",
+      "content": "",
+      "style": {}
+    },
+    {
+      "id": "videoBlock_1756982282720",
+      "type": "videoBlock",
+      "title": "Новый videoBlock",
+      "position": {
+        "x": 50,
+        "y": 50
+      },
+      "size": {
+        "width": 350,
+        "height": 250
+      },
+      "visible": true,
+      "url": "",
+      "text": "",
+      "content": "",
+      "style": {}
     }
   ]
 }
