@@ -1,87 +1,117 @@
 {
   "github": {
-    "user": "znamenskiialeksei",
+    "username": "znamenskiialeksei",
     "repo": "marmarisyachting"
   },
   "globalSettings": {
-    "pageTitle": "ÃÂÃÂÃÂÃÂÃÂÃÂµ ÃÂÃÂ¼ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ | Marmaris Yachting"
+    "pageTitle": "Marmaris Yachting - Главная страница"
   },
   "layout": {
     "header": {
-      "content": "<h1>апаввапавппыаыпп</h1>",
+      "content": "<h1>Добро пожаловать в Marmaris Yachting</h1>",
       "background": {
-        "type": "video",
-        "url": "https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4"
-      }
-    },
-    "footer": {
-      "content": "<p>ÃÂÃÂ© 2025 Znamenskii Aleksei. аппавпапавпапаа</a></p>",
-      "background": {
-        "type": "image",
-        "url": "https://images.pexels.com/photos/1638324/pexels-photo-1638324.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+        "type": "color",
+        "value": "#2c3e50"
+      },
+      "styles": {
+        "color": "#ffffff",
+        "padding": "20px"
       }
     },
     "main": {
-      "background": {
-        "type": "color",
-        "color": "#f0f2f5"
-      },
       "columns": [
         {
-          "id": "column1_1678886400",
-          "width": "20%",
+          "id": "col-1",
+          "width": "60%",
           "elements": [
-            "el_1757022916409"
+            "el-1",
+            "el-3"
           ]
         },
         {
-          "id": "column2_1678886401",
-          "width": "60%",
+          "id": "col-2",
+          "width": "40%",
           "elements": [
-            "el_1757023105279"
+            "el-2",
+            "el-4"
           ]
         }
       ]
     },
-    "columns": [
-      {
-        "width": "60%",
-        "blocks": []
+    "footer": {
+      "content": "<p>© 2025 Marmaris Yachting. Все права защищены.</p>",
+      "background": {
+        "type": "color",
+        "value": "#34495e"
       },
-      {
-        "width": "40%",
-        "blocks": []
+      "styles": {
+        "color": "#ecf0f1",
+        "padding": "15px"
       }
-    ]
+    }
   },
   "elements": [
     {
-      "id": "el_1757022916409",
-      "type": "textBlock",
-      "title": "ÃÂÃÂ¾ÃÂ²ÃÂÃÂ¹ ÃÂ±ÃÂ»ÃÂ¾ÃÂº: textBlock",
-      "visible": true,
-      "content": "<h2>апвапапааиаичсмаисмимс123445.</p>",
-      "style": {
+      "id": "el-1",
+      "adminTitle": "Основной маршрут",
+      "type": "externalBlock",
+      "content": {
+        "url": "https://www.example.com"
+      },
+      "styles": {
         "width": "100%",
+        "height": "500px",
+        "borderRadius": "8px",
+        "boxShadow": "0 4px 8px rgba(0,0,0,0.1)"
+      }
+    },
+    {
+      "id": "el-2",
+      "adminTitle": "Описание тура",
+      "type": "textBlock",
+      "content": {
+        "html": "<h2>Наше лучшее предложение</h2><p>Отправляйтесь в незабываемое путешествие по Средиземному морю. Мы предлагаем комфортабельные яхты и эксклюзивные маршруты.</p>"
+      },
+      "styles": {
         "padding": "20px",
         "backgroundColor": "#ffffff",
-        "color": "#333333",
+        "color": "#333",
+        "borderRadius": "8px",
+        "boxShadow": "0 4px 8px rgba(0,0,0,0.1)"
+      }
+    },
+    {
+      "id": "el-3",
+      "adminTitle": "Галерея",
+      "type": "photo",
+      "content": {
+        "url": "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?q=80&w=2070"
+      },
+      "styles": {
+        "width": "100%",
+        "objectFit": "cover",
         "borderRadius": "8px"
       }
     },
     {
-      "id": "el_1757023105279",
-      "type": "externalBlock",
-      "title": "ÃÂÃÂ¾ÃÂ²ÃÂÃÂ¹ ÃÂ±ÃÂ»ÃÂ¾ÃÂº: externalBlock",
-      "visible": true,
+      "id": "el-4",
+      "adminTitle": "Кнопка бронирования",
+      "type": "button",
       "content": {
-        "url": "https://znamenskiialeksei.github.io/marmarisyachting/2RouteVasilisa.html"
+        "text": "Забронировать тур",
+        "action": "openLink",
+        "url": "https://www.example.com/booking",
+        "modalContent": ""
       },
-      "style": {
+      "styles": {
         "width": "100%",
-        "height": "650px",
-        "borderRadius": "12px",
-        "boxShadow": "0 10px 25px rgba(0,0,0,0.1)"
+        "padding": "15px",
+        "backgroundColor": "#e74c3c",
+        "color": "#ffffff",
+        "textAlign": "center",
+        "fontSize": "18px",
+        "borderRadius": "5px",
+        "cursor": "pointer"
       }
     }
   ]
