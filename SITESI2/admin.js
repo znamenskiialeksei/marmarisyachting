@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- НАСТРОЙКИ ---
-    const GITHUB_USER = 'YOUR_GITHUB_USERNAME'; // <<< ВАШ ЮЗЕРНЕЙМ GITHUB
-    const GITHUB_REPO = 'YOUR_REPOSITORY_NAME'; // <<< ИМЯ ВАШЕГО РЕПОЗИТОРИЯ
+    const GITHUB_USER = 'znamenskiialeksei'; // <<< ВАШ ЮЗЕРНЕЙМ GITHUB
+    const GITHUB_REPO = 'marmarisyachting'; // <<< ИМЯ ВАШЕГО РЕПОЗИТОРИЯ
 
     // --- DOM ЭЛЕМЕНТЫ ---
     const loginView = document.getElementById('login-view');
