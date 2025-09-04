@@ -9,7 +9,7 @@
 <body>
     <div id="login-view" class="admin-container">
         <h2>Вход в панель администратора</h2>
-        <p>Введите ваш GitHub Personal Access Token для доступа к редактированию.</p>
+        <p>Введите ваш GitHub Personal Access Token.</p>
         <input type="password" id="github-token" placeholder="Токен (начинается с ghp_...)">
         <button id="login-btn">Войти</button>
     </div>
@@ -21,7 +21,7 @@
             </div>
             <div class="toolbar-group">
                 <span>Добавить:</span>
-                <button data-type="externalBlock">Внешний блок (Маршрут)</button>
+                <button data-type="externalBlock">Внешний блок</button>
                 <button data-type="textBlock">Текст</button>
                 <button data-type="videoBlock">Видео</button>
                 <button data-type="photo">Фото</button>
@@ -48,29 +48,35 @@
         </div>
 
         <div id="global-settings-panel" class="floating-panel" style="display:none; top: 70px; left: 20px;">
-            <div class="panel-header">🌍 Глобальные настройки</div>
+            <div class="panel-header">
+                <span>🌍 Глобальные настройки</span>
+                <div class="panel-controls">
+                    <button class="panel-collapse-btn">➖</button>
+                    <button class="panel-close-btn">❌</button>
+                </div>
+            </div>
             <div class="panel-content"></div>
         </div>
         <div id="layout-settings-panel" class="floating-panel" style="display:none; top: 270px; left: 20px;">
-            <div class="panel-header">🎨 Настройки макета</div>
+            <div class="panel-header">
+                <span>🎨 Настройки макета</span>
+                <div class="panel-controls">
+                    <button class="panel-collapse-btn">➖</button>
+                    <button class="panel-close-btn">❌</button>
+                </div>
+            </div>
             <div class="panel-content"></div>
         </div>
-        <div class="panel-controls">
-            <button class="panel-collapse-btn">➖</button>
-            <button class="panel-close-btn">❌</button>
-        </div>
-        </div>
-          <div class="panel-content"></div>
-        </div>
         <div id="element-inspector-panel" class="floating-panel" style="display:none; top: 70px; right: 20px;">
-        <div class="panel-header">
-        <span>⚙️ Настройки элемента <span id="inspector-element-id"></span></span>
-        <div class="panel-controls">
-            <button class="panel-collapse-btn">➖</button>
-            <button class="panel-close-btn">❌</button>
+            <div class="panel-header">
+                <span>⚙️ Настройки элемента <span id="inspector-element-id"></span></span>
+                <div class="panel-controls">
+                    <button class="panel-collapse-btn">➖</button>
+                    <button class="panel-close-btn">❌</button>
+                </div>
+            </div>
+            <div class="panel-content" id="inspector-content"></div>
         </div>
-        </div>
-         <div class="panel-content" id="inspector-content"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>

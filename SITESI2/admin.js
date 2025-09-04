@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let githubToken = '';
     let selectedElementId = null;
 
+    // --- 1. ЛОГИКА ВХОДА И ЗАГРУЗКИ ---
     loginBtn.addEventListener('click', () => {
         const token = tokenInput.value.trim();
         if (!token) return alert('Пожалуйста, введите ваш токен доступа GitHub.');
@@ -48,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- 2. ФУНКЦИИ РЕНДЕРИНГА ---
     function renderLayoutAndSettings() {
         globalSettingsPanel.querySelector('.panel-content').innerHTML = `
             <label>Заголовок сайта (Title)</label>
@@ -85,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function renderColumnsEditor() {
         const editor = document.getElementById('columns-editor');
+        if(!editor) return;
         editor.innerHTML = '';
         currentConfig.layout.main.columns.forEach((col, index) => {
             editor.innerHTML += `
@@ -123,40 +126,33 @@ document.addEventListener('DOMContentLoaded', () => {
         elWrapper.id = elementData.id;
         elWrapper.dataset.elementId = elementData.id;
 
-        if (elementData.height) elWrapper.style.height = elementData.height;
         if (elementData.style) Object.assign(elWrapper.style, elementData.style);
-
-        const overlay = '<div class="admin-element-overlay"></div>';
-
+        
+        const overlay = `<div class="admin-element-overlay"></div>`;
+        
         switch (elementData.type) {
             case 'externalBlock': case 'player':
-                elWrapper.innerHTML = `${overlay}<iframe src="${elementData.url}" scrolling="no" sandbox=""></iframe>`;
-                break;
+                elWrapper.innerHTML = `${overlay}<iframe src="${elementData.url}" scrolling="no" sandbox=""></iframe>`; break;
             case 'videoBlock': case 'reels':
                 elWrapper.innerHTML = `${overlay}<iframe src="${elementData.url}" sandbox="allow-fullscreen" allowfullscreen></iframe>`;
                 if (elementData.type === 'reels') elWrapper.style.aspectRatio = '9 / 16';
                 break;
             case 'textBlock':
-                elWrapper.innerHTML = elementData.content;
-                break;
+                elWrapper.innerHTML = elementData.content; break;
             case 'photo':
-                elWrapper.innerHTML = `<img src="${elementData.url}" alt="${elementData.title || ''}" style="width:100%; height:100%; object-fit: ${elementData.style?.objectFit || 'cover'};">`;
-                break;
+                elWrapper.innerHTML = `<img src="${elementData.url}" alt="${elementData.title || ''}" style="width:100%; height:100%; object-fit: ${elementData.style?.objectFit || 'cover'};">`; break;
             case 'button':
-                elWrapper.innerHTML = `<button style="pointer-events:none; width:100%; height:100%; background:${elementData.style?.backgroundColor}; color:${elementData.style?.color}; font-size:${elementData.style?.fontSize}; border-radius:${elementData.style?.borderRadius}; border:none;">${elementData.text || 'Кнопка'}</button>`;
-                break;
+                elWrapper.innerHTML = `<button style="pointer-events:none; width:100%; height:100%; background:${elementData.style?.backgroundColor}; color:${elementData.style?.color}; font-size:${elementData.style?.fontSize}; border-radius:${elementData.style?.borderRadius}; border:none;">${elementData.text || 'Кнопка'}</button>`; break;
         }
 
-        elWrapper.addEventListener('click', (e) => {
-            e.stopPropagation();
-            selectElement(elWrapper);
-        });
+        elWrapper.addEventListener('click', (e) => { e.stopPropagation(); selectElement(elWrapper); });
         return elWrapper;
     }
 
+    // --- 3. ИНТЕРАКТИВНОСТЬ ---
     function initInteractivity() {
         document.querySelectorAll('.sortable-column').forEach(col => {
-            new Sortable(col, { group: 'shared', animation: 150, handle: '.admin-element-overlay' });
+            new Sortable(col, { group: 'shared', animation: 150, handle: '.admin-element-overlay, .draggable-element:not(.type-player, .type-externalBlock, .type-videoBlock, .type-reels)' });
         });
 
         interact('.draggable-element').resizable({
@@ -167,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     target.style.width = `${event.rect.width}px`;
                     target.style.height = `${event.rect.height}px`;
                     if (target.id === selectedElementId) {
-                       updateElementFromInspector(); // Обновляем данные в конфиге
+                       updateElementFromInspector(true);
                     }
                 }
             }
@@ -175,17 +171,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function makePanelsInteractive() {
-        document.querySelectorAll('.floating-panel').forEach(panel => {
-            interact(panel).draggable({
-                allowFrom: '.panel-header',
-                ignoreFrom: '.panel-content, input, textarea, select, button'
-            }).styleCursor(false);
-            
-            panel.querySelector('.panel-close-btn').onclick = () => panel.style.display = 'none';
-            panel.querySelector('.panel-collapse-btn').onclick = () => panel.classList.toggle('collapsed');
+        document.body.addEventListener('click', (e) => {
+            const closeBtn = e.target.closest('.panel-close-btn');
+            if(closeBtn) closeBtn.closest('.floating-panel').style.display = 'none';
+
+            const collapseBtn = e.target.closest('.panel-collapse-btn');
+            if(collapseBtn) collapseBtn.closest('.floating-panel').classList.toggle('collapsed');
         });
+
+        interact('.floating-panel').draggable({
+            allowFrom: '.panel-header',
+            ignoreFrom: '.panel-content, input, textarea, select, button'
+        }).styleCursor(false);
     }
 
+    // --- 4. УПРАВЛЕНИЕ С ТУЛБАРА И ПАНЕЛЕЙ ---
     function setupToolbarActions() {
         document.getElementById('toggle-global-settings').onclick = () => togglePanel('global-settings-panel');
         document.getElementById('toggle-layout-settings').onclick = () => togglePanel('layout-settings-panel');
@@ -219,6 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function togglePanel(panelId) {
         const panel = document.getElementById(panelId);
         panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        panel.classList.remove('collapsed');
     }
 
     function addNewElement(type) {
@@ -227,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ...({
                 externalBlock: { height: '650px', url: '' },
                 textBlock: { content: '<p>Новый текстовый блок</p>' },
-                photo: { url: 'https://via.placeholder.com/400x300' },
+                photo: { url: 'https://via.placeholder.com/400x300', style: { objectFit: 'cover' } },
                 reels: { height: '600px', url: '' },
                 videoBlock: { height: '300px', url: '' },
                 button: { text: 'Кнопка', style: { backgroundColor: '#007bff', color: '#ffffff', fontSize: '16px', borderRadius: '8px' } }
@@ -239,6 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
         selectElement(document.getElementById(newElement.id));
     }
     
+    // --- 5. УПРАВЛЕНИЕ ИНСПЕКТОРОМ ---
     function selectElement(element) {
         document.querySelectorAll('.draggable-element.selected').forEach(el => el.classList.remove('selected'));
         if (element) {
@@ -256,6 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!elementData) return;
 
         inspectorPanel.style.display = 'block';
+        inspectorPanel.classList.remove('collapsed');
         document.getElementById('inspector-element-id').textContent = `(${elementData.title || elementData.id})`;
         
         let content = `
@@ -273,12 +276,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 content += `<label>Текст кнопки</label><input type="text" data-prop="text" value="${elementData.text || ''}">`; break;
         }
 
-        content += `<hr><details open><summary>Размеры</summary>
+        content += `<hr><details open><summary>Размеры и Стиль</summary>
             <label>Ширина (н-р, 100% или 300px)</label><input type="text" data-style-prop="width" value="${elementData.style?.width || '100%'}">
-            <label>Высота (н-р, 650px или auto)</label><input type="text" data-prop="height" value="${elementData.height || 'auto'}">
-        </details>`;
-
-        content += `<details open><summary>Стилизация</summary>
+            <label>Высота (н-р, 650px или auto)</label><input type="text" data-style-prop="height" value="${elementData.style?.height || 'auto'}">
             <label>Цвет фона</label><input type="text" data-style-prop="backgroundColor" value="${elementData.style?.backgroundColor || ''}">
             <label>Цвет текста</label><input type="text" data-style-prop="color" value="${elementData.style?.color || ''}">
             <label>Размер шрифта (н-р, 16px)</label><input type="text" data-style-prop="fontSize" value="${elementData.style?.fontSize || ''}">
@@ -297,25 +297,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function updateElementFromInspector() {
+    function updateElementFromInspector(fromResize = false) {
         if (!selectedElementId) return;
         const elementData = currentConfig.elements.find(el => el.id === selectedElementId);
         if (!elementData) return;
-
-        inspectorContent.querySelectorAll('[data-prop]').forEach(input => {
-            elementData[input.dataset.prop] = input.value;
-        });
-        if (!elementData.style) elementData.style = {};
-        inspectorContent.querySelectorAll('[data-style-prop]').forEach(input => {
-            elementData.style[input.dataset.styleProp] = input.value;
-        });
-
         const elementOnCanvas = document.getElementById(selectedElementId);
-        if (elementOnCanvas) {
-            const updatedElement = createAndSetupElement(elementData);
-            elementOnCanvas.replaceWith(updatedElement);
-            selectElement(updatedElement);
+
+        if(fromResize) {
+            if (!elementData.style) elementData.style = {};
+            elementData.style.width = elementOnCanvas.style.width;
+            elementData.style.height = elementOnCanvas.style.height;
+        } else {
+            inspectorContent.querySelectorAll('[data-prop]').forEach(input => {
+                elementData[input.dataset.prop] = input.value;
+            });
+            if (!elementData.style) elementData.style = {};
+            inspectorContent.querySelectorAll('[data-style-prop]').forEach(input => {
+                elementData.style[input.dataset.styleProp] = input.value;
+            });
         }
+        
+        // Re-render the single element on canvas to reflect changes
+        const updatedElementVisual = createAndSetupElement(elementData);
+        elementOnCanvas.replaceWith(updatedElementVisual);
+        selectElement(updatedElementVisual);
     }
     
     function deleteSelectedElement() {
@@ -328,10 +333,11 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedElementId = null;
         renderElementsOnCanvas();
     }
+    
     // --- 6. ЛОГИКА СОХРАНЕНИЯ ---
     saveBtn.addEventListener('click', async () => {
+        // 1. Собрать все данные из UI в currentConfig
         currentConfig.globalSettings.pageTitle = document.querySelector('[data-config-key="globalSettings.pageTitle"]').value;
-        
         ['header', 'main', 'footer'].forEach(part => {
              const panel = layoutSettingsPanel;
              if(currentConfig.layout[part].content !== undefined) {
@@ -350,8 +356,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         currentConfig.layout.main.columns.forEach(col => {
-            const colEl = document.querySelector(`[data-column-id="${col.id}"]`);
-            col.width = colEl.querySelector('.column-width-input')?.value || col.width;
+            const colInput = layoutSettingsPanel.querySelector(`.column-width-input[data-col-id="${col.id}"]`);
+            if (colInput) col.width = colInput.value;
         });
         
         const newColumns = [];
@@ -364,6 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         currentConfig.layout.main.columns = newColumns;
 
+        // 2. Отправить на GitHub API
         const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/config.json`;
         saveBtn.textContent = 'Сохранение...';
         saveBtn.disabled = true;

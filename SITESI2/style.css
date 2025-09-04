@@ -87,3 +87,25 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Ro
 .column-editor input { width: 80px; }
 .column-editor button { background: #dc3545; color: white; border: none; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
 #add-column-btn { width: 100%; margin-top: 10px; padding: 8px; background: #007bff; color: white; border: none; cursor: pointer; }
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.panel-controls button {
+    background: none; border: none; cursor: pointer; font-size: 14px; padding: 2px 5px;
+}
+.floating-panel.collapsed .panel-content,
+.floating-panel.collapsed #columns-editor,
+.floating-panel.collapsed details {
+    display: none;
+}
+.floating-panel.collapsed {
+    min-height: 0 !important;
+    height: auto !important;
+}
+.column-controls { margin-top: 15px; }
+.column-editor { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+.column-editor input { width: 80px; }
+.column-editor button { background: #dc3545; color: white; border: none; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
+#add-column-btn { width: 100%; margin-top: 10px; padding: 8px; background: #007bff; color: white; border: none; cursor: pointer; }
