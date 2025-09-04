@@ -16,7 +16,7 @@
 
         /* Экран входа */
         #login-screen { display: flex; justify-content: center; align-items: center; height: 100%; }
-        .login-box { padding: 40px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 100%; max-width: 400px; }
+        .login-box { padding: 40px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 100%; max-width: 450px; }
         .login-box h1 { text-align: center; margin-top: 0; }
         .login-box label { font-weight: bold; }
         .login-box button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; }
@@ -208,7 +208,10 @@ loginButton.addEventListener('click', async () => {
 });
 
 async function initializeEditor(user, repo, token) {
+    loginError.innerHTML = 'Подключение к GitHub...';
     githubApi = new GitHubAPI(user, repo, token);
+    console.log(`Попытка загрузить файл с: ${githubApi.baseUrl}`);
+
     try {
         config = await githubApi.getFile();
         loginScreen.style.display = 'none';
@@ -217,7 +220,24 @@ async function initializeEditor(user, repo, token) {
         updateSaveStatus(true);
     } catch (error) {
         console.error('Ошибка инициализации:', error);
-        loginError.textContent = `Ошибка: ${error.message}. Проверьте данные и права токена.`;
+        let detailedError = error.message;
+
+        // Улучшенная диагностика для ошибки "Failed to fetch"
+        if (error instanceof TypeError && error.message.toLowerCase().includes('failed to fetch')) {
+            detailedError = 'Не удалось выполнить сетевой запрос (Failed to fetch).';
+            loginError.innerHTML = `
+                <strong style="display: block; margin-bottom: 10px;">${detailedError}</strong>
+                Это может быть вызвано одной из следующих причин:
+                <ul style="text-align: left; margin-top: 10px; font-size: 14px; line-height: 1.5;">
+                    <li><b>Запуск локально:</b> Убедитесь, что вы открыли эту страницу через веб-сервер (адрес начинается с <code>http://</code> или <code>https://</code>), а не как локальный файл (<code>file://</code>).</li>
+                    <li><b>Блокировка:</b> Проверьте, не блокирует ли запрос антивирус, firewall или расширение в браузере (например, AdBlock). Попробуйте в режиме "Инкогнито".</li>
+                    <li><b>Сеть:</b> Проверьте ваше интернет-соединение и доступ к <code>api.github.com</code>.</li>
+                </ul>
+            `;
+        } else {
+            loginError.textContent = `Ошибка: ${detailedError}. Проверьте данные и права токена (требуется scope 'repo').`;
+        }
+        
         localStorage.removeItem('githubCreds');
     }
 }
