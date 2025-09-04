@@ -32,10 +32,7 @@
           "width": "60%",
           "elements": [
             "route1_player",
-            "welcome_text_1667823456",
-            "textBlock_1756993678738",
-            "textBlock_1756993701922",
-            "button_1756993743236"
+            "welcome_text_1667823456"
           ]
         },
         {
@@ -59,7 +56,11 @@
       "visible": true,
       "style": {
         "borderRadius": "12px",
-        "boxShadow": "0 10px 25px rgba(0,0,0,0.2)"
+        "boxShadow": "0 10px 25px rgba(0,0,0,0.2)",
+        "width": "30%",
+        "backgroundColor": "",
+        "color": "",
+        "fontSize": ""
       }
     },
     {
@@ -96,47 +97,8 @@
       "visible": true,
       "style": {
         "borderRadius": "12px",
-        "boxShadow": "0 10px 25px rgba(0,0,0,0.2)",
-        "backgroundColor": "",
-        "color": "",
-        "fontSize": ""
+        "boxShadow": "0 10px 25px rgba(0,0,0,0.2)"
       }
-    },
-    {
-      "id": "textBlock_1756993678738",
-      "type": "textBlock",
-      "title": "Новый textBlock",
-      "visible": true,
-      "style": {
-        "backgroundColor": "",
-        "color": "",
-        "fontSize": "16px",
-        "borderRadius": "",
-        "boxShadow": ""
-      },
-      "content": "<p>Новый текстовый блок1</p>",
-      "height": "auto"
-    },
-    {
-      "id": "textBlock_1756993701922",
-      "type": "textBlock",
-      "title": "Новый textBlock",
-      "visible": true,
-      "style": {},
-      "content": "<p>Новый текстовый блок</p>"
-    },
-    {
-      "id": "button_1756993743236",
-      "type": "button",
-      "title": "Новый button",
-      "visible": true,
-      "style": {
-        "backgroundColor": "#007bff",
-        "color": "#ffffff",
-        "fontSize": "16px",
-        "borderRadius": "8px"
-      },
-      "text": "Кнопка"
     }
   ]
 }
