@@ -79,3 +79,83 @@ main { position: relative; width: 100%; min-height: 120vh; }
 .draggable-element.selected { border-color: #007bff; z-index: 100 !important; }
 
 .type-fields { display: none; }
+/* --- НОВЫЕ СТИЛИ ДЛЯ АДМИН-ПАНЕЛИ --- */
+
+/* Убираем старый двухколоночный макет */
+.admin-main { display: block; }
+.admin-sidebar { display: none; } /* Старый сайдбар больше не нужен */
+
+/* Верхняя панель инструментов */
+#admin-toolbar {
+    background: #343a40;
+    color: white;
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1001;
+    box-sizing: border-box;
+}
+.toolbar-group { display: flex; align-items: center; gap: 8px; }
+#admin-toolbar button { background: #6c757d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+#admin-toolbar button:hover { background: #5a6268; }
+#save-btn { background-color: #28a745 !important; font-weight: bold; }
+
+/* Холст для редактирования */
+#admin-canvas {
+    margin: 60px auto 20px auto; /* Отступ от тулбара */
+    width: 100%;
+    max-width: 1280px; /* Симуляция десктопного вида */
+    height: 2000px; /* Даем пространство для работы */
+    background: #ffffff;
+    box-shadow: 0 0 20px rgba(0,0,0,0.15);
+    position: relative;
+    transform-origin: top center;
+    transition: all 0.3s ease-in-out;
+}
+#admin-canvas.tablet-view { max-width: 768px; }
+#admin-canvas.mobile-view { max-width: 420px; }
+
+/* Плавающие окна */
+.floating-panel {
+    position: fixed; /* Используем fixed для плавания поверх всего */
+    background: #fdfdfd;
+    border: 1px solid #ccc;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    z-index: 1002;
+    min-width: 320px;
+}
+.panel-header {
+    background: #f1f1f1;
+    padding: 10px;
+    cursor: move;
+    border-bottom: 1px solid #ccc;
+    font-weight: bold;
+    user-select: none;
+    border-radius: 8px 8px 0 0;
+}
+.panel-content {
+    padding: 15px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* Стили для элементов на холсте */
+.draggable-element {
+    border: 2px dashed rgba(0, 123, 255, 0.5);
+    transition: box-shadow 0.2s;
+    box-sizing: border-box;
+}
+.draggable-element:hover {
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.2);
+}
+.draggable-element.selected {
+    border-style: solid;
+    border-color: #007bff;
+    z-index: 100 !important;
+}

@@ -15,92 +15,59 @@
     </div>
 
     <div id="admin-view" style="display:none;">
-        <div class="admin-main">
-            <div class="admin-canvas">
-                <div id="add-element-toolbar">
-                    <span>Добавить новый элемент:</span>
-                    <button data-type="player">Плеер</button>
-                    <button data-type="textBlock">Текст</button>
-                    <button data-type="videoBlock">Видео</button>
-                    <button data-type="button">Кнопка</button>
-                </div>
-                <header id="main-header" class="layout-section"></header>
-                <main id="element-container"></main>
-                <footer id="main-footer" class="layout-section"></footer>
+        <div id="admin-toolbar">
+            <div class="toolbar-group">
+                <button id="save-btn" title="Сохранить все изменения">💾 Сохранить</button>
             </div>
+            <div class="toolbar-group">
+                <span>Добавить:</span>
+                <button data-type="player" title="Добавить плеер маршрута (iframe)">Плеер</button>
+                <button data-type="textBlock" title="Добавить текстовый блок">Текст</button>
+                <button data-type="videoBlock" title="Добавить видео-блок">Видео</button>
+                <button data-type="button" title="Добавить кнопку">Кнопка</button>
+            </div>
+            <div class="toolbar-group">
+                <span>Настройки:</span>
+                <button id="toggle-global-settings">🌍 Глобальные</button>
+                <button id="toggle-layout-settings">🎨 Макет</button>
+            </div>
+            <div class="toolbar-group">
+                <span>Вид холста:</span>
+                <button id="view-desktop">🖥️</button>
+                <button id="view-tablet">📱</button>
+                <button id="view-mobile">📱</button>
+            </div>
+        </div>
 
-            <aside class="admin-sidebar">
-                <div class="save-panel">
-                    <button id="save-btn">Сохранить все изменения</button>
+        <div id="admin-canvas">
+            <header id="main-header" class="layout-section"></header>
+            <main id="element-container"></main>
+            <footer id="main-footer" class="layout-section"></footer>
+        </div>
+
+        <div id="global-settings-panel" class="floating-panel" style="display:none;">
+            <div class="panel-header">🌍 Глобальные настройки</div>
+            <div class="panel-content">
+                <label>Заголовок сайта (Title)</label>
+                <input type="text" data-config-key="globalSettings.pageTitle">
+                <label>Режим по умолчанию</label>
+                 <select data-config-key="globalSettings.defaultViewMode">
+                    <option value="scroll">Свободная прокрутка</option>
+                    <option value="book">Книга (постранично)</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="layout-settings-panel" class="floating-panel" style="display:none;">
+            <div class="panel-header">🎨 Настройки макета</div>
+            <div class="panel-content">
+                 </div>
+        </div>
+        
+        <div id="element-inspector-panel" class="floating-panel" style="display:none;">
+            <div class="panel-header">⚙️ Настройки элемента <span id="inspector-element-id"></span></div>
+            <div class="panel-content">
                 </div>
-
-                <div id="global-settings-panel" class="sidebar-section">
-                    <h3>Глобальные настройки</h3>
-                    <label>Заголовок сайта (Title)</label>
-                    <input type="text" data-config-key="globalSettings.pageTitle">
-                </div>
-
-                <div id="layout-settings-panel" class="sidebar-section">
-                     <h3>Настройки макета</h3>
-                     <details>
-                         <summary>Шапка (Header)</summary>
-                         <label>HTML контент:</label>
-                         <textarea data-config-key="layout.header.content"></textarea>
-                         <label>Тип фона:</label>
-                         <select data-config-key="layout.header.background.type">
-                             <option value="color">Цвет</option>
-                             <option value="image">Изображение</option>
-                             <option value="video">Видео</option>
-                         </select>
-                         <label>Значение (цвет HEX или URL):</label>
-                         <input type="text" data-config-key="layout.header.background.url">
-                     </details>
-                     </div>
-                
-                <div id="element-inspector-panel" class="sidebar-section" style="display:none;">
-                    <h3>Настройки элемента <span id="inspector-element-id"></span></h3>
-                    <button id="delete-element-btn" style="background: #dc3545;">Удалить элемент</button>
-                    <hr>
-                    <label>ID (не изменять)</label>
-                    <input type="text" data-prop="id" readonly>
-                    <label>Заголовок (для админки)</label>
-                    <input type="text" data-prop="title">
-                    <label>Видимость</label>
-                    <input type="checkbox" data-prop="visible">
-
-                    <div class="type-fields" id="player-fields">
-                        <label>URL маршрута</label>
-                        <input type="text" data-prop="url">
-                    </div>
-                    <div class="type-fields" id="textBlock-fields">
-                        <label>HTML контент</label>
-                        <textarea data-prop="content"></textarea>
-                    </div>
-                    <div class="type-fields" id="videoBlock-fields">
-                        <label>URL видео (YouTube embed)</label>
-                        <input type="text" data-prop="url">
-                    </div>
-                    <div class="type-fields" id="button-fields">
-                        <label>Текст кнопки</label>
-                        <input type="text" data-prop="text">
-                        <label>Действие</label>
-                        <select data-prop="action">
-                            <option value="openLink">Открыть ссылку</option>
-                            <option value="openModal">Открыть модальное окно</option>
-                        </select>
-                        <label>Ссылка (для openLink)</label>
-                        <input type="text" data-prop="link">
-                        <label>Контент модального окна (для openModal)</label>
-                        <textarea data-prop="modalContent"></textarea>
-                        <label>Цвет фона</label>
-                        <input type="color" data-style-prop="backgroundColor">
-                        <label>Цвет текста</label>
-                        <input type="color" data-style-prop="textColor">
-                        <label>Пульсация</label>
-                        <input type="checkbox" data-style-prop="pulsing">
-                    </div>
-                </div>
-            </aside>
         </div>
     </div>
 
