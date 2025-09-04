@@ -49,8 +49,8 @@
   "elements": [
     {
       "id": "route1_player",
-      "type": "player",
-      "title": "Плеер: Маршрут 1",
+      "type": "externalBlock",
+      "title": "Маршрут 1: Дневной тур",
       "url": "https://znamenskiialeksei.github.io/marmarisyachting/1RouteVasilisa.html",
       "height": "650px",
       "visible": true,
@@ -86,8 +86,8 @@
     },
     {
       "id": "route2_player",
-      "type": "player",
-      "title": "Плеер: Маршрут 2",
+      "type": "externalBlock",
+      "title": "Маршрут 2: Тур с обедом",
       "url": "https://znamenskiialeksei.github.io/marmarisyachting/2RouteVasilisa.html",
       "height": "650px",
       "visible": true,

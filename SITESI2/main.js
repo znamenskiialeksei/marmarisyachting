@@ -56,6 +56,7 @@ function createElement(elementData) {
     if (elementData.style) Object.assign(elWrapper.style, elementData.style);
 
     switch (elementData.type) {
+        case 'externalBlock':
         case 'player':
             elWrapper.innerHTML = `<iframe src="${elementData.url}" scrolling="no"></iframe>`;
             break;

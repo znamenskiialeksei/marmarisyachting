@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const globalSettingsPanel = document.getElementById('global-settings-panel');
     const layoutSettingsPanel = document.getElementById('layout-settings-panel');
 
-    // --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ---
     let currentConfig = {};
     let githubToken = '';
     let selectedElementId = null;
@@ -65,15 +64,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     <summary>${part.charAt(0).toUpperCase() + part.slice(1)}</summary>
                     ${currentConfig.layout[part].content !== undefined ? `<label>HTML контент:</label><textarea data-layout-part="${part}" data-prop="content">${currentConfig.layout[part].content}</textarea>` : ''}
                     <label>Тип фона:</label>
-                    <select class="bg-type-selector" data-layout-part="${part}">
-                        <option value="color">Цвет</option>
-                        <option value="image">Изображение</option>
-                        <option value="video">Видео</option>
-                    </select>
+                    <select class="bg-type-selector" data-layout-part="${part}"><option value="color">Цвет</option><option value="image">Изображение</option><option value="video">Видео</option></select>
                     <label>Значение (цвет HEX или URL):</label>
                     <input type="text" class="bg-url-input" data-layout-part="${part}">
                 </details>
             `).join('')}
+            <div class="column-controls">
+                <hr><label>Колонки основного контента:</label>
+                <div id="columns-editor"></div>
+                <button id="add-column-btn">+ Добавить колонку</button>
+            </div>
         `;
         layoutSettingsPanel.querySelector('.panel-content').innerHTML = layoutContent;
 
@@ -82,6 +82,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const panel = layoutSettingsPanel;
             panel.querySelector(`.bg-type-selector[data-layout-part="${part}"]`).value = bg.type;
             panel.querySelector(`.bg-url-input[data-layout-part="${part}"]`).value = bg.url || bg.color || '';
+        });
+        
+        renderColumnsEditor();
+    }
+    
+    function renderColumnsEditor() {
+        const editor = document.getElementById('columns-editor');
+        editor.innerHTML = '';
+        currentConfig.layout.main.columns.forEach((col, index) => {
+            editor.innerHTML += `
+                <div class="column-editor">
+                    <span>Колонка ${index + 1}:</span>
+                    <input type="text" value="${col.width}" data-col-id="${col.id}" class="column-width-input" placeholder="н.р. 50% или 1fr">
+                    <button data-col-id="${col.id}" class="delete-column-btn">❌</button>
+                </div>
+            `;
         });
     }
 
@@ -102,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             container.appendChild(columnEl);
         });
-        initDragAndDrop();
+        initInteractivity();
     }
 
     function createAndSetupElement(elementData) {
@@ -114,22 +130,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (elementData.height) elWrapper.style.height = elementData.height;
         if (elementData.style) Object.assign(elWrapper.style, elementData.style);
 
-        const overlay = '<div class="iframe-overlay"></div>';
+        const overlay = `<div class="admin-element-overlay"></div>`;
 
         switch (elementData.type) {
-            case 'player':
-                elWrapper.innerHTML = `${overlay}<iframe src="${elementData.url}" scrolling="no"></iframe>`;
+            case 'externalBlock': case 'player':
+                elWrapper.innerHTML = `${overlay}<iframe src="${elementData.url}" scrolling="no" sandbox=""></iframe>`;
+                break;
+            case 'videoBlock': case 'reels':
+                elWrapper.innerHTML = `${overlay}<iframe src="${elementData.url}" sandbox="allow-fullscreen" allowfullscreen></iframe>`;
+                if (elementData.type === 'reels') elWrapper.style.aspectRatio = '9 / 16';
                 break;
             case 'textBlock':
                 elWrapper.innerHTML = elementData.content;
                 break;
             case 'photo':
                 elWrapper.innerHTML = `<img src="${elementData.url}" alt="${elementData.title || ''}" style="width:100%; height:100%; object-fit: ${elementData.style?.objectFit || 'cover'};">`;
-                break;
-            case 'videoBlock':
-            case 'reels':
-                elWrapper.innerHTML = `${overlay}<iframe src="${elementData.url}" allowfullscreen></iframe>`;
-                if (elementData.type === 'reels') elWrapper.style.aspectRatio = '9 / 16';
                 break;
             case 'button':
                 elWrapper.innerHTML = `<button style="pointer-events:none; width:100%; height:100%; background:${elementData.style?.backgroundColor}; color:${elementData.style?.color}; font-size:${elementData.style?.fontSize}; border-radius:${elementData.style?.borderRadius}; border:none;">${elementData.text || 'Кнопка'}</button>`;
@@ -143,15 +158,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return elWrapper;
     }
 
-    // --- 3. ИНТЕРАКТИВНОСТЬ (DRAG & DROP) ---
-    function initDragAndDrop() {
+    // --- 3. ИНТЕРАКТИВНОСТЬ ---
+    function initInteractivity() {
         document.querySelectorAll('.sortable-column').forEach(col => {
-            new Sortable(col, { group: 'shared', animation: 150, handle: '.element-wrapper' });
+            new Sortable(col, { group: 'shared', animation: 150, handle: '.admin-element-overlay' });
         });
 
-        interact('.draggable-element.type-player, .draggable-element.type-textBlock, .draggable-element.type-photo, .draggable-element.type-reels, .draggable-element.type-videoBlock')
-        .resizable({
-            edges: { bottom: true, top: false, left: false, right: false },
+        interact('.draggable-element').resizable({
+            edges: { bottom: true },
             listeners: {
                 move(event) {
                     const target = event.target;
@@ -173,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }).styleCursor(false);
     }
 
-    // --- 4. УПРАВЛЕНИЕ С ТУЛБАРА ---
+    // --- 4. УПРАВЛЕНИЕ С ТУЛБАРА И ПАНЕЛЕЙ ---
     function setupToolbarActions() {
         document.getElementById('toggle-global-settings').onclick = () => togglePanel('global-settings-panel');
         document.getElementById('toggle-layout-settings').onclick = () => togglePanel('layout-settings-panel');
@@ -186,6 +200,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 addNewElement(e.target.dataset.type);
             }
         });
+
+        layoutSettingsPanel.addEventListener('click', (e) => {
+            if (e.target.id === 'add-column-btn') {
+                currentConfig.layout.main.columns.push({
+                    id: 'column_' + Date.now(),
+                    width: '1fr',
+                    elements: []
+                });
+                renderLayoutAndSettings();
+                renderElementsOnCanvas();
+            }
+            if (e.target.classList.contains('delete-column-btn')) {
+                const colId = e.target.dataset.colId;
+                currentConfig.layout.main.columns = currentConfig.layout.main.columns.filter(c => c.id !== colId);
+                renderLayoutAndSettings();
+                renderElementsOnCanvas();
+            }
+        });
     }
 
     function togglePanel(panelId) {
@@ -195,13 +227,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function addNewElement(type) {
         const newElement = {
-            id: type + '_' + Date.now(),
-            type,
-            title: `Новый ${type}`,
-            visible: true,
-            style: {},
+            id: type + '_' + Date.now(), type, title: `Новый ${type}`, visible: true, style: {},
             ...({
-                player: { height: '650px', url: '' },
+                externalBlock: { height: '650px', url: '' },
                 textBlock: { content: '<p>Новый текстовый блок</p>' },
                 photo: { url: 'https://via.placeholder.com/400x300' },
                 reels: { height: '600px', url: '' },
@@ -242,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         
         switch (elementData.type) {
-            case 'player': case 'videoBlock': case 'reels': case 'photo':
+            case 'externalBlock': case 'player': case 'videoBlock': case 'reels': case 'photo':
                 content += `<label>URL контента</label><input type="text" data-prop="url" value="${elementData.url || ''}">`;
                 break;
             case 'textBlock':
@@ -334,6 +362,11 @@ document.addEventListener('DOMContentLoaded', () => {
              }
         });
         
+        currentConfig.layout.main.columns.forEach(col => {
+            const colEl = document.querySelector(`[data-column-id="${col.id}"]`);
+            col.width = colEl.querySelector('.column-width-input')?.value || col.width;
+        });
+        
         const newColumns = [];
         document.querySelectorAll('.layout-column').forEach(columnEl => {
             newColumns.push({
@@ -352,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const fileResponse = await fetch(url, { headers: { 'Authorization': `token ${githubToken}` } });
             const fileData = await fileResponse.json();
             
-            if (!fileResponse.ok) throw new Error(fileData.message);
+            if (!fileResponse.ok) throw new Error(fileData.message || 'Не удалось получить SHA файла.');
 
             const response = await fetch(url, {
                 method: 'PUT',
