@@ -9,9 +9,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.title = config.globalSettings.pageTitle;
 
         // --- Настройка фона ---
-        setupBackground('main-header', config.layout.header.background);
-        setupBackground(document.body, config.layout.main.background); // Фон для всей страницы
-        setupBackground('main-footer', config.layout.footer.background);
+        setupBackground(document.getElementById('main-header'), config.layout.header.background);
+        setupBackground(document.body, config.layout.main.background); // ИСПРАВЛЕНО: передаем элемент
+        setupBackground(document.getElementById('main-footer'), config.layout.footer.background);
 
         // --- Заполнение контента ---
         document.getElementById('main-header').innerHTML += config.layout.header.content;
@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         const menuContainer = document.getElementById('main-menu');
         if (config.menuItems && menuContainer) {
+            menuContainer.innerHTML = ''; // Очищаем перед добавлением
             config.menuItems.forEach(item => {
                 menuContainer.innerHTML += `<a href="${item.link}">${item.text}</a>`;
             });
@@ -28,14 +29,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const container = document.getElementById('element-container');
         container.innerHTML = ''; 
 
-        // Создаем колонки
         if (config.layout.main.columns) {
             config.layout.main.columns.forEach(columnData => {
                 const columnEl = document.createElement('div');
                 columnEl.className = 'layout-column';
                 columnEl.style.flexBasis = columnData.width;
                 
-                // Наполняем колонку элементами
                 columnData.elements.forEach(elementId => {
                     const elementData = config.elements.find(el => el.id === elementId);
                     if (elementData && elementData.visible) {
@@ -69,7 +68,7 @@ function createElement(elementData) {
             elWrapper.innerHTML = elementData.content;
             break;
         case 'photo':
-            elWrapper.innerHTML = `<img src="${elementData.url}" alt="${elementData.title || ''}">`;
+            elWrapper.innerHTML = `<img src="${elementData.url}" alt="${elementData.title || ''}" style="width:100%; height:100%; object-fit: ${elementData.style?.objectFit || 'cover'};">`;
             break;
         case 'videoBlock':
         case 'reels':
@@ -80,12 +79,9 @@ function createElement(elementData) {
             const btn = document.createElement('button');
             btn.textContent = elementData.text || 'Кнопка';
             Object.assign(btn.style, {
-                width: '100%', height: '100%', cursor: 'pointer',
-                border: 'none',
-                backgroundColor: elementData.style.backgroundColor,
-                color: elementData.style.color,
-                fontSize: elementData.style.fontSize,
-                fontWeight: elementData.style.fontWeight,
+                width: '100%', height: '100%', cursor: 'pointer', border: 'none',
+                backgroundColor: elementData.style.backgroundColor, color: elementData.style.color,
+                fontSize: elementData.style.fontSize, fontWeight: elementData.style.fontWeight,
                 borderRadius: elementData.style.borderRadius
             });
             
@@ -102,11 +98,11 @@ function createElement(elementData) {
     return elWrapper;
 }
 
-
 function setupBackground(element, bgConfig) {
     if (!element || !bgConfig) return;
     
-    const existingBg = element.querySelector('.background-layer');
+    // Удаляем старый фон, если он есть
+    const existingBg = element.querySelector(':scope > .background-layer');
     if (existingBg) existingBg.remove();
 
     if (bgConfig.type === 'color') {
