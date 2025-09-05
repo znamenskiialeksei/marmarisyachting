@@ -77,7 +77,18 @@
                         <button class="panel-action" data-action="close" title="Закрыть">❌</button>
                     </div>
                 </div>
-                <div class="panel-body" id="layout-settings-body"></div>
+                <div class="panel-body" id="layout-settings-body">
+                    <div class="inspector-field">
+                        <label>Выберите секцию для редактирования</label>
+                        <select id="layout-section-selector">
+                            <option value="header">Шапка (Header)</option>
+                            <option value="main">Основная часть (Main)</option>
+                            <option value="footer">Подвал (Footer)</option>
+                        </select>
+                    </div>
+                    <div id="layout-section-editors">
+                        </div>
+                </div>
             </div>
         </div>
     </div>

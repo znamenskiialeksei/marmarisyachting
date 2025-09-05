@@ -14,7 +14,7 @@ body, html { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFo
 /* --- Стили публичной страницы --- */
 #element-container { display: flex; flex-wrap: wrap; padding: 20px; gap: 20px; align-items: flex-start; }
 .layout-column { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
-.element-wrapper iframe, .element-wrapper img { max-width: 100%; width: 100%; height: 100%; display: block; border: none; }
+.element-wrapper iframe, .element-wrapper img { max-width: 100%; width: 100%; height: 100%; display: block; border: none; object-fit: cover; }
 .element-wrapper button { transition: filter 0.2s ease; }
 .element-wrapper button:hover { filter: brightness(1.1); }
 
@@ -46,7 +46,6 @@ body, html { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFo
 #canvas-wrapper { flex-grow: 1; overflow: auto; padding: 20px; background-color: #dce4e9; }
 #admin-canvas { background: white; margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.15); transition: width 0.3s ease-in-out; transform-origin: top center; }
 
-/* FIX: Стили для изменения размера и предотвращения случайных кликов */
 .admin-element-wrapper { position: relative; border: 2px dashed transparent; transition: border-color 0.2s; touch-action: none; }
 .admin-element-wrapper:hover { border-color: #f1c40f; }
 .admin-element-wrapper.selected { border-color: var(--primary-color); border-style: solid; }
@@ -60,13 +59,16 @@ body, html { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFo
 .panel-body { padding: 15px; overflow-y: auto; overflow-wrap: break-word; }
 .panel-body.minimized { display: none; }
 
-.inspector-group { margin-bottom: 20px; }
-.inspector-group h4 { margin: 0 0 10px; font-size: 13px; color: #7f8c8d; text-transform: uppercase; border-bottom: 1px solid var(--light-gray); padding-bottom: 5px; }
+.inspector-group { margin-bottom: 20px; border-top: 1px solid var(--light-gray); padding-top: 15px; }
+.inspector-group:first-child { border-top: none; padding-top: 0; }
+.inspector-group h4 { margin: 0 0 10px; font-size: 13px; color: #7f8c8d; text-transform: uppercase; }
 .inspector-field { margin-bottom: 12px; }
 .inspector-field label { display: block; font-size: 14px; margin-bottom: 5px; font-weight: 500; }
-/* FIX: Поля ввода теперь корректно обрабатывают длинные строки и не выходят за рамки */
 .inspector-field input, .inspector-field select, .inspector-field textarea { width: 100%; max-width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background-color: white; word-break: break-all; }
 .inspector-field textarea { min-height: 120px; resize: vertical; }
 .inspector-field input[type="color"] { padding: 2px; height: 38px; cursor: pointer; }
 .column-editor { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .column-editor input { flex-grow: 1; }
+/* Скрытие редакторов секций в панели "Макет" */
+.layout-section-editor { display: none; }
+.layout-section-editor.active { display: block; }
