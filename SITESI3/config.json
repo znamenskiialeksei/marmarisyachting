@@ -4,118 +4,46 @@
     "repo": "marmarisyachting"
   },
   "globalSettings": {
-    "pageTitle": "Marmaris Yachting - Аренда яхт в Турции"
+    "pageTitle": "Тестовая страница"
   },
   "layout": {
     "header": {
-      "content": "<h1>Marmaris Yachting</h1><p>Ваше незабываемое путешествие начинается здесь</p>",
+      "content": "<h1>Тест</h1>",
       "background": {
         "type": "color",
-        "value": "#2c3e50"
-      },
-      "styles": {
-        "color": "#ffffff",
-        "padding": "30px",
-        "textAlign": "center"
+        "value": "#dddddd"
       }
     },
     "main": {
       "columns": [
         {
-          "id": "col-16623211",
-          "width": "65%",
+          "id": "col-test",
+          "width": "100%",
           "elements": [
-            "el-16623322",
-            "el-16623455"
-          ]
-        },
-        {
-          "id": "col-16623212",
-          "width": "35%",
-          "elements": [
-            "el-16623344",
-            "el-16623566"
+            "el-test"
           ]
         }
       ]
     },
     "footer": {
-      "content": "<p>© 2025 Marmaris Yachting. Все права защищены.</p>",
+      "content": "<p>Тестовый подвал</p>",
       "background": {
         "type": "color",
-        "value": "#34495e"
-      },
-      "styles": {
-        "color": "#ecf0f1",
-        "padding": "20px",
-        "textAlign": "center"
+        "value": "#dddddd"
       }
     }
   },
   "elements": [
     {
-      "id": "el-16623322",
-      "adminTitle": "Главное фото яхты",
-      "type": "photo",
-      "content": {
-        "url": "https://images.unsplash.com/photo-1598890982464-843461a28a13?q=80&w=2070&auto=format&fit=crop"
-      },
-      "styles": {
-        "width": "100%",
-        "borderRadius": "8px",
-        "boxShadow": "0 4px 15px rgba(0,0,0,0.1)",
-        "objectFit": "cover",
-        "height": "400px"
-      }
-    },
-    {
-      "id": "el-16623344",
-      "adminTitle": "Описание предложения",
+      "id": "el-test",
+      "adminTitle": "Тестовый блок",
       "type": "textBlock",
       "content": {
-        "html": "<h2>Эксклюзивный тур</h2><p>Откройте для себя скрытые бухты и кристально чистые воды Эгейского моря на борту наших премиальных яхт. Мы предлагаем индивидуальные маршруты и первоклассный сервис.</p>"
+        "html": "<p>Это минимальный тест.</p>"
       },
       "styles": {
         "padding": "20px",
-        "backgroundColor": "#ffffff",
-        "borderRadius": "8px",
-        "boxShadow": "0 4px 15px rgba(0,0,0,0.1)"
-      }
-    },
-    {
-      "id": "el-16623455",
-      "adminTitle": "Видео-обзор",
-      "type": "videoBlock",
-      "content": {
-        "url": "https://www.youtube.com/embed/dQw4w9WgXcQ"
-      },
-      "styles": {
-        "width": "100%",
-        "height": "350px",
-        "borderRadius": "8px",
-        "border": "none"
-      }
-    },
-    {
-      "id": "el-16623566",
-      "adminTitle": "Кнопка запроса",
-      "type": "button",
-      "content": {
-        "text": "Узнать подробнее",
-        "action": "openLink",
-        "url": "/contacts",
-        "modalContent": ""
-      },
-      "styles": {
-        "width": "100%",
-        "padding": "15px",
-        "backgroundColor": "#e74c3c",
-        "color": "#ffffff",
-        "textAlign": "center",
-        "fontSize": "18px",
-        "borderRadius": "5px",
-        "border": "none",
-        "cursor": "pointer"
+        "backgroundColor": "#ffffff"
       }
     }
   ]
