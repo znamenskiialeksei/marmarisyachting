@@ -25,14 +25,14 @@
           "id": "col-16623211",
           "width": "65%",
           "elements": [
-            "el-1757072175619"
+            "el-16623344",
+            "el-1757072257031"
           ]
         },
         {
           "id": "col-16623212",
           "width": "35%",
           "elements": [
-            "el-16623344",
             "el-16623566"
           ]
         }
@@ -89,11 +89,16 @@
       }
     },
     {
-      "id": "el-1757072175619",
-      "adminTitle": "Новый videoBlock",
-      "type": "videoBlock",
-      "content": {},
-      "styles": {}
+      "id": "el-1757072257031",
+      "adminTitle": "Новый externalBlock",
+      "type": "externalBlock",
+      "content": {
+        "url": "https://znamenskiialeksei.github.io/marmarisyachting/2RouteVasilisa.html"
+      },
+      "styles": {
+        "width": "35%",
+        "height": "100%"
+      }
     }
   ]
 }
