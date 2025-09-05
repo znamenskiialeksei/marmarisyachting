@@ -25,14 +25,20 @@
           "id": "col-16623211",
           "width": "65%",
           "elements": [
-            "el-1757074203806",
-            "el-16623455"
+            "el-1757077388607",
+            "el-1757077315899",
+            "el-1757077199440",
+            "el-1757076904821",
+            "el-1757076662145"
           ]
         },
         {
-          "id": "col-1757074131396",
-          "width": "1fr",
-          "elements": []
+          "id": "col-16623212",
+          "width": "35%",
+          "elements": [
+            "el-16623344",
+            "el-16623566"
+          ]
         }
       ]
     },
@@ -65,20 +71,6 @@
       }
     },
     {
-      "id": "el-16623455",
-      "adminTitle": "Видео-обзор",
-      "type": "videoBlock",
-      "content": {
-        "url": "https://www.youtube.com/embed/dQw4w9WgXcQ"
-      },
-      "styles": {
-        "width": "100%",
-        "height": "350px",
-        "borderRadius": "8px",
-        "border": "none"
-      }
-    },
-    {
       "id": "el-16623566",
       "adminTitle": "Кнопка запроса",
       "type": "button",
@@ -101,15 +93,70 @@
       }
     },
     {
-      "id": "el-1757074203806",
+      "id": "el-1757076662145",
       "adminTitle": "Новый externalBlock",
       "type": "externalBlock",
       "content": {
         "url": "https://znamenskiialeksei.github.io/marmarisyachting/2RouteVasilisa.html"
       },
       "styles": {
-        "width": "35%",
-        "height": "400px"
+        "width": "493.917px",
+        "height": "370.833px"
+      }
+    },
+    {
+      "id": "el-1757076904821",
+      "adminTitle": "Новый textBlock",
+      "type": "textBlock",
+      "content": {
+        "html": "<p>Новый текстппппппппnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn.</p>"
+      },
+      "styles": {
+        "width": "197.498px",
+        "height": "56.994px"
+      }
+    },
+    {
+      "id": "el-1757077199440",
+      "adminTitle": "Новый photo",
+      "type": "photo",
+      "content": {
+        "url": "https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview"
+      },
+      "styles": {
+        "width": "413.57px",
+        "height": "263.216px"
+      }
+    },
+    {
+      "id": "el-1757077315899",
+      "adminTitle": "Новый videoBlock",
+      "type": "videoBlock",
+      "content": {
+        "url": "https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0"
+      },
+      "styles": {
+        "width": "417.132px",
+        "height": "317.262px"
+      }
+    },
+    {
+      "id": "el-1757077388607",
+      "adminTitle": "Новый button",
+      "type": "button",
+      "content": {
+        "text": "Кнопка 6666666666666666 666666666ggg",
+        "action": "openModal",
+        "url": "https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route2"
+      },
+      "styles": {
+        "padding": "15px",
+        "backgroundColor": "#3498db",
+        "color": "#ffffff",
+        "border": "none",
+        "cursor": "pointer",
+        "width": "167.141px",
+        "height": "89.295px"
       }
     }
   ]
