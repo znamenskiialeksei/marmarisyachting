@@ -24,6 +24,7 @@
           "id": "col-1",
           "width": "60%",
           "elements": [
+            "el-1757030555997",
             "el-1757030460052",
             "el-1",
             "el-3"
@@ -123,6 +124,21 @@
         "html": "<p>Введите ваш текстгггннееаиттттт здесь.</p>"
       },
       "styles": {}
+    },
+    {
+      "id": "el-1757030555997",
+      "adminTitle": "Новый button",
+      "type": "button",
+      "content": {
+        "text": "Новая кнопка"
+      },
+      "styles": {
+        "padding": "15px",
+        "backgroundColor": "#3498db",
+        "color": "#ffffff",
+        "border": "none",
+        "cursor": "pointer"
+      }
     }
   ]
 }
