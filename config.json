@@ -24,7 +24,9 @@
         {
           "id": "col-16623211",
           "width": "65%",
-          "elements": []
+          "elements": [
+            "el-1757072175619"
+          ]
         },
         {
           "id": "col-16623212",
@@ -85,6 +87,13 @@
         "border": "none",
         "cursor": "pointer"
       }
+    },
+    {
+      "id": "el-1757072175619",
+      "adminTitle": "Новый videoBlock",
+      "type": "videoBlock",
+      "content": {},
+      "styles": {}
     }
   ]
 }
