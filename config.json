@@ -23,23 +23,15 @@
       "columns": [
         {
           "id": "col-16623211",
-          "width": "35%",
+          "width": "65%",
           "elements": [
-            "el-1757073271657",
-            "el-1757073249008",
-            "el-1757073204219",
-            "el-16623344",
-            "el-1757072257031"
+            "el-1757074203806",
+            "el-16623455"
           ]
         },
         {
-          "id": "col-1757073148308",
-          "width": "35%",
-          "elements": []
-        },
-        {
-          "id": "col-1757073160117",
-          "width": "35%",
+          "id": "col-1757074131396",
+          "width": "1fr",
           "elements": []
         }
       ]
@@ -69,9 +61,21 @@
         "padding": "20px",
         "backgroundColor": "#ffffff",
         "borderRadius": "8px",
-        "boxShadow": "0 4px 15px rgba(0,0,0,0.1)",
+        "boxShadow": "0 4px 15px rgba(0,0,0,0.1)"
+      }
+    },
+    {
+      "id": "el-16623455",
+      "adminTitle": "Видео-обзор",
+      "type": "videoBlock",
+      "content": {
+        "url": "https://www.youtube.com/embed/dQw4w9WgXcQ"
+      },
+      "styles": {
         "width": "100%",
-        "height": "20%"
+        "height": "350px",
+        "borderRadius": "8px",
+        "border": "none"
       }
     },
     {
@@ -97,39 +101,16 @@
       }
     },
     {
-      "id": "el-1757072257031",
+      "id": "el-1757074203806",
       "adminTitle": "Новый externalBlock",
       "type": "externalBlock",
       "content": {
         "url": "https://znamenskiialeksei.github.io/marmarisyachting/2RouteVasilisa.html"
       },
       "styles": {
-        "width": "100%",
-        "height": "100%"
+        "width": "35%",
+        "height": "400px"
       }
-    },
-    {
-      "id": "el-1757073204219",
-      "adminTitle": "Новый externalBlock",
-      "type": "externalBlock",
-      "content": {},
-      "styles": {}
-    },
-    {
-      "id": "el-1757073249008",
-      "adminTitle": "Новый externalBlock",
-      "type": "externalBlock",
-      "content": {},
-      "styles": {}
-    },
-    {
-      "id": "el-1757073271657",
-      "adminTitle": "Новый photo",
-      "type": "photo",
-      "content": {
-        "url": "https://via.placeholder.com/600x400.png?text=Фото"
-      },
-      "styles": {}
     }
   ]
 }
