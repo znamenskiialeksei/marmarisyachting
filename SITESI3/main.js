@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Добавляем случайный параметр для обхода кэша браузера при загрузке конфига
+    // FIX: Добавляем случайный параметр для обхода кэша браузера при загрузке конфига
     const cacheBust = `?v=${new Date().getTime()}`;
 
     fetch(`config.json${cacheBust}`)
@@ -26,13 +26,17 @@ function renderPage(config) {
     // 1. Установка глобальных настроек
     document.title = config.globalSettings.pageTitle;
 
+    // Рендерим фон для BODY (из секции main)
+    const mainLayout = config.layout.main || {};
+    setupBackground(document.body, mainLayout.background);
+
     // 2. Рендеринг секций: шапка и подвал
     setupSection('page-header', config.layout.header);
     setupSection('page-footer', config.layout.footer);
     
     // 3. Рендеринг основного контента (колонки и элементы)
     const elementContainer = document.getElementById('element-container');
-    elementContainer.innerHTML = ''; // Очищаем на всякий случай
+    elementContainer.innerHTML = ''; 
 
     config.layout.main.columns.forEach(column => {
         const columnDiv = document.createElement('div');
@@ -54,8 +58,28 @@ function renderPage(config) {
 }
 
 /**
+ * Настраивает фон для любого элемента
+ * @param {HTMLElement} element - DOM-элемент
+ * @param {object} backgroundConfig - Конфигурация фона
+ */
+function setupBackground(element, backgroundConfig) {
+    if (!element || !backgroundConfig) return;
+
+    if (backgroundConfig.type === 'color') {
+        element.style.backgroundColor = backgroundConfig.value;
+        element.style.backgroundImage = 'none';
+    } else if (backgroundConfig.type === 'image') {
+        element.style.backgroundImage = `url('${backgroundConfig.value}')`;
+        element.style.backgroundSize = 'cover';
+        element.style.backgroundPosition = 'center';
+        element.style.backgroundColor = 'transparent';
+    }
+    // Логика для видео-фона на публичной части может быть добавлена здесь
+}
+
+/**
  * Настраивает шапку или подвал
- * @param {string} elementId - ID секции ('page-header' или 'page-footer')
+ * @param {string} elementId - ID секции
  * @param {object} sectionConfig - Конфигурация для этой секции
  */
 function setupSection(elementId, sectionConfig) {
@@ -64,17 +88,8 @@ function setupSection(elementId, sectionConfig) {
     
     element.innerHTML = sectionConfig.content;
     
-    // Применение фона
-    if (sectionConfig.background) {
-        if (sectionConfig.background.type === 'color') {
-            element.style.backgroundColor = sectionConfig.background.value;
-        } else if (sectionConfig.background.type === 'image') {
-            element.style.backgroundImage = `url('${sectionConfig.background.value}')`;
-            element.style.backgroundSize = 'cover';
-            element.style.backgroundPosition = 'center';
-        }
-    }
-    // Применение кастомных стилей
+    setupBackground(element, sectionConfig.background);
+
     if (sectionConfig.styles) {
         Object.assign(element.style, sectionConfig.styles);
     }
@@ -98,6 +113,7 @@ function createElement(elementData) {
             element.src = elementData.content.url;
             element.setAttribute('frameborder', '0');
             element.setAttribute('allowfullscreen', '');
+            element.setAttribute('loading', 'lazy'); // Для производительности
             break;
         case 'textBlock':
             element = document.createElement('div');
@@ -107,6 +123,7 @@ function createElement(elementData) {
             element = document.createElement('img');
             element.src = elementData.content.url;
             element.alt = elementData.adminTitle || 'Изображение';
+            element.setAttribute('loading', 'lazy'); // Для производительности
             break;
         case 'button':
             element = document.createElement('button');
@@ -124,7 +141,6 @@ function createElement(elementData) {
     }
 
     if (element) {
-        // Применение стилей к созданному элементу
         if (elementData.styles) {
             Object.assign(element.style, elementData.styles);
         }
@@ -155,7 +171,6 @@ function setupModalInteraction() {
 
     closeModalBtn.addEventListener('click', closeModal);
     modalOverlay.addEventListener('click', (event) => {
-        // Закрываем, только если клик был по самому оверлею, а не по его содержимому
         if (event.target === modalOverlay) {
             closeModal();
         }
