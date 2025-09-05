@@ -74,7 +74,6 @@ function setupBackground(element, backgroundConfig) {
         element.style.backgroundPosition = 'center';
         element.style.backgroundColor = 'transparent';
     }
-    // Логика для видео-фона на публичной части может быть добавлена здесь
 }
 
 /**
@@ -113,7 +112,7 @@ function createElement(elementData) {
             element.src = elementData.content.url;
             element.setAttribute('frameborder', '0');
             element.setAttribute('allowfullscreen', '');
-            element.setAttribute('loading', 'lazy'); // Для производительности
+            element.setAttribute('loading', 'lazy'); 
             break;
         case 'textBlock':
             element = document.createElement('div');
@@ -123,7 +122,7 @@ function createElement(elementData) {
             element = document.createElement('img');
             element.src = elementData.content.url;
             element.alt = elementData.adminTitle || 'Изображение';
-            element.setAttribute('loading', 'lazy'); // Для производительности
+            element.setAttribute('loading', 'lazy');
             break;
         case 'button':
             element = document.createElement('button');
@@ -157,6 +156,8 @@ function setupModalInteraction() {
     const modalOverlay = document.getElementById('modal-overlay');
     const modalBody = document.getElementById('modal-body');
     const closeModalBtn = document.querySelector('.modal-close-btn');
+
+    if (!modalOverlay || !modalBody || !closeModalBtn) return;
 
     document.querySelectorAll('.modal-trigger-btn').forEach(button => {
         button.addEventListener('click', () => {
