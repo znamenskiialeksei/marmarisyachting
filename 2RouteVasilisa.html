@@ -448,7 +448,7 @@
             isContinuousPlayback: false, 
             mobileFeedMode: true,
             feedModeForDesktop: true,
-            mainTitle: 'Маршрут 2.33 Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
+            mainTitle: 'Маршрут 2. Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
             audioUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisyachting/main/2RouteAudioVasilisa.mp3',
             bookingUrl: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route2',
             coverVideoUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4',
@@ -819,10 +819,6 @@
                 page.dataset.pageNumber = pageNum; 
                 if (pageNum === 1) page.classList.add('active');
                 
-                if (pageData.customHeight) {
-                    page.style.height = pageData.customHeight;
-                }
-                
                 const buttonsContainer = document.createElement('div'); 
                 buttonsContainer.className = 'page-buttons-container'; 
                 
@@ -878,25 +874,50 @@
                     if (h2) h2.remove(); 
                     textContent.innerHTML = tempDiv.innerHTML; 
                     const details = document.createElement('details'); 
+                    details.open = !pageData.collapsedOnLoad; 
+                    
+                    if (pageData.customHeight && pageData.customHeight !== 'auto') {
+                        page.style.height = details.open ? pageData.customHeight : 'auto';
+                    }
+
+                    details.addEventListener('toggle', () => {
+                        if (pageData.customHeight && pageData.customHeight !== 'auto') {
+                            page.style.height = details.open ? pageData.customHeight : 'auto';
+                        }
+                        
+                        // ================== НАЧАЛО ИЗМЕНЕНИЙ ==================
+                        if (details.open) {
+                            const pageNumToSync = parseInt(page.dataset.pageNumber, 10);
+                            currentPage = pageNumToSync;
+                            
+                            // Запоминаем, играло ли аудио ДО того, как мы сменили позицию.
+                            // Используем нашу переменную isPlaying, а не свойство audioPlayer.paused,
+                            // так как оно может быть ненадёжным при быстрой смене currentTime.
+                            const wasPlaying = isPlaying;
+                            
+                            // Просто перемещаем аудио на начало выбранного раздела.
+                            audioPlayer.currentTime = getPageStartTime(pageNumToSync);
+
+                            // Если плеер до этого играл (т.е. пользователь его запустил), 
+                            // то продолжаем воспроизведение с новой точки.
+                            // Если он был на паузе, то он останется на паузе, ожидая команды пользователя.
+                            if (wasPlaying) {
+                                audioPlayer.play();
+                            }
+                        }
+                        // =================== КОНЕЦ ИЗМЕНЕНИЙ ===================
+                    });
+
                     const summary = document.createElement('summary'); 
                     summary.innerHTML = title; 
-                    details.open = !pageData.collapsedOnLoad; 
                     details.appendChild(summary); 
                     details.appendChild(buttonsContainer); 
                     details.appendChild(textContent); 
                     page.appendChild(details);
-                    
-                    details.addEventListener('toggle', (event) => {
-                        if (details.open) {
-                            const pageNum = parseInt(page.dataset.pageNumber, 10);
-                            currentPage = pageNum;
-                            if (isPlaying) {
-                                audioPlayer.currentTime = getPageStartTime(pageNum);
-                            }
-                        }
-                    });
-
                 } else { 
+                    if (pageData.customHeight) {
+                        page.style.height = pageData.customHeight;
+                    }
                     page.appendChild(buttonsContainer); 
                     page.appendChild(textContent); 
                 }
@@ -989,7 +1010,8 @@
                 if (firstPage && !firstPage.open) {
                     firstPage.open = true;
                 }
-                audioPlayer.currentTime = 0;
+                // <<< ИСПРАВЛЕНИЕ ЗДЕСЬ
+                audioPlayer.currentTime = 0; // Принудительно ставим на начало
                 audioPlayer.play();
             } else if (!isFeedMode && isCoverActive) {
                 coverView.style.display = 'none';
@@ -1020,46 +1042,28 @@
 
         nextBtn.addEventListener('click', () => {
             if (!isFeedMode) {
-                if (isCoverActive) { coverView.style.display = 'none'; bookView.style.display = 'flex'; isCoverActive = false; showPage(1); } else if (currentPage < publishedPages.length) { 
-                    const nextPage = currentPage + 1; 
-                    showPage(nextPage); 
-                    if (isPlaying) { 
-                        audioPlayer.currentTime = getPageStartTime(nextPage); 
-                    } 
-                }
+                if (isCoverActive) { coverView.style.display = 'none'; bookView.style.display = 'flex'; isCoverActive = false; showPage(1); } else if (currentPage < publishedPages.length) { const nextPage = currentPage + 1; showPage(nextPage); audioPlayer.currentTime = getPageStartTime(nextPage); }
             }
         });
         prevBtn.addEventListener('click', () => {
             if (!isFeedMode) {
                 if (isCoverActive) return;
-                if (currentPage > 1) { 
-                    const prevPage = currentPage - 1; 
-                    showPage(prevPage); 
-                    if (isPlaying) { 
-                        audioPlayer.currentTime = getPageStartTime(prevPage); 
-                    } 
-                } else { 
-                    bookView.style.display = 'none'; 
-                    coverView.style.display = 'flex'; 
-                    isCoverActive = true; 
-                    audioPlayer.pause(); 
-                    updateButtonsAndIndicator(); 
-                }
+                if (currentPage > 1) { const prevPage = currentPage - 1; showPage(prevPage); audioPlayer.currentTime = getPageStartTime(prevPage); } else { bookView.style.display = 'none'; coverView.style.display = 'flex'; isCoverActive = true; audioPlayer.pause(); updateButtonsAndIndicator(); }
             }
         });
 
         audioPlayer.addEventListener('timeupdate', () => {
-            if (!isPlaying || isCoverActive || audioPlayer.seeking) {
-                return;
-            }
-            
+            if (!isPlaying || isCoverActive) return;
+
             if (CONFIG.isContinuousPlayback) {
                 const currentTime = audioPlayer.currentTime;
                 const targetPageData = publishedPages.find((p, index) => {
                     const startTime = getPageStartTime(index + 1);
                     return currentTime >= startTime && currentTime < p.narrationEndTime;
                 });
+                
                 if (!targetPageData) return;
+                
                 const newPageNum = publishedPages.indexOf(targetPageData) + 1;
                 
                 if (isFeedMode) {
@@ -1077,7 +1081,9 @@
                         currentPage = newPageNum;
                     }
                 } else {
-                    if (newPageNum !== currentPage) { showPage(newPageNum); }
+                    if (newPageNum !== currentPage) {
+                        showPage(newPageNum);
+                    }
                 }
             }
         });
@@ -1096,6 +1102,7 @@
     </script>
 </body>
 </html>
+
 
 
 
