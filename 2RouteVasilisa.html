@@ -448,7 +448,7 @@
             isContinuousPlayback: false, 
             mobileFeedMode: true,
             feedModeForDesktop: true,
-            mainTitle: 'Маршрут 2.99 Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
+            mainTitle: 'Маршрут 2. Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
             audioUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisyachting/main/2RouteAudioVasilisa.mp3',
             bookingUrl: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route2',
             coverVideoUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4',
@@ -625,9 +625,10 @@
         let currentPage = 1;
         let isPlaying = false;
         let isCoverActive = true;
-        // <<< ИЗМЕНЕНИЕ 1: Новая переменная для отслеживания гибридного режима >>>
-        // Она будет true только в начале, пока пользователь не нажмёт паузу в первый раз.
-        let isNarratorModeActive = false; 
+        
+        // <<< ИЗМЕНЕНИЕ 1: Новая переменная для управления гибридным режимом в "Ленте" >>>
+        // Она будет включаться по кнопке Play и выключаться по кнопке Pause.
+        let isNarratorModeActive = false;
         
         let tooltipTimeout = null;
 
@@ -965,10 +966,10 @@
                     const tempIframe = tempDiv.firstChild; 
                     
                     if (tempIframe && tempIframe.tagName === 'IFRAME' && tempIframe.src) {
-                        modalIframe.style.aspectRatio = '16 / 9'; 
+                        modalIframe.style.aspectRatio = '16 / 9';
                         modalIframe.style.width = '90%';
                         modalIframe.style.height = 'auto';
-                        modalIframe.src = tempIframe.src; 
+                        modalIframe.src = tempIframe.src;
                         modalIframe.style.display = 'block';
                     } else if (isAdmin) {
                         alert('Ошибка в коде для blokiframe: ' + media.iframeCode);
@@ -1054,12 +1055,9 @@
             }
         }
         
-        // <<< ИЗМЕНЕНИЕ 2: Обновлена логика кнопки Play/Pause для гибридного режима >>>
         playPauseBtn.addEventListener('click', () => {
             if (isFeedMode && isCoverActive) {
-                // Это самый первый запуск в режиме ленты. Активируем режим Рассказчика.
-                isNarratorModeActive = true; 
-                isPlaying = true;
+                if (isFeedMode) isNarratorModeActive = true; // Включаем режим рассказчика
                 isCoverActive = false;
                 scrollToPage(1);
                 const firstPage = document.querySelector('.page[data-page-number="1"] details');
@@ -1070,7 +1068,6 @@
                 audioPlayer.currentTime = 0; 
                 audioPlayer.play();
             } else if (!isFeedMode && isCoverActive) {
-                // Логика для режима "Истории" остается без изменений
                 coverView.style.display = 'none';
                 bookView.style.display = 'flex';
                 isCoverActive = false;
@@ -1078,17 +1075,13 @@
                 audioPlayer.currentTime = 0;
                 audioPlayer.play();
             } else {
-                // Это все последующие нажатия на Play/Pause
+                // <<< ИЗМЕНЕНИЕ 2: Обновлена логика кнопки Play/Pause для управления гибридным режимом >>>
                 if (isPlaying) {
-                    // Пользователь нажимает на паузу.
                     audioPlayer.pause();
-                    // Отключаем режим Рассказчика НАВСЕГДА для этой сессии.
-                    // Теперь страница не будет сама скроллиться и переключаться.
-                    isNarratorModeActive = false; 
+                    if (isFeedMode) isNarratorModeActive = false; // При паузе выключаем рассказчика -> режим "Свободного изучения"
                 } else {
-                    // Пользователь возобновляет воспроизведение после паузы.
-                    // Режим рассказчика уже выключен, поэтому просто запускаем аудио.
                     audioPlayer.play();
+                    if (isFeedMode) isNarratorModeActive = true; // При запуске включаем рассказчика
                 }
             }
         });
@@ -1099,12 +1092,11 @@
         audioPlayer.onended = () => {
             isPlaying = false; playPauseBtn.textContent = '▶';
             if (isFeedMode) {
+                isNarratorModeActive = false; // Выключаем рассказчика по окончании
                 const lastPage = document.querySelector(`.page[data-page-number="${currentPage}"] details`);
                 if (lastPage) lastPage.open = false;
                 document.getElementById('cover-view').scrollIntoView({ behavior: 'smooth', block: 'start' });
                 isCoverActive = true; currentPage = 1;
-                // Сбрасываем режим Рассказчика при окончании
-                isNarratorModeActive = false;
             } else {
                 showPage(1);
             }
@@ -1123,12 +1115,16 @@
         });
 
         audioPlayer.addEventListener('timeupdate', () => {
-            if (!isPlaying || isCoverActive) return;
-            
-            // <<< ИЗМЕНЕНИЕ 3: Условие автопрокрутки теперь зависит от isNarratorModeActive >>>
-            // Статическая настройка CONFIG.isContinuousPlayback больше не влияет на этот динамический режим.
-            // Автоматическое ведение пользователя работает только если isNarratorModeActive равно true.
-            if (isNarratorModeActive) {
+            // Убрали проверку `!isPlaying` отсюда, так как timeupdate нужен для синхронизации, даже если плеер на паузе
+            if (isCoverActive) return;
+
+            // <<< ИЗМЕНЕНИЕ 3: Главное условие работы автопрокрутки >>>
+            // Теперь автоматика (режим "Рассказчика") работает:
+            // 1. В режиме "Ленты" (isFeedMode), ТОЛЬКО если активен isNarratorModeActive.
+            // 2. В режиме "Истории" (!isFeedMode), если в конфиге включен isContinuousPlayback.
+            const isAutoPilot = (isFeedMode && isNarratorModeActive) || (!isFeedMode && CONFIG.isContinuousPlayback);
+
+            if (isAutoPilot && isPlaying) { // Добавили isPlaying сюда, чтобы автопрокрутка не работала на паузе
                 const currentTime = audioPlayer.currentTime;
                 const targetPageData = publishedPages.find((p, index) => {
                     const startTime = getPageStartTime(index + 1);
@@ -1153,8 +1149,8 @@
                         
                         currentPage = newPageNum;
                     }
-                } else { // Эта логика осталась для режима "Истории", если isContinuousPlayback: true
-                    if (CONFIG.isContinuousPlayback && newPageNum !== currentPage) {
+                } else {
+                    if (newPageNum !== currentPage) {
                         showPage(newPageNum);
                     }
                 }
@@ -1175,6 +1171,7 @@
     </script>
 </body>
 </html>
+
 
 
 
