@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Маршрут 2. Дневной яхтенный тур с обедом на яхте.</title>
+    <title>Маршрут 2. Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.</title>
     <style>
         body {
             margin: 0;
@@ -141,7 +141,7 @@
             position: absolute; width: 100%; height: 100%;
             display: flex; flex-direction: column; align-items: center;
             padding: 20px; box-sizing: border-box;
-            opacity: 0; visibility: hidden; transition: opacity 0.5s ease-in-out, height 0.3s ease-in-out;
+            opacity: 0; visibility: hidden; transition: opacity 0.5s ease-in-out;
             background: white;
             position: relative; 
         }
@@ -339,7 +339,6 @@
             opacity: 1 !important;
             visibility: visible !important;
             margin-bottom: 10px;
-            height: auto; 
         }
         .feed-mode .page details {
             width: 100%;
@@ -445,13 +444,14 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const CONFIG = {
-            isContinuousPlayback: false, 
+            isContinuousPlayback: false, // true = плеер управляет страницами, false = плеер следует за пользователем.
+            
             mobileFeedMode: true,
             feedModeForDesktop: true,
-            mainTitle: 'Маршрут 2.11 Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
+            mainTitle: 'Маршрут 2. Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
             audioUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisyachting/main/2RouteAudioVasilisa.mp3',
             bookingUrl: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route2',
-            coverVideoUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4',
+            coverVideoUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4',
             coverVideoFitMode: 'cover',
             coverTexts: [ { text: 'Мармарис', tooltip: 'Возможно вы сейчас здесь....', top: '5%', left: '45%', visible: true } ],
             pulsingEffect: { enabled: true, fadeInDuration: 0.5, visibleDuration: 4.0, fadeOutDuration: 0.5, hiddenDuration: 3.0 },
@@ -470,7 +470,6 @@
                     { name: 'Маршрут 2: Дневной тур с обедом на яхте', url: 'https://www.marmarisyachting.ru/Yacht-Vasilisa-Catalog/Route2' },
                     { name: 'Маршрут 3: Дневной тур Чифтлик', url: 'https://www.marmarisyachting.ru/Yacht-Vasilisa-Catalog/Route3' },
                     { name: 'Бронировать тур', action: 'openBooking' },
-                    { name: 'Календарь доступности', url: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=calendar', target: '_blank' },
                     { name: 'Недельная аренда виллы', url: 'https://www.marmarisyachting.ru/Villa-Turaman' }
                 ]
             },
@@ -487,8 +486,8 @@
                             pulsing: true,
                             icon: '<svg viewBox="0 0 90 40"><rect x="0.5" y="0.5" width="89" height="39" rx="8" fill="#4CAF50" stroke="#FFFFFF" stroke-width="1"/><text x="45" y="25" font-size="14" font-family="Arial, sans-serif" fill="white" font-weight="bold" text-anchor="middle">Связаться</text></svg>',
                             tooltip: 'Напишите нам',
-                            top: '94%',
-                            left: '60%',
+                            top: '4%',
+                            left: '50%',
                             routes: [
                                 { name: 'Написать в WhatsApp', url: 'https://wa.me/905366140347', target: '_blank' },
                                 { name: 'Написать в Telegram', url: 'https://t.me/marmarisyachtingru', target: '_blank' }
@@ -500,7 +499,6 @@
                     published: true,
                     collapsible: true,
                     collapsedOnLoad: true,
-                    customHeight: 'auto',
                     text: `<h2> Парусный день в Кумлубюк: Гастрономический круиз на яхте.</h2><p>Посвятите день абсолютному наслаждению: это эксклюзивный дневной тур, где живописные пейзажи Эгейского моря сочетаются с изысканным обедом, приготовленным специально для вас прямо на борту яхты. Идеальный сценарий для особого случая или просто идеального дня в море. Приглашаем вас на борт комфортабельной парусной яхты для путешествия к знаменитому пляжу Кумлубюк. Вас ждет неспешный круиз вдоль панорамных берегов, почти шесть часов отдыха в уединенной бухте с купанием и водными развлечениями, и кульминация дня — гастрономический обед в открытом море. Этот тур создан для небольшой компании от 1 до 6 человек. Мы стремимся подарить вам истинное удовольствие от яхтинга, поэтому при благоприятных погодных условиях мы обязательно совершим переход под парусами. А для самых ярких фотографий белоснежный парус будет поднят в любом случае.</p>`,
                     narrationEndTime: 101,
                 },
@@ -508,7 +506,6 @@
                     published: true,
                     collapsible: true,
                     collapsedOnLoad: false,
-                    customHeight: 'auto',
                     text: `<h2> Программа путешествия: </h2><p>9:30 – Отправление и панорамный круиз Наше путешествие начнется из гавани Мармарис Яхт Марина. Следующие 90 минут мы посвятим неспешному переходу вдоль живописного побережья, наслаждаясь видами на Adakoy Marina, уединенные Козий и Вороний острова и знаменитый пляж Турунч. 11:00 – Отдых и обед в бухте Кумлубюк Мы бросим якорь в кристально чистых водах респектабельной бухты Кумлубюк почти на шесть часов. Это ваше время для полного расслабления: купайтесь, загорайте на палубе, исследуйте бухту на каяке или сап-борде. А мы позаботимся о вашем комфорте и гастрономических впечатлениях. Гастрономический опыт на борту. В течение дня мы будем рады предложить вам наш фирменный сервис: 11:30 — Приветственный чай, кофе и восточные сладости. 13:00 — Тарелка сочных сезонных фруктов для освежения. 14:30 — Комплексный обед (включен в стоимость 1000$): Салат "Чабан": Свежий микс из томатов черри, огурцов, перца и лука под заправкой из оливкового масла. Карбонара по-флотски: Классические спагетти Barilla №5 с пикантной говяжьей бастурмой, сливками, яйцом и настоящим сыром Parmigiano Reggiano. После обеда — чай, кофе и сладости. Обед-гриль (общая стоимость тура 1300$): Хотите сделать этот день еще более особенным? Выберите опцию с роскошным меню, приготовленным на гриле прямо на яхте: Сочные куриные крылья в соусе барбекю (300 гр.). Ароматный картофель в мундире на гриле (200 гр.). Шампиньоны на гриле (50 гр.). Свежий салат "Чабан" (150 гр.). 16:45 – Возвращение в Мармарис. Насладившись отдыхом, мы начинаем обратный 90-минутный переход в марину. Это прекрасное время, чтобы расслабиться на палубе и проводить солнце, окрашивающее береговую линию в золотые тона. 18:15 – Прибытие в Мармарис Яхт Марина.</p>`,
                     narrationEndTime: 240,
                 },
@@ -516,7 +513,6 @@
                     published: true,
                     collapsible: true,
                     collapsedOnLoad: false,
-                    customHeight: 'auto',
                     text: `<h2> Важные детали и сервисы. </h2><p>Важные детали и сервисы. В стоимость тура включено: Аренда парусной яхты с капитаном. Комплексный обед или обед-гриль на борту (в зависимости от выбранного варианта). Чай, кофе, питьевая вода в течение всего дня. Фруктовая тарелка и сладости к чаю. Пользование надувным каяком, сап-бордом, надувной "ватрушкой" и масками для плавания. Подарите себе день идеального отдыха, где каждая деталь продумана для вашего удовольствия!</p>`,
                     narrationEndTime: 272,
                 },
@@ -524,7 +520,6 @@
                     published: true,
                     collapsible: true,
                     collapsedOnLoad: true,
-                    customHeight: '550px',
                     text: `<h2>Фото и Видео о маршруте.</h2><p>К данной странице мы рекомендуем вам вернуться после завершения прослушивания и подробно ознакомиться с представленными фотографиями и видео о маршруте.</p>`,
                     narrationEndTime: 284,
                     mainVideo: { 
@@ -565,7 +560,6 @@
                     published: true,
                     collapsible: true,
                     collapsedOnLoad: true,
-                    customHeight: 'auto',
                     text: `<h2> О яхте Bavaria C45. </h2><p>Яхта произведена. ..</p>`,
                     narrationEndTime: 439,
                     mainVideo: { 
@@ -617,9 +611,7 @@
         let currentPage = 1;
         let isPlaying = false;
         let isCoverActive = true;
-        
         let tooltipTimeout = null;
-
 
         if (CONFIG.pulsingEffect && CONFIG.pulsingEffect.enabled) {
             const effect = CONFIG.pulsingEffect;
@@ -819,6 +811,10 @@
                 page.dataset.pageNumber = pageNum; 
                 if (pageNum === 1) page.classList.add('active');
                 
+                if (pageData.customHeight) {
+                    page.style.height = pageData.customHeight;
+                }
+                
                 const buttonsContainer = document.createElement('div'); 
                 buttonsContainer.className = 'page-buttons-container'; 
                 
@@ -874,37 +870,25 @@
                     if (h2) h2.remove(); 
                     textContent.innerHTML = tempDiv.innerHTML; 
                     const details = document.createElement('details'); 
-                    details.open = !pageData.collapsedOnLoad; 
-                    
-                    if (pageData.customHeight && pageData.customHeight !== 'auto') {
-                        page.style.height = details.open ? pageData.customHeight : 'auto';
-                    }
-
-                    details.addEventListener('toggle', () => {
-                        if (pageData.customHeight && pageData.customHeight !== 'auto') {
-                            page.style.height = details.open ? pageData.customHeight : 'auto';
-                        }
-                        
-                        if (details.open) {
-                            const pageNumToSync = parseInt(page.dataset.pageNumber, 10);
-                            currentPage = pageNumToSync;
-                            audioPlayer.currentTime = getPageStartTime(pageNumToSync);
-                            if (audioPlayer.paused) {
-                                audioPlayer.play();
-                            }
-                        }
-                    });
-
                     const summary = document.createElement('summary'); 
                     summary.innerHTML = title; 
+                    details.open = !pageData.collapsedOnLoad; 
                     details.appendChild(summary); 
                     details.appendChild(buttonsContainer); 
                     details.appendChild(textContent); 
                     page.appendChild(details);
+                    
+                    details.addEventListener('toggle', (event) => {
+                        if (details.open) {
+                            const pageNum = parseInt(page.dataset.pageNumber, 10);
+                            currentPage = pageNum;
+                            if (isPlaying) {
+                                audioPlayer.currentTime = getPageStartTime(pageNum);
+                            }
+                        }
+                    });
+
                 } else { 
-                    if (pageData.customHeight) {
-                        page.style.height = pageData.customHeight;
-                    }
                     page.appendChild(buttonsContainer); 
                     page.appendChild(textContent); 
                 }
@@ -990,23 +974,12 @@
         
         playPauseBtn.addEventListener('click', () => {
             if (isFeedMode && isCoverActive) {
-                isPlaying = true;
-                isCoverActive = false;
-                scrollToPage(1);
+                isPlaying = true; isCoverActive = false; scrollToPage(1);
                 const firstPage = document.querySelector('.page[data-page-number="1"] details');
-                if (firstPage && !firstPage.open) {
-                    firstPage.open = true;
-                }
-                // <<< ИСПРАВЛЕНИЕ ЗДЕСЬ
-                audioPlayer.currentTime = 0; // Принудительно ставим на начало
+                if (firstPage) firstPage.open = true;
                 audioPlayer.play();
             } else if (!isFeedMode && isCoverActive) {
-                coverView.style.display = 'none';
-                bookView.style.display = 'flex';
-                isCoverActive = false;
-                showPage(1);
-                audioPlayer.currentTime = 0;
-                audioPlayer.play();
+                coverView.style.display = 'none'; bookView.style.display = 'flex'; isCoverActive = false; showPage(1); audioPlayer.currentTime = 0; audioPlayer.play();
             } else {
                 isPlaying ? audioPlayer.pause() : audioPlayer.play();
             }
@@ -1029,28 +1002,49 @@
 
         nextBtn.addEventListener('click', () => {
             if (!isFeedMode) {
-                if (isCoverActive) { coverView.style.display = 'none'; bookView.style.display = 'flex'; isCoverActive = false; showPage(1); } else if (currentPage < publishedPages.length) { const nextPage = currentPage + 1; showPage(nextPage); audioPlayer.currentTime = getPageStartTime(nextPage); }
+                if (isCoverActive) { coverView.style.display = 'none'; bookView.style.display = 'flex'; isCoverActive = false; showPage(1); } else if (currentPage < publishedPages.length) { 
+                    const nextPage = currentPage + 1; 
+                    showPage(nextPage); 
+                    if (isPlaying) { 
+                        audioPlayer.currentTime = getPageStartTime(nextPage); 
+                    } 
+                }
             }
         });
         prevBtn.addEventListener('click', () => {
             if (!isFeedMode) {
                 if (isCoverActive) return;
-                if (currentPage > 1) { const prevPage = currentPage - 1; showPage(prevPage); audioPlayer.currentTime = getPageStartTime(prevPage); } else { bookView.style.display = 'none'; coverView.style.display = 'flex'; isCoverActive = true; audioPlayer.pause(); updateButtonsAndIndicator(); }
+                if (currentPage > 1) { 
+                    const prevPage = currentPage - 1; 
+                    showPage(prevPage); 
+                    if (isPlaying) { 
+                        audioPlayer.currentTime = getPageStartTime(prevPage); 
+                    } 
+                } else { 
+                    bookView.style.display = 'none'; 
+                    coverView.style.display = 'flex'; 
+                    isCoverActive = true; 
+                    audioPlayer.pause(); 
+                    updateButtonsAndIndicator(); 
+                }
             }
         });
 
         audioPlayer.addEventListener('timeupdate', () => {
-            if (!isPlaying || isCoverActive) return;
-
+            // *** ИСПРАВЛЕНИЕ: Это единственное место, которое требовало доработки для гибридного режима ***
+            // Теперь автоматика не сработает, если плеер находится в процессе "перемотки" (seeking),
+            // что дает приоритет ручному переключению страниц.
+            if (!isPlaying || isCoverActive || audioPlayer.seeking) {
+                return;
+            }
+            
             if (CONFIG.isContinuousPlayback) {
                 const currentTime = audioPlayer.currentTime;
                 const targetPageData = publishedPages.find((p, index) => {
                     const startTime = getPageStartTime(index + 1);
                     return currentTime >= startTime && currentTime < p.narrationEndTime;
                 });
-                
                 if (!targetPageData) return;
-                
                 const newPageNum = publishedPages.indexOf(targetPageData) + 1;
                 
                 if (isFeedMode) {
@@ -1058,19 +1052,15 @@
                         const prevPageData = publishedPages[currentPage - 1];
                         if (prevPageData && prevPageData.collapsible) {
                             const prevPageDetails = document.querySelector(`.page[data-page-number="${currentPage}"] details`);
-                            if (prevPageDetails && prevPageDetails.open) prevPageDetails.open = false;
+                            if (prevPageDetails) prevPageDetails.open = false;
                         }
                         const newPageDetails = document.querySelector(`.page[data-page-number="${newPageNum}"] details`);
-                        if (newPageDetails && !newPageDetails.open) newPageDetails.open = true;
-                        
-                        scrollToPage(newPageNum); 
-                        
+                        if (newPageDetails) newPageDetails.open = true;
+                        scrollToPage(newPageNum);
                         currentPage = newPageNum;
                     }
                 } else {
-                    if (newPageNum !== currentPage) {
-                        showPage(newPageNum);
-                    }
+                    if (newPageNum !== currentPage) { showPage(newPageNum); }
                 }
             }
         });
@@ -1089,6 +1079,7 @@
     </script>
 </body>
 </html>
+
 
 
 
