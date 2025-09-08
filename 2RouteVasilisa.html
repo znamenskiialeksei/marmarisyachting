@@ -1,456 +1,462 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Маршрут 2. Дневной яхтенный тур с обедом на яхте.</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            height: 100svh;
+<!DOCTYPE html> <html lang="ru"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Маршрут 2. Дневной яхтенный тур с обедом на яхте.</title> <style> /* Начало блока для написания CSS-стилей */
+        body { /* Стили для всего тела документа */
+            margin: 0; /* Убираем стандартные внешние отступы у body */
+            overflow: hidden; /* Скрываем любой контент, который выходит за пределы экрана (важно для режима "Истории") */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; /* Набор системных шрифтов для кросс-платформенной совместимости */
+            display: flex; /* Используем Flexbox-модель для расположения дочерних элементов */
+            flex-direction: column; /* Располагаем дочерние элементы в колонку (вертикально) */
+            height: 100vh; /* Задаем высоту тела равной 100% высоты видимой части окна браузера (viewport height) */
+            height: 100svh; /* Более новый стандарт (small viewport height), который лучше работает на мобильных устройствах, учитывая панели браузера */
         }
-        .content-view {
-            flex-grow: 1;
-            position: relative;
-            display: none;
-            background-color: #000;
+        .content-view { /* Общий класс для основных контейнеров контента (обложка и книга) */
+            flex-grow: 1; /* Разрешаем элементу занимать всё доступное свободное пространство по вертикали */
+            position: relative; /* Устанавливаем относительное позиционирование, чтобы дочерние абсолютные элементы позиционировались относительно него */
+            display: none; /* По умолчанию скрываем эти блоки */
+            background-color: #000; /* Цвет фона - черный */
         }
-        #cover-view.content-view { display: flex; }
-        #cover-video {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 1;
-            object-fit: cover;
+        #cover-view.content-view { display: flex; } /* Контейнер обложки (#cover-view) делаем видимым при загрузке, используя display: flex для центрирования контента */
+        #cover-video { /* Стили для фонового видео на обложке */
+            position: absolute; /* Абсолютное позиционирование относительно родительского .content-view */
+            top: 0; left: 0; /* Прижимаем видео к верхнему левому углу родителя */
+            width: 100%; height: 100%; /* Растягиваем видео на всю ширину и высоту родителя */
+            z-index: 1; /* Помещаем видео на первый слой (ниже текста и кнопок) */
+            object-fit: cover; /* Масштабируем видео так, чтобы оно полностью покрывало контейнер, обрезая лишнее */
         }
-        .cover-text-box {
-            position: absolute;
-            z-index: 2;
-            text-shadow: 2px 2px 5px rgba(8, 0, 0, 0.8);
-            font-size: 1.1em;
-            max-width: 90%;
-            text-align: center;
-            transform: translate(-50%, -50%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: opacity 0.5s;
+        .cover-text-box { /* Контейнер для текста на обложке */
+            position: absolute; /* Абсолютное позиционирование */
+            z-index: 2; /* Помещаем текст выше видео (z-index: 1) */
+            text-shadow: 2px 2px 5px rgba(8, 0, 0, 0.8); /* Тень для текста для лучшей читаемости на видео-фоне */
+            font-size: 1.1em; /* Немного увеличиваем размер шрифта */
+            max-width: 90%; /* Ограничиваем максимальную ширину, чтобы текст не прилипал к краям экрана */
+            text-align: center; /* Выравниваем текст по центру */
+            transform: translate(-50%, -50%); /* Техника для точного центрирования блока (сдвигаем на 50% своей ширины и высоты) */
+            display: flex; /* Используем flex для внутреннего выравнивания */
+            align-items: center; /* Выравниваем дочерние элементы по вертикали */
+            justify-content: center; /* Выравниваем дочерние элементы по горизонтали */
+            gap: 10px; /* Расстояние между дочерними элементами */
+            transition: opacity 0.5s; /* Плавный переход для свойства прозрачности */
         }
-        .cover-text-bg {
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 5px 10px;
-            color: rgb(246, 238, 238);
-            white-space: nowrap;
+        .cover-text-bg { /* Стили для подложки под текстом на обложке */
+            background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный черный фон */
+            padding: 5px 10px; /* Внутренние отступы для текста */
+            color: rgb(246, 238, 238); /* Светлый цвет текста */
+            white-space: nowrap; /* Запрещаем перенос текста на новую строку */
         }
-        #tooltip-box {
-            position: fixed;
-            z-index: 10001;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.9em;
-            max-width: 250px;
-            text-align: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
-            pointer-events: none;
+        #tooltip-box { /* Стили для всплывающей подсказки */
+            position: fixed; /* Фиксированное позиционирование относительно окна браузера */
+            z-index: 10001; /* Очень высокий z-index, чтобы подсказка была поверх всех элементов */
+            background-color: rgba(0, 0, 0, 0.8); /* Полупрозрачный фон */
+            color: white; /* Белый цвет текста */
+            padding: 8px 12px; /* Внутренние отступы */
+            border-radius: 8px; /* Скругление углов */
+            font-size: 0.9em; /* Немного уменьшенный шрифт */
+            max-width: 250px; /* Максимальная ширина подсказки */
+            text-align: center; /* Выравнивание текста по центру */
+            opacity: 0; /* Изначально полностью прозрачна (скрыта) */
+            visibility: hidden; /* Изначально скрыта и не участвует в событиях */
+            transition: opacity 0.3s, visibility 0.3s, transform 0.3s; /* Плавные переходы для появления/исчезновения */
+            pointer-events: none; /* Подсказка не перехватывает клики мыши */
         }
-        #tooltip-box.visible { opacity: 1; visibility: visible; }
-        .cover-button {
-            position: absolute;
-            z-index: 3;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(0, 0, 0, 0.5);
-            border: 2px solid white;
-            cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s;
-            transform: translate(-50%, -50%);
+        #tooltip-box.visible { opacity: 1; visibility: visible; } /* Класс для отображения подсказки */
+        .cover-button { /* Общий стиль для круглых кнопок на обложке */
+            position: absolute; /* Абсолютное позиционирование */
+            z-index: 3; /* Помещаем кнопки поверх текста и видео */
+            width: 50px; /* Ширина кнопки */
+            height: 50px; /* Высота кнопки */
+            border-radius: 50%; /* Делаем кнопку идеально круглой */
+            display: flex; /* Используем flex для центрирования иконки внутри */
+            align-items: center; /* Вертикальное центрирование */
+            justify-content: center; /* Горизонтальное центрирование */
+            background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
+            border: 2px solid white; /* Белая рамка */
+            cursor: pointer; /* Указатель мыши в виде руки */
+            transition: transform 0.2s, background-color 0.2s; /* Плавные переходы для эффектов */
+            transform: translate(-50%, -50%); /* Центрирование кнопки */
         }
-        .cover-button:hover {
-            transform: translate(-50%, -50%) scale(1.1);
-            background-color: rgba(0, 0, 0, 0.7);
+        .cover-button:hover { /* Эффект при наведении на кнопку */
+            transform: translate(-50%, -50%) scale(1.1); /* Немного увеличиваем кнопку */
+            background-color: rgba(0, 0, 0, 0.7); /* Делаем фон темнее */
         }
-        .cover-button.route-selector-btn {
-            width: 90px;
-            height: 40px;
-            border-radius: 8px;
+        .cover-button.route-selector-btn { /* Стиль для прямоугольной кнопки выбора маршрутов */
+            width: 90px; /* Задаем ширину */
+            height: 40px; /* Задаем высоту */
+            border-radius: 8px; /* Делаем углы скругленными */
         }
-        .cover-button svg { width: 28px; height: 28px; fill: white; }
-        .pulsing {
-            animation-name: pulseAnimation;
-            animation-iteration-count: infinite;
-            animation-timing-function: ease-in-out;
-            animation-duration: var(--pulse-total-duration, 8s);
+        .cover-button svg { width: 28px; height: 28px; fill: white; } /* Стили для SVG иконок внутри кнопок */
+        .pulsing { /* Класс для создания эффекта пульсации */
+            animation-name: pulseAnimation; /* Название анимации */
+            animation-iteration-count: infinite; /* Бесконечное повторение анимации */
+            animation-timing-function: ease-in-out; /* Плавность хода анимации */
+            animation-duration: var(--pulse-total-duration, 8s); /* Длительность одного цикла анимации (берется из JS переменной) */
         }
-        .cover-button.route-selector-btn svg {
-            width: 100%;
-            height: 100%;
-            fill: initial;
+        .cover-button.route-selector-btn svg { /* Стили для SVG внутри кнопки выбора маршрута */
+            width: 100%; /* Растягиваем SVG на всю ширину кнопки */
+            height: 100%; /* Растягиваем SVG на всю высоту кнопки */
+            fill: initial; /* Сбрасываем цвет заливки, чтобы он наследовался из SVG-кода */
         }
-        @keyframes pulseAnimation {
-            0% { opacity: 0; }
-            6.25% { opacity: 1; }
-            56.25% { opacity: 1; }
-            81.25% { opacity: 0; }
-            100% { opacity: 0; }
+        @keyframes pulseAnimation { /* Определение самой анимации пульсации */
+            0% { opacity: 0; } /* Начало: невидимый */
+            6.25% { opacity: 1; } /* Плавное появление */
+            56.25% { opacity: 1; } /* Остается видимым */
+            81.25% { opacity: 0; } /* Плавное исчезновение */
+            100% { opacity: 0; } /* Конец: невидимый */
         }
         
-        .route-dropdown-menu {
-            position: fixed;
-            z-index: 10000; 
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            padding: 8px;
-            min-width: 200px;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+        .route-dropdown-menu { /* Стили для выпадающего меню */
+            position: fixed; /* Фиксированное позиционирование */
+            z-index: 10000;  /* Высокий z-index, чтобы быть поверх других элементов */
+            background-color: white; /* Белый фон */
+            border-radius: 8px; /* Скругленные углы */
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3); /* Тень для эффекта объема */
+            padding: 8px; /* Внутренние отступы */
+            min-width: 200px; /* Минимальная ширина меню */
+            opacity: 0; /* Изначально невидимо */
+            visibility: hidden; /* Изначально скрыто */
+            transition: opacity 0.2s, transform 0.2s, visibility 0.2s; /* Плавные переходы */
         }
-        .route-dropdown-menu.visible {
-            opacity: 1;
-            visibility: visible;
+        .route-dropdown-menu.visible { /* Класс для отображения меню */
+            opacity: 1; /* Делаем видимым */
+            visibility: visible; /* Делаем доступным */
         }
-        .route-dropdown-menu a {
-            display: block;
-            padding: 10px 15px;
-            color: #333;
-            text-decoration: none;
-            border-radius: 6px;
-            transition: background-color 0.2s;
-            cursor: pointer;
+        .route-dropdown-menu a { /* Стили для ссылок внутри меню */
+            display: block; /* Делаем ссылки блочными элементами, чтобы занимали всю ширину */
+            padding: 10px 15px; /* Внутренние отступы */
+            color: #333; /* Темный цвет текста */
+            text-decoration: none; /* Убираем подчеркивание */
+            border-radius: 6px; /* Скругление углов для каждого пункта */
+            transition: background-color 0.2s; /* Плавный переход фона */
+            cursor: pointer; /* Указатель в виде руки */
         }
-        .route-dropdown-menu a:hover {
-            background-color: #f0f0f0;
+        .route-dropdown-menu a:hover { /* Эффект при наведении на пункт меню */
+            background-color: #f0f0f0; /* Слегка серый фон */
         }
 
-        .page {
-            position: absolute; width: 100%; height: 100%;
-            display: flex; flex-direction: column; align-items: center;
-            padding: 20px; box-sizing: border-box;
-            opacity: 0; visibility: hidden; transition: opacity 0.5s ease-in-out, height 0.3s ease-in-out;
-            background: white;
+        .page { /* Стили для отдельной "страницы" контента в режиме "Истории" */
+            position: absolute; width: 100%; height: 100%; /* Абсолютное позиционирование на весь родительский блок */
+            display: flex; flex-direction: column; align-items: center; /* Flex-контейнер для внутреннего контента */
+            padding: 20px; box-sizing: border-box; /* Внутренние отступы, box-sizing для правильного расчета размеров */
+            opacity: 0; visibility: hidden; transition: opacity 0.5s ease-in-out, height 0.3s ease-in-out; /* Плавное появление/исчезновение страницы */
+            background: white; /* Белый фон */
             position: relative; 
         }
-        .page.active { opacity: 1; visibility: visible; }
-        .page p {
-            margin-top: 15px; text-align: left; font-size: 1.1em; line-height: 1.6;
-            color: #333; overflow-y: auto; width: 100%;
-            padding-right: 10px; flex-grow: 1; min-height: 0;
-            box-sizing: border-box;
+        .page.active { opacity: 1; visibility: visible; } /* Класс для активной (видимой) страницы */
+        .page p { /* Стили для текстового блока на странице */
+            margin-top: 15px; text-align: left; font-size: 1.1em; line-height: 1.6; /* Настройки текста */
+            color: #333; /* Темный цвет текста */
+            overflow-y: auto; /* Добавляем вертикальную прокрутку, если текст не помещается */
+            width: 100%; /* Ширина на 100% родителя */
+            padding-right: 10px; /* Небольшой отступ справа для полосы прокрутки */
+            flex-grow: 1; /* Занимает все доступное вертикальное пространство */
+            min-height: 0; /* Хак для корректной работы flex-grow и overflow-y */
+            box-sizing: border-box; /* Включаем padding в расчет ширины */
         }
-        .page-buttons-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 15px; flex-shrink: 0; }
-        .page-btn { color: white; border: none; border-radius: 8px; padding: 10px 20px; font-size: 1em; cursor: pointer; transition: background-color 0.3s; }
-        .page-btn.video-btn, .page-btn.iframe-btn { background-color: #4285F4; }
-        .page-btn.audio-btn { background-color: #f4b400; }
-        .page-btn.photo-btn { background-color: #0F9D58; }
-        .page-btn.text-btn { background-color: #673ab7; }
-        .page-btn.carousel-btn { background-color: #9c27b0; }
-        .page-btn:hover { filter: brightness(90%); }
-        .page-btn.admin-error-btn { background-color: #db4437; cursor: not-allowed; border: 2px dashed white; font-weight: bold; }
-        .link-btn {
-            position: absolute;
-            z-index: 5;
-            padding: 12px 24px;
-            font-size: 1em;
-            font-weight: 600;
-            color: white;
-            background: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%);
-            border: none;
-            border-radius: 8px;
-            left: 50%;
-            top: 85%;
-            transform: translate(-50%, -50%);
+        .page-buttons-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 15px; flex-shrink: 0; } /* Контейнер для кнопок (видео, фото и т.д.) */
+        .page-btn { color: white; border: none; border-radius: 8px; padding: 10px 20px; font-size: 1em; cursor: pointer; transition: background-color 0.3s; } /* Общий стиль для кнопок на странице */
+        .page-btn.video-btn, .page-btn.iframe-btn { background-color: #4285F4; } /* Синий цвет для кнопок видео и iframe */
+        .page-btn.audio-btn { background-color: #f4b400; } /* Желтый цвет для кнопок аудио */
+        .page-btn.photo-btn { background-color: #0F9D58; } /* Зеленый цвет для кнопок фото */
+        .page-btn.text-btn { background-color: #673ab7; } /* Фиолетовый цвет для текстовых кнопок */
+        .page-btn.carousel-btn { background-color: #9c27b0; } /* Пурпурный для фото-карусели */
+        .page-btn:hover { filter: brightness(90%); } /* Затемнение кнопки при наведении */
+        .page-btn.admin-error-btn { background-color: #db4437; cursor: not-allowed; border: 2px dashed white; font-weight: bold; } /* Стиль для кнопки-ошибки в админ-режиме */
+        .link-btn { /* Стиль для особой кнопки-ссылки (не используется в текущей конфигурации, но присутствует) */
+            position: absolute; /* Абсолютное позиционирование */
+            z-index: 5; /* Слой над другими элементами */
+            padding: 12px 24px; font-size: 1em; font-weight: 600; /* Настройки текста и отступов */
+            color: white; /* Белый цвет текста */
+            background: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%); /* Градиентный фон */
+            border: none; /* Без рамки */
+            border-radius: 8px; /* Скругленные углы */
+            left: 50%; top: 85%; /* Положение */
+            transform: translate(-50%, -50%); /* Центрирование */
         }
-        .link-btn:hover { transform: translate(-50%, -50%) scale(1.05); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0; top: 0;
-            width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
+        .link-btn:hover { transform: translate(-50%, -50%) scale(1.05); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); } /* Эффект при наведении */
+        .modal { /* Стили для модального (всплывающего) окна */
+            display: none; /* Изначально скрыто */
+            position: fixed; /* Фиксированное позиционирование на весь экран */
+            z-index: 1000; /* Высокий z-index */
+            left: 0; top: 0; width: 100%; height: 100%; /* Размеры на весь экран */
+            background-color: rgba(0, 0, 0, 0.8); /* Полупрозрачный черный фон (затемнение) */
+            justify-content: center; align-items: center; /* Центрирование содержимого */
+            flex-direction: column; /* Располагаем элементы в колонку */
         }
-        .modal-content { display: none; max-width: 90%; max-height: 80%; width: auto; height: auto; border-radius: 4px; }
-        #modalIframe { 
-            display: block;
-            background-color: #000;
-            border-radius: 8px;
-            max-width: 95vw;
-            max-height: 90vh;
+        .modal-content { display: none; max-width: 90%; max-height: 80%; width: auto; height: auto; border-radius: 4px; } /* Общий класс для контента внутри модального окна */
+        #modalIframe { /* Стили для iframe внутри модального окна */
+            display: block; /* Делаем блочным элементом */
+            background-color: #000; /* Черный фон на случай долгой загрузки */
+            border-radius: 8px; /* Скругленные углы */
+            max-width: 95vw; /* Максимальная ширина 95% от ширины экрана */
+            max-height: 90vh; /* Максимальная высота 90% от высоты экрана */
         }
-        #modalText { background-color: #fff; padding: 25px; color: #333; overflow-y: auto; line-height: 1.6; }
-        .modal-close { position: absolute; top: 20px; right: 35px; color: #fb0404; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 1001; }
-        .modal-header, .modal-footer { color: white; text-align: center; padding: 5px 15px; max-width: 90%; box-sizing: border-box; font-size: clamp(0.8rem, 2vw, 1.1em); }
-        #iframe-wrapper { position: relative; width: 95%; max-width: 700px; background-color: #ffffff; border-radius: 8px; padding: 15px; box-sizing: border-box; transition: height 0.3s ease; }
-        #bookingFrame { width: 100%; height: 100%; border: none; }
-        #admin-panel { position: fixed; bottom: 10px; left: 10px; z-index: 9999; background-color: rgba(255, 221, 221, 0.95); border: 2px solid #db4437; border-radius: 8px; padding: 15px; max-width: 400px; }
-        #admin-panel h4 { margin: 0 0 10px 0; color: #b71c1c; }
-        #admin-panel ul { margin: 0; padding-left: 20px; }
-        #admin-panel li { margin-bottom: 5px; }
-        .controls {
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 10px 15px;
-            background: #f1f1f1;
-            border-top: 1px solid #ddd;
-            box-sizing: border-box;
+        #modalText { background-color: #fff; padding: 25px; color: #333; overflow-y: auto; line-height: 1.6; } /* Стили для текстового контента в модальном окне */
+        .modal-close { position: absolute; top: 20px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 1001; } /* Стили для кнопки "закрыть" (крестик) */
+        .modal-header, .modal-footer { color: white; text-align: center; padding: 5px 15px; max-width: 90%; box-sizing: border-box; font-size: clamp(0.8rem, 2vw, 1.1em); } /* Стили для заголовка и подвала в модальном окне */
+        #iframe-wrapper { position: relative; width: 95%; max-width: 700px; background-color: #ffffff; border-radius: 8px; padding: 15px; box-sizing: border-box; transition: height 0.3s ease; } /* Обертка для iframe формы бронирования */
+        #bookingFrame { width: 100%; height: 100%; border: none; } /* Стили для самого iframe формы бронирования */
+        #admin-panel { position: fixed; bottom: 10px; left: 10px; z-index: 9999; background-color: rgba(255, 221, 221, 0.95); border: 2px solid #db4437; border-radius: 8px; padding: 15px; max-width: 400px; } /* Стили для панели с ошибками в админ-режиме */
+        #admin-panel h4 { margin: 0 0 10px 0; color: #b71c1c; } /* Заголовок в админ-панели */
+        #admin-panel ul { margin: 0; padding-left: 20px; } /* Список в админ-панели */
+        #admin-panel li { margin-bottom: 5px; } /* Элемент списка в админ-панели */
+        .controls { /* Стили для нижней панели управления */
+            flex-shrink: 0; /* Запрещаем панели сжиматься */
+            display: flex; /* Flexbox для дочерних элементов */
+            flex-direction: column; /* Элементы в колонку */
+            justify-content: center; /* Вертикальное центрирование */
+            align-items: center; /* Горизонтальное центрирование */
+            padding: 10px 15px; /* Внутренние отступы */
+            background: #f1f1f1; /* Светло-серый фон */
+            border-top: 1px solid #ddd; /* Верхняя рамка для отделения */
+            box-sizing: border-box; /* Правильный расчет размеров */
         }
-        .controls-label {
-            color: #555;
-            margin-bottom: 8px;
-            font-weight: bold;
-            text-align: center;
-            font-size: clamp(1.2rem, 2.5vw, 1.4em);
-            max-width: 100%;
-            word-break: break-word;
-            overflow-wrap: break-word;
-            hyphens: auto;
-            min-width: 0;
+        .controls-label { /* Стиль для заголовка на панели управления */
+            color: #555; /* Темно-серый цвет текста */
+            margin-bottom: 8px; /* Отступ снизу */
+            font-weight: bold; /* Жирный шрифт */
+            text-align: center; /* Выравнивание по центру */
+            font-size: clamp(1.2rem, 2.5vw, 1.4em); /* Адаптивный размер шрифта */
+            max-width: 100%; /* Максимальная ширина */
+            word-break: break-word; overflow-wrap: break-word; hyphens: auto; /* Настройки для переноса длинных слов */
+            min-width: 0; /* Хак для корректной работы flex */
         }
-        .controls-buttons {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            gap: clamp(10px, 3vw, 25px);
-            flex-wrap: wrap;
+        .controls-buttons { /* Контейнер для кнопок на панели управления */
+            display: flex; /* Flexbox */
+            justify-content: center; align-items: center; /* Центрирование */
+            width: 100%; /* Ширина на 100% */
+            gap: clamp(10px, 3vw, 25px); /* Адаптивное расстояние между кнопками */
+            flex-wrap: wrap; /* Разрешаем перенос кнопок на новую строку */
         }
-        .button-wrapper { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .button-label { font-size: clamp(1.0rem, 1.8vw, 1.2rem); color: #555; text-align: center; line-height: 1.3; }
-        .controls button { color: white; border: none; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: background-color 0.3s, transform 0.3s; }
-        .controls button:hover { transform: scale(1.1); }
-        #playPauseBtn { background: #4285F4; width: 40px; height: 40px; font-size: 20px; }
-        .nav-btn { background: #757575; width: 40px; height: 40px; font-size: 20px; }
-        #bookingBtn { background: #4CAF50; width: 40px; height: 40px; font-size: 20px; }
-        #pageIndicator { font-size: 1.2em; font-weight: bold; color: #333; min-width: 50px; text-align: center; }
+        .button-wrapper { display: flex; flex-direction: column; align-items: center; gap: 4px; } /* Обертка для кнопки и её подписи */
+        .button-label { font-size: clamp(1.0rem, 1.8vw, 1.2rem); color: #555; text-align: center; line-height: 1.3; } /* Стиль для подписи под кнопкой */
+        .controls button { color: white; border: none; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: background-color 0.3s, transform 0.3s; } /* Общий стиль для кнопок на панели */
+        .controls button:hover { transform: scale(1.1); } /* Увеличение при наведении */
+        #playPauseBtn { background: #4285F4; width: 40px; height: 40px; font-size: 20px; } /* Кнопка Play/Pause */
+        .nav-btn { background: #757575; width: 40px; height: 40px; font-size: 20px; } /* Кнопки навигации (вперед/назад) */
+        #bookingBtn { background: #4CAF50; width: 40px; height: 40px; font-size: 20px; } /* Кнопка бронирования */
+        #pageIndicator { font-size: 1.2em; font-weight: bold; color: #333; min-width: 50px; text-align: center; } /* Индикатор номера страницы */
 
-        #modalCarousel {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            width: 95%;
-            max-width: 1280px;
-            height: 90%;
-            gap: 15px;
+        #modalCarousel { /* Стили для модального окна с фото-каруселью */
+            display: flex; /* Flexbox */
+            flex-direction: row; /* Элементы в строку */
+            justify-content: space-between; /* Распределение элементов */
+            align-items: center; /* Вертикальное выравнивание */
+            width: 95%; max-width: 1280px; height: 90%; /* Размеры */
+            gap: 15px; /* Расстояние между элементами */
         }
-        #carouselIframeWrapper {
-            flex-grow: 1;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            position: relative; 
-            z-index: 1;
+        #carouselIframeWrapper { /* Обертка для iframe внутри карусели */
+            flex-grow: 1; /* Занимает все доступное пространство */
+            width: 100%; height: 100%; /* Размеры */
+            display: flex; justify-content: center; align-items: center; /* Центрирование iframe */
+            overflow: hidden; /* Скрытие частей iframe, выходящих за границы */
+            position: relative; z-index: 1; /* Позиционирование */
         }
-        #carouselIframe {
-            flex-shrink: 0;
-            border: none;
-            border-radius: 8px;
-            transition: transform 0.3s ease;
-            transform-origin: center center;
+        #carouselIframe { /* Сам iframe в карусели */
+            flex-shrink: 0; /* Запрет на сжатие */
+            border: none; border-radius: 8px; /* Стили рамки */
+            transition: transform 0.3s ease; /* Плавный переход для масштабирования */
+            transform-origin: center center; /* Точка трансформации в центре */
         }
-        .carousel-nav {
-            flex-shrink: 0;
-            background: rgba(0,0,0,0.5);
-            border: none;
-            color: white;
-            font-size: 3em;
-            cursor: pointer;
-            padding: 0 20px;
-            border-radius: 8px;
-            user-select: none;
-            height: 80%;
-            position: relative; 
-            z-index: 2;
+        .carousel-nav { /* Кнопки "вперед/назад" в карусели */
+            flex-shrink: 0; /* Запрет на сжатие */
+            background: rgba(0,0,0,0.5); /* Полупрозрачный фон */
+            border: none; color: white; /* Стили рамки и текста */
+            font-size: 3em; cursor: pointer; /* Настройки текста и курсора */
+            padding: 0 20px; border-radius: 8px; /* Отступы и скругление */
+            user-select: none; /* Запрет на выделение текста */
+            height: 80%; position: relative; z-index: 2; /* Размеры и позиционирование */
         }
-        .carousel-nav:hover {
-            background: rgba(0,0,0,0.8);
-        }
-        @media (max-width: 768px) {
-            #modalCarousel {
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: center;
-                align-items: center;
-                gap: 15px;
+        .carousel-nav:hover { background: rgba(0,0,0,0.8); } /* Затемнение при наведении */
+        @media (max-width: 768px) { /* Медиа-запрос для мобильных устройств */
+            #modalCarousel { /* Перестраиваем карусель на мобильных */
+                flex-direction: row; /* Элементы в строку */
+                flex-wrap: wrap; /* С переносом */
+                justify-content: center; /* Центрирование */
+                align-items: center; /* Центрирование */
+                gap: 15px; /* Промежуток */
             }
         
-            #carouselIframeWrapper {
-                order: 1;
-                width: 100%;
-                height: 80%;
+            #carouselIframeWrapper { /* Обертка iframe на мобильных */
+                order: 1; /* Порядок отображения: сначала iframe */
+                width: 100%; /* Ширина на 100% */
+                height: 80%; /* Высота 80% */
             }
         
-            #modalCarousel .carousel-nav.prev,
+            #modalCarousel .carousel-nav.prev, /* Кнопки навигации на мобильных */
             #modalCarousel .carousel-nav.next {
-                order: 2;
-                font-size: 2em;
-                background: rgba(0, 0, 0, 0.5);
-                border-radius: 50%;
-                height: 45px;
-                width: 45px;
-                padding: 0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin-top: 5px;
+                order: 2; /* Порядок отображения: после iframe */
+                font-size: 2em; /* Уменьшаем шрифт */
+                background: rgba(0, 0, 0, 0.5); /* Фон */
+                border-radius: 50%; /* Делаем круглыми */
+                height: 45px; width: 45px; /* Размеры */
+                padding: 0; /* Убираем отступы */
+                display: flex; align-items: center; justify-content: center; /* Центрирование иконки */
+                margin-top: 5px; /* Отступ сверху */
             }
         }
 
-        .feed-mode {
-            height: auto;
-            overflow-y: auto;
-            overflow-x: hidden;
+        /* ----- СТИЛИ ДЛЯ РЕЖИМА "ЛЕНТЫ" (FEED MODE) ----- */
+        .feed-mode { /* Класс, который добавляется к body для активации режима ленты */
+            height: auto; /* Высота определяется контентом */
+            overflow-y: auto; /* Включаем вертикальную прокрутку */
+            overflow-x: hidden; /* Выключаем горизонтальную */
         }
-        .feed-mode .content-view {
-            display: block !important;
-            position: relative;
-            height: auto;
+        .feed-mode .content-view { /* Блоки контента в режиме ленты */
+            display: block !important; /* Делаем их видимыми и блочными */
+            position: relative; /* Обычное относительное позиционирование */
+            height: auto; /* Высота по контенту */
         }
-        .feed-mode #cover-view {
-            height: 100vh;
-            height: 100svh;
+        .feed-mode #cover-view { /* Обложка в режиме ленты */
+            height: 100vh; /* Занимает первый экран */
+            height: 100svh; /* Аналог для мобильных */
         }
-        .feed-mode .page {
-            position: relative;
-            opacity: 1 !important;
-            visibility: visible !important;
-            margin-bottom: 10px;
-            height: auto; 
+        .feed-mode .page { /* "Страницы" в режиме ленты */
+            position: relative; /* Обычное позиционирование */
+            opacity: 1 !important; visibility: visible !important; /* Делаем их всегда видимыми */
+            margin-bottom: 10px; /* Отступ между блоками */
+            height: auto;  /* Высота по контенту */
         }
-        .feed-mode .page details {
-            width: 100%;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            box-sizing: border-box;
+        .feed-mode .page details { /* Элемент <details> для создания раскрывающихся блоков */
+            width: 100%; /* Ширина на 100% */
+            border: 1px solid #e0e0e0; /* Светлая рамка */
+            border-radius: 8px; /* Скругление углов */
+            box-sizing: border-box; /* Правильный расчет размеров */
         }
-        .feed-mode .page details[open] {
-            min-height: 80vh;
-            padding-bottom: 80px;
+        .feed-mode .page details[open] { /* Стили для раскрытого блока */
+            min-height: 80vh; /* Минимальная высота, чтобы занимал почти весь экран */
+            padding-bottom: 80px; /* Отступ снизу, чтобы контент не перекрывался панелью управления */
         }
-        .feed-mode .controls {
-            position: sticky;
-            bottom: 0;
-            z-index: 1000;
-            width: 100%;
+        .feed-mode .controls { /* Панель управления в режиме ленты */
+            position: sticky; /* "Прилипает" к низу экрана при прокрутке */
+            bottom: 0; /* Расположение внизу */
+            z-index: 1000; /* Поверх контента */
+            width: 100%; /* Ширина на 100% */
         }
-        .feed-mode .page summary {
-            padding: 15px;
-            background-color: #f1f1f1;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            list-style: none;
-            position: relative;
+        .feed-mode .page summary { /* Заголовок раскрывающегося блока */
+            padding: 15px; /* Внутренние отступы */
+            background-color: #f1f1f1; /* Светло-серый фон */
+            border-radius: 8px; /* Скругление углов */
+            font-weight: bold; font-size: 1.1em; /* Настройки шрифта */
+            cursor: pointer; /* Курсор-рука */
+            transition: background-color 0.2s; /* Плавный переход фона */
+            list-style: none; /* Убираем стандартный маркер-стрелку */
+            position: relative; /* Относительное позиционирование для псевдо-элемента */
         }
-        .feed-mode .page summary:hover {
-            background-color: #e0e0e0;
+        .feed-mode .page summary:hover { /* Эффект при наведении на заголовок */
+            background-color: #e0e0e0; /* Затемнение фона */
         }
-        .feed-mode .page summary::before {
-            content: '▼';
-            position: absolute;
-            right: 20px;
-            transition: transform 0.2s;
+        .feed-mode .page summary::before { /* Псевдо-элемент для создания своей стрелки */
+            content: '▼'; /* Символ стрелки */
+            position: absolute; /* Абсолютное позиционирование */
+            right: 20px; /* Справа */
+            transition: transform 0.2s; /* Плавный переход для поворота */
         }
-        .feed-mode .page details:not([open]) > summary::before {
-            transform: rotate(-90deg);
+        .feed-mode .page details:not([open]) > summary::before { /* Когда блок закрыт */
+            transform: rotate(-90deg); /* Поворачиваем стрелку */
         }
-        .feed-mode .page details > .page-buttons-container {
-            margin-top: 20px;
+        .feed-mode .page details > .page-buttons-container { /* Контейнер кнопок внутри раскрытого блока */
+            margin-top: 20px; /* Отступ сверху */
         }
-    </style>
-</head>
-<body>
-    <div id="cover-view" class="content-view">
+
+        /* <<< НАЧАЛО ИЗМЕНЕНИЙ: Стили для встраиваемого медиа-контента >>> */
+        .embedded-media { /* Общий класс для всех встраиваемых элементов (img, video, iframe) */
+            max-width: 100%; /* Элемент не будет выходить за границы родительского текстового блока */
+            height: auto;   /* Высота подстраивается автоматически для сохранения пропорций */
+            display: block; /* Отображается как блочный элемент */
+            margin: 15px auto; /* Вертикальный отступ 15px, горизонтально центрируется */
+            border-radius: 8px; /* Скругленные углы */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Легкая тень для объема */
+        }
+        .embedded-media.align-left { /* Класс для обтекания текста справа */
+            float: left; /* Прижимаем элемент влево */
+            margin-right: 15px; /* Отступ справа от текста */
+            margin-left: 0; /* Убираем авто-отступ слева */
+        }
+        .embedded-media.align-right { /* Класс для обтекания текста слева */
+            float: right; /* Прижимаем элемент вправо */
+            margin-left: 15px; /* Отступ слева от текста */
+            margin-right: 0; /* Убираем авто-отступ справа */
+        }
+        .embedded-media.size-small { width: 30%; max-width: 200px; } /* Маленький размер, не более 200px */
+        .embedded-media.size-medium { width: 50%; max-width: 400px; } /* Средний размер, не более 400px */
+        .embedded-media.size-large { width: 100%; } /* Большой размер, на всю ширину текстового блока */
+        
+        .reels-style { /* Специальный класс для вертикальных видео */
+            max-width: 300px; /* Типичная ширина для таких видео */
+            aspect-ratio: 9 / 16; /* Жестко задаем пропорции 9:16 */
+            width: 50%; /* Ширина относительно контейнера, можно менять */
+            height: auto; /* Высота рассчитается из пропорций */
+        }
+        .embedded-audio { /* Класс для встроенных аудио-плееров */
+            width: 100%; /* Растягиваем плеер на всю ширину */
+            margin: 15px 0; /* Добавляем вертикальные отступы */
+        }
+        /* После float-элементов нужно очищать поток, чтобы следующие блоки отображались корректно */
+        .page p::after {
+             content: "";
+             display: table;
+             clear: both;
+        }
+        /* <<< КОНЕЦ ИЗМЕНЕНИЙ >>> */
+
+    </style> </head> <body> <div id="cover-view" class="content-view">
         <div id="tooltip-box"></div>
     </div>
+    
     <div id="book-view" class="content-view">
         <div class="page-viewer"></div>
     </div>
+    
     <div class="controls">
         <div id="main-title" class="controls-label"></div>
         <div class="controls-buttons">
             <div class="button-wrapper">
-                <button id="prevBtn" class="nav-btn">◄</button>
-                <span class="button-label">назад</span>
-            </div>
+                <button id="prevBtn" class="nav-btn">◄</button> <span class="button-label">назад</span> </div>
             <div class="button-wrapper">
-                <button id="playPauseBtn">▶</button>
-                <span class="button-label">слушать</span>
-            </div>
+                <button id="playPauseBtn">▶</button> <span class="button-label">слушать</span> </div>
             <span id="pageIndicator"></span>
             <div class="button-wrapper">
-                <button id="nextBtn" class="nav-btn">►</button>
-                <span class="button-label">вперёд</span>
-            </div>
+                <button id="nextBtn" class="nav-btn">►</button> <span class="button-label">вперёд</span> </div>
             <div class="button-wrapper">
-                <button id="bookingBtn" title="Бронировать">🛒</button>
-                <span class="button-label">бронировать</span>
-            </div>
+                <button id="bookingBtn" title="Бронировать">🛒</button> <span class="button-label">бронировать</span> </div>
         </div>
     </div>
     
     <div id="mediaModal" class="modal">
-        <span class="modal-close">&times;</span>
-        <div class="modal-header"></div>
-        <div class="modal-content" id="modalText"></div>
-        <img class="modal-content" id="modalPhoto" alt="Изображение">
-        <video class="modal-content" id="modalVideo" controls playsinline></video>
-        <iframe class="modal-content" id="modalIframe" frameborder="0" allowfullscreen></iframe>
-        <audio class="modal-content" id="modalAudio" controls></audio>
-        
-        <div class="modal-content" id="modalCarousel">
-            <button class="carousel-nav prev">&lt;</button>
-            <div id="carouselIframeWrapper">
-                <iframe src="" frameborder="0" allowfullscreen id="carouselIframe"></iframe>
+        <span class="modal-close">&times;</span> <div class="modal-header"></div> <div class="modal-content" id="modalText"></div> <img class="modal-content" id="modalPhoto" alt="Изображение"> <video class="modal-content" id="modalVideo" controls playsinline></video> <iframe class="modal-content" id="modalIframe" frameborder="0" allowfullscreen></iframe> <audio class="modal-content" id="modalAudio" controls></audio> <div class="modal-content" id="modalCarousel">
+            <button class="carousel-nav prev">&lt;</button> <div id="carouselIframeWrapper"> <iframe src="" frameborder="0" allowfullscreen id="carouselIframe"></iframe>
             </div>
-            <button class="carousel-nav next">&gt;</button>
-        </div>
+            <button class="carousel-nav next">&gt;</button> </div>
         
-        <div class="modal-footer"></div>
-    </div>
+        <div class="modal-footer"></div> </div>
 
     <div id="bookingModal" class="modal">
-        <div id="iframe-wrapper">
-            <span class="modal-close">&times;</span>
-            <iframe id="bookingFrame" src="" title="Форма бронирования"></iframe>
-        </div>
+        <div id="iframe-wrapper"> <span class="modal-close">&times;</span> <iframe id="bookingFrame" src="" title="Форма бронирования"></iframe> </div>
     </div>
+
     <audio id="narrationAudio" preload="auto"></audio>
+
     <script>
+    // Событие, которое гарантирует, что весь HTML-код страницы загружен и готов к работе
     document.addEventListener('DOMContentLoaded', function() {
+        
+        // ===============================================================================================
+        // ||                             ГЛАВНЫЙ ОБЪЕКТ НАСТРОЕК (CONFIG)                             ||
+        // ===============================================================================================
+        // Это "мозг" всей страницы. Весь контент и поведение настраиваются здесь.
         const CONFIG = {
-            isContinuousPlayback: false, 
+            // --- ГЛОБАЛЬНЫЕ НАСТРОЙКИ ПОВЕДЕНИЯ ---
+            
+            isContinuousPlayback: true, 
             mobileFeedMode: true,
             feedModeForDesktop: true,
-            mainTitle: 'Маршрут 2. Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
+
+            // --- ОСНОВНОЙ КОНТЕНТ ---
+
+            mainTitle: 'Маршрут 2.55 Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
             audioUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisyachting/main/2RouteAudioVasilisa.mp3',
             bookingUrl: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route2',
+
+            // --- НАСТРОЙКИ ОБЛОЖКИ (СТАРТОВОГО ЭКРАНА) ---
+
             coverVideoUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4',
             coverVideoFitMode: 'cover',
             coverTexts: [ { text: 'Мармарис', tooltip: 'Возможно вы сейчас здесь....', top: '5%', left: '45%', visible: true } ],
@@ -474,21 +480,22 @@
                     { name: 'Недельная аренда виллы', url: 'https://www.marmarisyachting.ru/Villa-Turaman' }
                 ]
             },
+
+            // ===============================================================================================
+            // ||                                 СТРАНИЦЫ С КОНТЕНТОМ                                      ||
+            // ===============================================================================================
             pages: [
                 {
-                    published: true,
+                    published: true, 
                     collapsible: false,
                     customHeight: 'auto',
                     text: `<h2> О маршруте. </h2><p>Название: Маршрут 2. Дневной яхтенный тур под парусом Мармарис-Кумлубюк с обедом на яхте. Продолжительность: 1 день. Время: 9:30 – 18:15. Аудитория: от 1 до 6 гостей, включая детей от 6 лет. Стоимость: 1000 долларов США (стандартный обед)/1300 долларов США (обед-гриль). Особенности: Эксклюзивный однодневный круиз, сочетающий панорамные виды побережья, долгий отдых с купанием в живописной бухте Кумлубюк и изысканный обед, приготовленный для вас прямо на борту яхты.</p>`,
                     narrationEndTime: 40,
                     customDropdowns: [
                         {
-                            visible: true,
-                            pulsing: true,
+                            visible: true, pulsing: true,
                             icon: '<svg viewBox="0 0 90 40"><rect x="0.5" y="0.5" width="89" height="39" rx="8" fill="#4CAF50" stroke="#FFFFFF" stroke-width="1"/><text x="45" y="25" font-size="14" font-family="Arial, sans-serif" fill="white" font-weight="bold" text-anchor="middle">Связаться</text></svg>',
-                            tooltip: 'Напишите нам',
-                            top: '94%',
-                            left: '60%',
+                            tooltip: 'Напишите нам', top: '94%', left: '60%',
                             routes: [
                                 { name: 'Написать в WhatsApp', url: 'https://wa.me/905366140347', target: '_blank' },
                                 { name: 'Написать в Telegram', url: 'https://t.me/marmarisyachtingru', target: '_blank' }
@@ -602,36 +609,76 @@
                         { type: 'iframe', buttonText: 'Видеообзор яхты', url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0', headerText: 'Видеообзор яхты', footerText: '' }
                     ],
                 },
-                { published: false, text: `<h2> Шаблон </h2><p>Название: Шаблон</p>`, narrationEndTime: 510, },
+                
+                // ===============================================================================================
+                // ||                  СТРАНИЦА-ШАБЛОН С МАКСИМАЛЬНЫМ КОЛИЧЕСТВОМ ПРИМЕРОВ                     ||
+                // ===============================================================================================
+                { 
+                    published: true, // Включаем страницу, чтобы видеть результат
+                    collapsible: true, // Делаем блок сворачиваемым в режиме "Ленты"
+                    collapsedOnLoad: false, // При загрузке блок будет развернут
+                    narrationEndTime: 510, // Устанавливаем время окончания озвучки для этого блока
+                    
+                    // <<< НАЧАЛО ИЗМЕНЕНИЙ: Полностью переработанный блок `text` с примерами встраивания медиа >>>
+                    text: `<h2>Шаблон: Встраивание медиа и форматирование</h2>
+                           <p>Эта страница демонстрирует, как встраивать различный медиаконтент прямо в текст, используя HTML-теги и специальные CSS-классы.</p>
+                           
+                           <hr>
+                           <h3>1. Встраивание изображений (<img>)</h3>
+                           <p>Вы можете вставить изображение по прямой ссылке. Используйте класс <code>embedded-media</code> для базовых стилей.</p>
+                           <img src="https://raw.githubusercontent.com/znamenskiialeksei/my-audiobook-foto/main/%D1%801.png" alt="Пример изображения" class="embedded-media size-medium">
+                           
+                           <p>
+                             <img src="https://raw.githubusercontent.com/znamenskiialeksei/my-audiobook-foto/main/%D1%802.png" alt="Маленькое изображение" class="embedded-media size-small align-left">
+                             Этот текст будет обтекать изображение, расположенное слева. Классы <code>align-left</code> и <code>size-small</code> позволяют создавать такие компактные компоновки. Текст продолжается, заполняя свободное пространство справа от картинки. Это удобно для иллюстрации отдельных моментов в повествовании без разрыва основного текста.
+                           </p>
+                           <p>А этот текст начнется после того, как закончится обтекание.</p>
+
+                           <hr>
+                           <h3>2. Встраивание видео (<video> и <iframe>)</h3>
+                           <p>Можно вставлять видео как по прямой ссылке на файл .mp4, так и через iframe с видеохостингов.</p>
+                           <video controls src="https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4" class="embedded-media size-large"></video>
+                           
+                           <p>Для вертикальных видео (Reels, Shorts) используйте класс <code>reels-style</code>.</p>
+                           <iframe src="https://www.youtube.com/embed/f3a-3FFkM1A" class="embedded-media reels-style" allowfullscreen></iframe>
+                           
+                           <hr>
+                           <h3>3. Встраивание аудио (<audio>)</h3>
+                           <p>Вы можете добавить аудиоплеер прямо в текст. Используйте класс <code>embedded-audio</code>.</p>
+                           <audio controls src="https://archive.org/download/cc_2023_08_01/cc_2023_08_01.mp3" class="embedded-audio"></audio>
+                           <p>Это позволяет вставлять фоновую музыку, звуковые эффекты или дополнительные аудио-комментарии.</p>
+                           `,
+                    // <<< КОНЕЦ ИЗМЕНЕНИЙ >>>
+                },
             ]
         };
 
-        const isMobile = window.innerWidth < 768;
-        const isFeedMode = (isMobile && CONFIG.mobileFeedMode) || (!isMobile && CONFIG.feedModeForDesktop);
-        if (isFeedMode) {
-            document.body.classList.add('feed-mode');
+        // --- НАЧАЛО ОСНОВНОЙ ЛОГИКИ СКРИПТА ---
+
+        const isMobile = window.innerWidth < 768; // Проверяем, является ли устройство мобильным по ширине экрана
+        const isFeedMode = (isMobile && CONFIG.mobileFeedMode) || (!isMobile && CONFIG.feedModeForDesktop); // Определяем, нужно ли включать режим "Ленты"
+        if (isFeedMode) { // Если да,
+            document.body.classList.add('feed-mode'); // добавляем к body соответствующий класс
         }
 
-        const isAdmin = new URLSearchParams(window.location.search).get('admin') === 'true';
-        const adminErrors = [];
-        const publishedPages = CONFIG.pages.filter(p => p.published);
-        const coverView = document.getElementById('cover-view');
-        const bookView = document.getElementById('book-view');
-        const audioPlayer = document.getElementById('narrationAudio');
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const prevBtn = document.getElementById('prevBtn');
-        const pageIndicator = document.getElementById('pageIndicator');
-        let currentPage = 1;
-        let isPlaying = false;
-        let isCoverActive = true;
+        const isAdmin = new URLSearchParams(window.location.search).get('admin') === 'true'; // Проверяем наличие ?admin=true в URL для включения режима отладки
+        const adminErrors = []; // Массив для сбора ошибок конфигурации
+        const publishedPages = CONFIG.pages.filter(p => p.published); // Создаем массив только из опубликованных страниц
+        const coverView = document.getElementById('cover-view'); // Находим DOM-элемент обложки
+        const bookView = document.getElementById('book-view'); // Находим DOM-элемент "книги"
+        const audioPlayer = document.getElementById('narrationAudio'); // Находим DOM-элемент аудио-плеера
+        const playPauseBtn = document.getElementById('playPauseBtn'); // Находим кнопку Play/Pause
+        const nextBtn = document.getElementById('nextBtn'); // Находим кнопку "вперед"
+        const prevBtn = document.getElementById('prevBtn'); // Находим кнопку "назад"
+        const pageIndicator = document.getElementById('pageIndicator'); // Находим индикатор страниц
         
-        // <<< ИЗМЕНЕНИЕ 1: Новая переменная для управления гибридным режимом в "Ленте" >>>
-        // Она будет включаться по кнопке Play и выключаться по кнопке Pause.
-        let isNarratorModeActive = false;
+        // --- Переменные для отслеживания состояния ---
+        let currentPage = 1; // Номер текущей страницы
+        let isPlaying = false; // Флаг, играет ли сейчас аудио
+        let isCoverActive = true; // Флаг, активна ли сейчас обложка
+        let isNarratorModeActive = false; // Флаг для управления гибридным режимом "Ленты"
         
-        let tooltipTimeout = null;
-
+        let tooltipTimeout = null; // Переменная для таймера подсказки
 
         if (CONFIG.pulsingEffect && CONFIG.pulsingEffect.enabled) {
             const effect = CONFIG.pulsingEffect;
@@ -761,7 +808,6 @@
             tooltipBox.classList.remove('visible');
         }
 
-
         function setupCover() {
             document.querySelector('#main-title').textContent = CONFIG.mainTitle;
             if (CONFIG.audioUrl) audioPlayer.src = CONFIG.audioUrl;
@@ -823,16 +869,16 @@
         
         function setupBookPages() {
             const pageViewer = document.querySelector('.page-viewer');
-            pageViewer.innerHTML = ''; 
+            pageViewer.innerHTML = '';
             publishedPages.forEach((pageData, index) => {
-                const pageNum = index + 1; 
-                const page = document.createElement('div'); 
-                page.className = 'page'; 
-                page.dataset.pageNumber = pageNum; 
+                const pageNum = index + 1;
+                const page = document.createElement('div');
+                page.className = 'page';
+                page.dataset.pageNumber = pageNum;
                 if (pageNum === 1) page.classList.add('active');
                 
-                const buttonsContainer = document.createElement('div'); 
-                buttonsContainer.className = 'page-buttons-container'; 
+                const buttonsContainer = document.createElement('div');
+                buttonsContainer.className = 'page-buttons-container';
                 
                 const allMedia = []; 
                 if (pageData.mainVideo && pageData.mainVideo.url) { 
@@ -855,15 +901,11 @@
                     if (hasUrl) { 
                         const btn = document.createElement('button');
                         const btnClass = (media.type === 'iframe' || media.type === 'blokiframe') ? 'iframe-btn' : `${media.type}-btn`;
-                        btn.className = `page-btn ${btnClass}`; 
+                        btn.className = `page-btn ${btnClass}`;
                         btn.textContent = media.buttonText; 
 
-                        if (media.buttonColor) {
-                            btn.style.backgroundColor = media.buttonColor;
-                        }
-                        if (media.buttonTextColor) {
-                            btn.style.color = media.buttonTextColor;
-                        }
+                        if (media.buttonColor) btn.style.backgroundColor = media.buttonColor;
+                        if (media.buttonTextColor) btn.style.color = media.buttonTextColor;
 
                         btn.onclick = () => openMediaModal(media); 
                         buttonsContainer.appendChild(btn); 
@@ -878,17 +920,17 @@
                     }
                 }); 
                 
-                const textContent = document.createElement('p'); 
+                const textContent = document.createElement('p');
                 textContent.innerHTML = pageData.text || '';
                 
                 if (isFeedMode && pageData.collapsible) {
-                    const tempDiv = document.createElement('div'); 
-                    tempDiv.innerHTML = pageData.text; 
-                    const h2 = tempDiv.querySelector('h2'); 
-                    const title = h2 ? h2.innerHTML : 'Развернуть'; 
-                    if (h2) h2.remove(); 
-                    textContent.innerHTML = tempDiv.innerHTML; 
-                    const details = document.createElement('details'); 
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = pageData.text;
+                    const h2 = tempDiv.querySelector('h2');
+                    const title = h2 ? h2.innerHTML : 'Развернуть';
+                    if (h2) h2.remove();
+                    textContent.innerHTML = tempDiv.innerHTML;
+                    const details = document.createElement('details');
                     details.open = !pageData.collapsedOnLoad; 
                     
                     if (pageData.customHeight && pageData.customHeight !== 'auto') {
@@ -903,22 +945,19 @@
                         if (details.open) {
                             const pageNumToSync = parseInt(page.dataset.pageNumber, 10);
                             currentPage = pageNumToSync;
-                            
                             const wasPlaying = isPlaying;
-                            
                             audioPlayer.currentTime = getPageStartTime(pageNumToSync);
-
                             if (wasPlaying) {
                                 audioPlayer.play();
                             }
                         }
                     });
 
-                    const summary = document.createElement('summary'); 
-                    summary.innerHTML = title; 
-                    details.appendChild(summary); 
-                    details.appendChild(buttonsContainer); 
-                    details.appendChild(textContent); 
+                    const summary = document.createElement('summary');
+                    summary.innerHTML = title;
+                    details.appendChild(summary);
+                    details.appendChild(buttonsContainer);
+                    details.appendChild(textContent);
                     page.appendChild(details);
                 } else { 
                     if (pageData.customHeight) {
@@ -946,13 +985,15 @@
 
         function openMediaModal(media) {
             [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => { el.style.display = 'none'; if(el.tagName === 'VIDEO' || el.tagName === 'AUDIO') { el.src = ''; el.pause(); } else if (el.tagName === 'IMG' || el.tagName === 'IFRAME') { el.src = 'about:blank'; } });
-            mediaModal.querySelector('.modal-header').textContent = media.headerText || ''; mediaModal.querySelector('.modal-footer').textContent = ''; 
+            mediaModal.querySelector('.modal-header').textContent = media.headerText || '';
+            mediaModal.querySelector('.modal-footer').textContent = ''; 
             if (media.type === 'carousel' && media.images && media.images.length > 0) {
                 currentCarouselImages = media.images; currentCarouselIndex = 0;
                 function showCarouselSlide(index) {
                     const wrapper = document.getElementById('carouselIframeWrapper'); const iframe = document.getElementById('carouselIframe'); const slideData = currentCarouselImages[index]; if (!slideData || !slideData.url || !slideData.width || !slideData.height) { iframe.src = 'about:blank'; return; } const containerWidth = wrapper.clientWidth; const containerHeight = wrapper.clientHeight; iframe.width = slideData.width; iframe.height = slideData.height; const scaleX = containerWidth / slideData.width; const scaleY = containerHeight / slideData.height; const scale = Math.min(scaleX, scaleY); iframe.style.transform = `scale(${scale})`; iframe.src = slideData.url; mediaModal.querySelector('.modal-footer').textContent = slideData.caption || ''; carouselPrevBtn.style.visibility = (index === 0) ? 'hidden' : 'visible'; carouselNextBtn.style.visibility = (index === currentCarouselImages.length - 1) ? 'hidden' : 'visible';
                 }
-                carouselPrevBtn.onclick = () => { if (currentCarouselIndex > 0) { currentCarouselIndex--; showCarouselSlide(currentCarouselIndex); } }; carouselNextBtn.onclick = () => { if (currentCarouselIndex < currentCarouselImages.length - 1) { currentCarouselIndex++; showCarouselSlide(currentCarouselIndex); } };
+                carouselPrevBtn.onclick = () => { if (currentCarouselIndex > 0) { currentCarouselIndex--; showCarouselSlide(currentCarouselIndex); } };
+                carouselNextBtn.onclick = () => { if (currentCarouselIndex < currentCarouselImages.length - 1) { currentCarouselIndex++; showCarouselSlide(currentCarouselIndex); } };
                 modalCarousel.style.display = 'flex'; setTimeout(() => { showCarouselSlide(0); }, 50);
             } else {
                 mediaModal.querySelector('.modal-footer').textContent = media.footerText || ''; let contentElement;
@@ -964,7 +1005,6 @@
                     const tempDiv = document.createElement('div');
                     tempDiv.innerHTML = media.iframeCode.trim();
                     const tempIframe = tempDiv.firstChild; 
-                    
                     if (tempIframe && tempIframe.tagName === 'IFRAME' && tempIframe.src) {
                         modalIframe.style.aspectRatio = '16 / 9';
                         modalIframe.style.width = '90%';
@@ -1009,7 +1049,8 @@
             }
             mediaModal.style.display = 'flex';
         }
-        const bookingModal = document.getElementById('bookingModal'); const bookingFrame = document.getElementById('bookingFrame'); 
+        const bookingModal = document.getElementById('bookingModal'); const bookingFrame = document.getElementById('bookingFrame');
+        
         function closeModal(modal) { modal.style.display = 'none'; if (modal.id === 'mediaModal') { [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => { el.style.display = 'none'; if (el.tagName === 'VIDEO' || el.tagName === 'AUDIO') { el.pause(); el.src = ''; } else if (el.tagName === 'IMG' || el.tagName === 'IFRAME') { el.src = 'about:blank'; } }); } if (modal.id === 'bookingModal') { bookingFrame.src = ''; } }
         mediaModal.querySelector('.modal-close').onclick = () => closeModal(mediaModal);
         bookingModal.querySelector('.modal-close').onclick = () => closeModal(bookingModal);
@@ -1057,14 +1098,13 @@
         
         playPauseBtn.addEventListener('click', () => {
             if (isFeedMode && isCoverActive) {
-                if (isFeedMode) isNarratorModeActive = true; // Включаем режим рассказчика
+                if (isFeedMode) isNarratorModeActive = true;
                 isCoverActive = false;
                 scrollToPage(1);
                 const firstPage = document.querySelector('.page[data-page-number="1"] details');
                 if (firstPage && !firstPage.open) {
                     firstPage.open = true;
                 }
-                
                 audioPlayer.currentTime = 0; 
                 audioPlayer.play();
             } else if (!isFeedMode && isCoverActive) {
@@ -1075,13 +1115,12 @@
                 audioPlayer.currentTime = 0;
                 audioPlayer.play();
             } else {
-                // <<< ИЗМЕНЕНИЕ 2: Обновлена логика кнопки Play/Pause для управления гибридным режимом >>>
                 if (isPlaying) {
                     audioPlayer.pause();
-                    if (isFeedMode) isNarratorModeActive = false; // При паузе выключаем рассказчика -> режим "Свободного изучения"
+                    if (isFeedMode) isNarratorModeActive = false;
                 } else {
                     audioPlayer.play();
-                    if (isFeedMode) isNarratorModeActive = true; // При запуске включаем рассказчика
+                    if (isFeedMode) isNarratorModeActive = true;
                 }
             }
         });
@@ -1092,7 +1131,7 @@
         audioPlayer.onended = () => {
             isPlaying = false; playPauseBtn.textContent = '▶';
             if (isFeedMode) {
-                isNarratorModeActive = false; // Выключаем рассказчика по окончании
+                isNarratorModeActive = false;
                 const lastPage = document.querySelector(`.page[data-page-number="${currentPage}"] details`);
                 if (lastPage) lastPage.open = false;
                 document.getElementById('cover-view').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1115,16 +1154,11 @@
         });
 
         audioPlayer.addEventListener('timeupdate', () => {
-            // Убрали проверку `!isPlaying` отсюда, так как timeupdate нужен для синхронизации, даже если плеер на паузе
             if (isCoverActive) return;
 
-            // <<< ИЗМЕНЕНИЕ 3: Главное условие работы автопрокрутки >>>
-            // Теперь автоматика (режим "Рассказчика") работает:
-            // 1. В режиме "Ленты" (isFeedMode), ТОЛЬКО если активен isNarratorModeActive.
-            // 2. В режиме "Истории" (!isFeedMode), если в конфиге включен isContinuousPlayback.
             const isAutoPilot = (isFeedMode && isNarratorModeActive) || (!isFeedMode && CONFIG.isContinuousPlayback);
 
-            if (isAutoPilot && isPlaying) { // Добавили isPlaying сюда, чтобы автопрокрутка не работала на паузе
+            if (isAutoPilot && isPlaying) {
                 const currentTime = audioPlayer.currentTime;
                 const targetPageData = publishedPages.find((p, index) => {
                     const startTime = getPageStartTime(index + 1);
@@ -1137,16 +1171,11 @@
                 
                 if (isFeedMode) {
                     if (newPageNum !== currentPage) {
-                        const prevPageData = publishedPages[currentPage - 1];
-                        if (prevPageData && prevPageData.collapsible) {
-                            const prevPageDetails = document.querySelector(`.page[data-page-number="${currentPage}"] details`);
-                            if (prevPageDetails && prevPageDetails.open) prevPageDetails.open = false;
-                        }
+                        const prevPageDetails = document.querySelector(`.page[data-page-number="${currentPage}"] details`);
+                        if (prevPageDetails && prevPageDetails.open) prevPageDetails.open = false;
                         const newPageDetails = document.querySelector(`.page[data-page-number="${newPageNum}"] details`);
                         if (newPageDetails && !newPageDetails.open) newPageDetails.open = true;
-                        
                         scrollToPage(newPageNum); 
-                        
                         currentPage = newPageNum;
                     }
                 } else {
@@ -1168,9 +1197,8 @@
             if (pageIndicator) pageIndicator.style.display = 'none';
         }
     });
-    </script>
-</body>
-</html>
+    </script> </body> </html> ```
+
 
 
 
