@@ -553,6 +553,12 @@
             /* Максимальная высота 90% от высоты viewport */
         }
 
+        #jitsi-container {
+            width: 90%;
+            height: 90%;
+            max-width: 1280px;
+        }
+
         #modalText {
             /* Стиль для текстового блока в модальном окне */
             background-color: #fff;
@@ -827,7 +833,6 @@
             /* Размер иконки */
         }
         
-        /* НОВЫЙ СТИЛЬ ДЛЯ КНОПКИ ВИДЕОКОНФЕРЕНЦИИ */
         #conferenceBtn {
             background: #e63946; /* Яркий красный цвет */
             width: 40px;
@@ -1295,6 +1300,7 @@
         <div class="modal-content" id="modalText"></div>
         <img class="modal-content" id="modalPhoto" alt="Изображение">
         <video class="modal-content" id="modalVideo" controls playsinline></video>
+        <div class="modal-content" id="jitsi-container"></div>
         <iframe class="modal-content" id="modalIframe" frameborder="0" allowfullscreen></iframe>
         <audio class="modal-content" id="modalAudio" controls></audio>
         <div class="modal-content" id="modalCarousel">
@@ -1325,17 +1331,16 @@
                 isContinuousPlayback: false,
                 mobileFeedMode: true,
                 feedModeForDesktop: true,
-                
-                // НОВЫЙ ОБЪЕКТ ДЛЯ ВИДЕОКОНФЕРЕНЦИИ
+
                 videoConference: {
-                    enabled: true, // true - показать кнопку, false - скрыть
-                    buttonText: 'эфир', // Текст под кнопкой
-                    roomName: 'MarmarisYachtingRoute2LiveSession', // Уникальное имя комнаты. Можете изменить
-                    tooltip: 'Присоединиться к видео-эфиру' // Всплывающая подсказка
+                    enabled: true,
+                    buttonText: 'эфир',
+                    roomName: 'MarmarisYachtingRoute2LiveSession',
+                    tooltip: 'Присоединиться к видео-эфиру'
                 },
 
                 // --- Основная информация ---
-                mainTitle: 'Маршрут 2.222 Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
+                mainTitle: 'Маршрут 2. Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
                 audioUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisyachting/main/2RouteAudioVasilisa.mp3',
                 bookingUrl: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route2',
 
@@ -1406,9 +1411,6 @@
                     }]
                 },
 
-                // ====================================================================================================
-                // --- МАССИВ СТРАНИЦ ---
-                // ====================================================================================================
                 pages: [{
                     published: true,
                     text: `<h2> О маршруте. </h2><p>Название: Маршрут 2. Дневной яхтенный тур под парусом Мармарис-Кумлубюк с обедом на яхте. Продолжительность: 1 день. Время: 9:30 – 18:15. Аудитория: от 1 до 6 гостей, включая детей от 6 лет. Стоимость: 1000 долларов США (стандартный обед)/1300 долларов США (обед-гриль). Особенности: Эксклюзивный однодневный круиз, сочетающий панорамные виды побережья, долгий отдых с купанием в живописной бухте Кумлубюк и изысканный обед, приготовленный для вас прямо на борту яхты.</p>`,
@@ -1576,9 +1578,6 @@
                         footerText: ''
                     }],
                 },
-                // ====================================================================================================
-                // --- СТРАНИЦА-ШАБЛОН ---
-                // ====================================================================================================
                 {
                     published: true,
                     collapsible: true,
@@ -1665,14 +1664,13 @@
                         headerText: 'Дополнительная информация'
                     }]
                 },
-            ] // Конец массива pages
-        }; // Конец объекта CONFIG
+            ]
+        };
 
         // ====================================================================================================
         // --- ЛОГИКА СКРИПТА ---
         // ====================================================================================================
 
-        // --- Инициализация переменных и констант ---
         const isMobile = window.innerWidth < 768;
         const isFeedMode = (isMobile && CONFIG.mobileFeedMode) || (!isMobile && CONFIG.feedModeForDesktop);
         if (isFeedMode) {
@@ -1987,55 +1985,46 @@
         let currentCarouselIndex = 0;
 
         function openConferenceModal() {
-    if (jitsiApi) return;
+            if (jitsiApi) return;
 
-    // Сначала готовим модальное окно, но НЕ запускаем Jitsi
-    [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel].forEach(el => el.style.display = 'none');
+            [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => el.style.display = 'none');
+            
+            const jitsiContainer = document.getElementById('jitsi-container');
+            jitsiContainer.style.display = 'block';
 
-    mediaModal.querySelector('.modal-header').textContent = 'Присоединение к видеоконференции...';
-    mediaModal.querySelector('.modal-footer').textContent = 'Вы можете включить/выключить камеру и микрофон внизу экрана.';
+            mediaModal.querySelector('.modal-header').textContent = 'Присоединение к видеоконференции...';
+            mediaModal.querySelector('.modal-footer').textContent = 'Вы можете включить/выключить камеру и микрофон внизу экрана.';
+            mediaModal.style.display = 'flex';
 
-    modalIframe.style.display = 'block';
-    modalIframe.style.width = '100%';
-    modalIframe.style.height = '100%';
-    modalIframe.style.aspectRatio = 'auto';
-    modalIframe.src = 'about:blank';
+            setTimeout(() => {
+                const options = {
+                    roomName: 'MarmarisYachtVasilisaTestRoom',
+                    parentNode: jitsiContainer, 
+                    configOverwrite: {
+                        startWithVideoMuted: true,
+                        startWithAudioMuted: false,
+                        prejoinPageEnabled: true
+                    },
+                    interfaceConfigOverwrite: {
+                        TOOLBAR_BUTTONS: [
+                            'microphone', 'camera', 'desktop', 'hangup', 'chat', 'raisehand', 'tileview'
+                        ],
+                    }
+                };
 
-    // Показываем модальное окно ("ставим сцену")
-    mediaModal.style.display = 'flex';
+                try {
+                    jitsiApi = new JitsiMeetExternalAPI("meet.jit.si", options);
 
-    // А теперь даем браузеру паузу в 100 миллисекунд и только ПОТОМ запускаем Jitsi
-    setTimeout(() => {
-        const options = {
-            roomName: CONFIG.videoConference.roomName,
-            parentNode: modalIframe,
-            configOverwrite: {
-                startWithVideoMuted: true,
-                startWithAudioMuted: false,
-                prejoinPageEnabled: true
-            },
-            interfaceConfigOverwrite: {
-                TOOLBAR_BUTTONS: [
-                    'microphone', 'camera', 'closedcaptions', 'desktop', 'fullscreen',
-                    'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
-                    'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand',
-                    'videoquality', 'filmstrip', 'tileview', 'videobackgroundblur',
-                    'mute-everyone', 'security'
-                ],
-                SETTINGS_SECTIONS: ['devices', 'language', 'moderator', 'profile'],
-            }
-        };
+                    jitsiApi.addEventListener('readyToClose', () => {
+                        closeModal(mediaModal);
+                    });
+                } catch (error) {
+                    console.error("Не удалось запустить Jitsi API:", error);
+                    jitsiContainer.innerHTML = "Ошибка при запуске видеоконференции. Попробуйте обновить страницу.";
+                }
 
-        // Инициализируем Jitsi API
-        jitsiApi = new JitsiMeetExternalAPI("meet.jit.si", options);
-
-        // Вешаем обработчик закрытия конференции
-        jitsiApi.addEventListener('readyToClose', () => {
-            closeModal(mediaModal);
-        });
-
-    }, 100); // Та самая пауза в 100 миллисекунд
-}
+            }, 100);
+        }
 
         function openMediaModal(media) {
             [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => {
@@ -2162,6 +2151,11 @@
                 if (jitsiApi) {
                     jitsiApi.dispose();
                     jitsiApi = null;
+                }
+                const jitsiContainer = document.getElementById('jitsi-container');
+                if(jitsiContainer) {
+                    jitsiContainer.style.display = 'none';
+                    jitsiContainer.innerHTML = '';
                 }
                 [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => {
                     el.style.display = 'none';
