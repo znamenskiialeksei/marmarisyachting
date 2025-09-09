@@ -88,7 +88,7 @@
             /* Выравнивает дочерние элементы по центру горизонтально */
             gap: 10px;
             /* Добавляет отступ между дочерними элементами */
-            transition: opacity: 0.5s;
+            transition: opacity 0.5s;
             /* Плавный переход для свойства прозрачности */
         }
 
@@ -1335,10 +1335,11 @@
                 videoConference: {
                     enabled: true,
                     buttonText: 'эфир',
-                    roomName: 'MarmarisYachtingRoute2LiveSession',
+                    roomName: 'Route2-VasilisaConference', // Уникальное имя для Маршрута 2
                     tooltip: 'Присоединиться к видео-эфиру'
                 },
-
+                
+                // URL скрипта для отправки уведомлений
                 notificationScriptUrl: 'https://script.google.com/macros/s/AKfycbyJ9fpAvYsFq3LNSFa548AmBgZ7giGY37WDZw-rgTA9GEJ76YEVuDg1CSqUDeGkE_Sf/exec',
 
                 // --- Основная информация ---
@@ -1987,61 +1988,58 @@
         let currentCarouselIndex = 0;
 
         function openConferenceModal() {
-    if (jitsiApi) return;
+            if (jitsiApi) return;
 
-    // --- НАЧАЛО БЛОКА УВЕДОМЛЕНИЯ ---
-    if (CONFIG.notificationScriptUrl && CONFIG.notificationScriptUrl.startsWith('https')) {
-        const payload = {
-            siteUrl: window.location.href,
-            roomName: CONFIG.videoConference.roomName || 'Unknown Room'
-        };
-
-        // Отправляем "тихий" запрос нашему роботу. Пользователь этого не заметит.
-        fetch(CONFIG.notificationScriptUrl, {
-            method: 'POST',
-            mode: 'no-cors', 
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Изменен заголовок
-            body: JSON.stringify(payload)
-        }).catch(error => console.error('Ошибка отправки уведомления:', error));
-    }
-    // --- КОНЕЦ БЛОКА УВЕДОМЛЕНИЯ ---
-
-    const jitsiContainer = document.getElementById('jitsi-container');
-    [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => el.style.display = 'none');
-    jitsiContainer.style.display = 'block';
-
-    mediaModal.querySelector('.modal-header').textContent = 'Присоединение к видеоконференции...';
-    mediaModal.querySelector('.modal-footer').textContent = 'Вы можете включить/выключить камеру и микрофон внизу экрана.';
-    mediaModal.style.display = 'flex';
-
-    setTimeout(() => {
-        const options = {
-            roomName: CONFIG.videoConference.roomName || 'MarmarisYachtVasilisaTestRoom',
-            parentNode: jitsiContainer,
-            configOverwrite: {
-                startWithVideoMuted: true,
-                startWithAudioMuted: false,
-                prejoinPageEnabled: true
-            },
-            interfaceConfigOverwrite: {
-                TOOLBAR_BUTTONS: [
-                    'microphone', 'camera', 'desktop', 'hangup', 'chat', 'raisehand', 'tileview'
-                ],
+            // --- БЛОК УВЕДОМЛЕНИЯ ---
+            if (CONFIG.notificationScriptUrl && CONFIG.notificationScriptUrl.startsWith('https')) {
+                const payload = {
+                    siteUrl: window.location.href,
+                    roomName: CONFIG.videoConference.roomName || 'Unknown Room'
+                };
+                fetch(CONFIG.notificationScriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                }).catch(error => console.error('Ошибка отправки уведомления:', error));
             }
-        };
+            // --- КОНЕЦ БЛОКА УВЕДОМЛЕНИЯ ---
 
-        try {
-            jitsiApi = new JitsiMeetExternalAPI("meet.jit.si", options);
-            jitsiApi.addEventListener('readyToClose', () => {
-                closeModal(mediaModal);
-            });
-        } catch (error) {
-            console.error("Не удалось запустить Jitsi API:", error);
-            jitsiContainer.innerHTML = "Ошибка при запуске видеоконференции. Попробуйте обновить страницу.";
+            const jitsiContainer = document.getElementById('jitsi-container');
+            [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => el.style.display = 'none');
+            jitsiContainer.style.display = 'block';
+
+            mediaModal.querySelector('.modal-header').textContent = 'Присоединение к видеоконференции...';
+            mediaModal.querySelector('.modal-footer').textContent = 'Вы можете включить/выключить камеру и микрофон внизу экрана.';
+            mediaModal.style.display = 'flex';
+
+            setTimeout(() => {
+                const options = {
+                    roomName: CONFIG.videoConference.roomName || 'MarmarisYachtVasilisaTestRoom',
+                    parentNode: jitsiContainer,
+                    configOverwrite: {
+                        startWithVideoMuted: true,
+                        startWithAudioMuted: false,
+                        prejoinPageEnabled: true
+                    },
+                    interfaceConfigOverwrite: {
+                        TOOLBAR_BUTTONS: [
+                            'microphone', 'camera', 'desktop', 'hangup', 'chat', 'raisehand', 'tileview'
+                        ],
+                    }
+                };
+
+                try {
+                    jitsiApi = new JitsiMeetExternalAPI("meet.jit.si", options);
+                    jitsiApi.addEventListener('readyToClose', () => {
+                        closeModal(mediaModal);
+                    });
+                } catch (error) {
+                    console.error("Не удалось запустить Jitsi API:", error);
+                    jitsiContainer.innerHTML = "Ошибка при запуске видеоконференции. Попробуйте обновить страницу.";
+                }
+            }, 100);
         }
-    }, 100);
-}
-3.  Убедитесь, что в `CONFIG` у вас прописана переменная `notificationScriptUrl` со ссылкой на ваш **старый** скрипт-робот.
 
         function openMediaModal(media) {
             [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => {
