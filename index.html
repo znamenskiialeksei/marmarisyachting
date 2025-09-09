@@ -1987,47 +1987,55 @@
         let currentCarouselIndex = 0;
 
         function openConferenceModal() {
-            if (jitsiApi) return;
+    if (jitsiApi) return;
 
-            [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel].forEach(el => el.style.display = 'none');
-            
-            mediaModal.querySelector('.modal-header').textContent = 'Присоединение к видеоконференции...';
-            mediaModal.querySelector('.modal-footer').textContent = 'Вы можете включить/выключить камеру и микрофон внизу экрана.';
-            
-            modalIframe.style.display = 'block';
-            modalIframe.style.width = '100%';
-            modalIframe.style.height = '100%';
-            modalIframe.style.aspectRatio = 'auto';
-            modalIframe.src = 'about:blank';
-            
-            mediaModal.style.display = 'flex';
+    // Сначала готовим модальное окно, но НЕ запускаем Jitsi
+    [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel].forEach(el => el.style.display = 'none');
 
-            const options = {
-                roomName: CONFIG.videoConference.roomName,
-                parentNode: modalIframe,
-                configOverwrite: { 
-                    startWithVideoMuted: true,
-                    startWithAudioMuted: false,
-                    prejoinPageEnabled: true 
-                },
-                interfaceConfigOverwrite: {
-                    TOOLBAR_BUTTONS: [
-                        'microphone', 'camera', 'closedcaptions', 'desktop', 'fullscreen',
-                        'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
-                        'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand',
-                        'videoquality', 'filmstrip', 'tileview', 'videobackgroundblur',
-                        'mute-everyone', 'security'
-                    ],
-                    SETTINGS_SECTIONS: ['devices', 'language', 'moderator', 'profile'],
-                }
-            };
-            
-            jitsiApi = new JitsiMeetExternalAPI("meet.jit.si", options);
+    mediaModal.querySelector('.modal-header').textContent = 'Присоединение к видеоконференции...';
+    mediaModal.querySelector('.modal-footer').textContent = 'Вы можете включить/выключить камеру и микрофон внизу экрана.';
 
-            jitsiApi.addEventListener('readyToClose', () => {
-                closeModal(mediaModal);
-            });
-        }
+    modalIframe.style.display = 'block';
+    modalIframe.style.width = '100%';
+    modalIframe.style.height = '100%';
+    modalIframe.style.aspectRatio = 'auto';
+    modalIframe.src = 'about:blank';
+
+    // Показываем модальное окно ("ставим сцену")
+    mediaModal.style.display = 'flex';
+
+    // А теперь даем браузеру паузу в 100 миллисекунд и только ПОТОМ запускаем Jitsi
+    setTimeout(() => {
+        const options = {
+            roomName: CONFIG.videoConference.roomName,
+            parentNode: modalIframe,
+            configOverwrite: {
+                startWithVideoMuted: true,
+                startWithAudioMuted: false,
+                prejoinPageEnabled: true
+            },
+            interfaceConfigOverwrite: {
+                TOOLBAR_BUTTONS: [
+                    'microphone', 'camera', 'closedcaptions', 'desktop', 'fullscreen',
+                    'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
+                    'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand',
+                    'videoquality', 'filmstrip', 'tileview', 'videobackgroundblur',
+                    'mute-everyone', 'security'
+                ],
+                SETTINGS_SECTIONS: ['devices', 'language', 'moderator', 'profile'],
+            }
+        };
+
+        // Инициализируем Jitsi API
+        jitsiApi = new JitsiMeetExternalAPI("meet.jit.si", options);
+
+        // Вешаем обработчик закрытия конференции
+        jitsiApi.addEventListener('readyToClose', () => {
+            closeModal(mediaModal);
+        });
+
+    }, 100); // Та самая пауза в 100 миллисекунд
+}
 
         function openMediaModal(media) {
             [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => {
