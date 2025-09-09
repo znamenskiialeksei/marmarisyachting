@@ -88,7 +88,7 @@
             /* Выравнивает дочерние элементы по центру горизонтально */
             gap: 10px;
             /* Добавляет отступ между дочерними элементами */
-            transition: opacity 0.5s;
+            transition: opacity: 0.5s;
             /* Плавный переход для свойства прозрачности */
         }
 
@@ -1339,6 +1339,8 @@
                     tooltip: 'Присоединиться к видео-эфиру'
                 },
 
+                notificationScriptUrl: 'https://script.google.com/macros/s/AKfycbyJ9fpAvYsFq3LNSFa548AmBgZ7giGY37WDZw-rgTA9GEJ76YEVuDg1CSqUDeGkE_Sf/exec',
+
                 // --- Основная информация ---
                 mainTitle: 'Маршрут 2. Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
                 audioUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisyachting/main/2RouteAudioVasilisa.mp3',
@@ -1987,6 +1989,15 @@
         function openConferenceModal() {
             if (jitsiApi) return;
 
+            if (CONFIG.notificationScriptUrl && CONFIG.notificationScriptUrl.startsWith('https')) {
+                fetch(CONFIG.notificationScriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: JSON.stringify({ event: 'conference_join' })
+                }).catch(error => console.error('Ошибка отправки уведомления:', error));
+            }
+            
             [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => el.style.display = 'none');
             
             const jitsiContainer = document.getElementById('jitsi-container');
