@@ -88,7 +88,7 @@
             /* Выравнивает дочерние элементы по центру горизонтально */
             gap: 10px;
             /* Добавляет отступ между дочерними элементами */
-            transition: opacity: 0.5s;
+            transition: opacity 0.5s;
             /* Плавный переход для свойства прозрачности */
         }
 
@@ -1335,10 +1335,11 @@
                 videoConference: {
                     enabled: true,
                     buttonText: 'эфир',
-                    roomName: 'Route2-VasilisaConference',
+                    roomName: 'Route2-VasilisaConference', // Уникальное имя для Маршрута 2
                     tooltip: 'Присоединиться к видео-эфиру'
                 },
-
+                
+                // URL скрипта для отправки уведомлений
                 notificationScriptUrl: 'https://script.google.com/macros/s/AKfycby6DFzTC1zvZdPQIYHWCFEA8IClHCJZmCfSh3RTIBovCbivkGwHY7VXGGpuILSfptRS/exec',
 
                 // --- Основная информация ---
@@ -1989,18 +1990,23 @@
         function openConferenceModal() {
             if (jitsiApi) return;
 
+            // --- БЛОК УВЕДОМЛЕНИЯ ---
             if (CONFIG.notificationScriptUrl && CONFIG.notificationScriptUrl.startsWith('https')) {
+                const payload = {
+                    siteUrl: window.location.href,
+                    roomName: CONFIG.videoConference.roomName || 'Unknown Room'
+                };
                 fetch(CONFIG.notificationScriptUrl, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: JSON.stringify({ event: 'conference_join' })
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
                 }).catch(error => console.error('Ошибка отправки уведомления:', error));
             }
-            
-            [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => el.style.display = 'none');
-            
+            // --- КОНЕЦ БЛОКА УВЕДОМЛЕНИЯ ---
+
             const jitsiContainer = document.getElementById('jitsi-container');
+            [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => el.style.display = 'none');
             jitsiContainer.style.display = 'block';
 
             mediaModal.querySelector('.modal-header').textContent = 'Присоединение к видеоконференции...';
@@ -2009,8 +2015,8 @@
 
             setTimeout(() => {
                 const options = {
-                    roomName: 'MarmarisYachtVasilisaTestRoom',
-                    parentNode: jitsiContainer, 
+                    roomName: CONFIG.videoConference.roomName || 'MarmarisYachtVasilisaTestRoom',
+                    parentNode: jitsiContainer,
                     configOverwrite: {
                         startWithVideoMuted: true,
                         startWithAudioMuted: false,
@@ -2025,7 +2031,6 @@
 
                 try {
                     jitsiApi = new JitsiMeetExternalAPI("meet.jit.si", options);
-
                     jitsiApi.addEventListener('readyToClose', () => {
                         closeModal(mediaModal);
                     });
@@ -2033,7 +2038,6 @@
                     console.error("Не удалось запустить Jitsi API:", error);
                     jitsiContainer.innerHTML = "Ошибка при запуске видеоконференции. Попробуйте обновить страницу.";
                 }
-
             }, 100);
         }
 
@@ -2377,6 +2381,7 @@
 </body>
 
 </html>
+
 
 
 
