@@ -20,6 +20,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/fold/foldcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/fold/foldgutter.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/fold/brace-fold.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/mode/overlay.min.js"></script>
 
 
     <style>
@@ -821,7 +822,6 @@
 
         /* Стили для плавающего окна-блокнота */
         #scratchpad-window {
-            display: none;
             position: fixed;
             z-index: 10003;
             background-color: #f1f1f1;
@@ -834,7 +834,7 @@
             left: 20%;
             resize: both; /* Позволяет изменять размер */
             overflow: hidden; /* Скрывает содержимое, выходящее за рамки */
-            display: flex;
+            display: none; /* Изначально скрыт */
             flex-direction: column;
         }
         
@@ -873,6 +873,13 @@
         #scratchpad-window .CodeMirror {
              flex-grow: 1; /* Растягивает редактор */
              height: 100%;
+        }
+
+        /* --- Стили для кастомной подсветки ключей и их значений --- */
+        .cm-s-material-darker .cm-custom-key,
+        .cm-s-material-darker .cm-custom-value {
+            color: #81C784; /* Зеленый цвет */
+            font-weight: bold;
         }
 
         /* --- СТИЛИ ДЛЯ НИЖНЕЙ ПАНЕЛИ УПРАВЛЕНИЯ --- */
@@ -1540,7 +1547,7 @@
                 </div>
             </div>
         </div>
-         <div id="scratchpad-window" style="display: none;">
+         <div id="scratchpad-window">
             <div id="scratchpad-header">
                 <span id="scratchpad-header-title">Блокнот для кода</span>
                 <button id="scratchpad-close-btn">&times;</button>
@@ -2638,6 +2645,71 @@
                 const sendToScratchpadBtn = document.getElementById('send-to-scratchpad-btn');
                 const getFromScratchpadBtn = document.getElementById('get-from-scratchpad-btn');
                 
+                // --- Новый режим-наложение для CodeMirror для кастомной подсветки ---
+                CodeMirror.defineOverlay("customJsonHighlight", {
+                    token: function(stream) {
+                        // Регулярное выражение для поиска ключей и их строковых значений
+                        const regex = /"(tooltip|text|roomName|name)"(\s*:\s*)(".*?")/g;
+                        if (stream.match(regex, true)) {
+                           // Этот блок кода не будет работать как надо, так как stream.match потребляет весь матч.
+                           // Вместо этого, мы будем использовать более простую логику.
+                        }
+
+                        // Простая логика: ищем ключ и если нашли, возвращаем стиль.
+                        // Подсветка значения требует более сложного state-машины, которую мы здесь опускаем для надежности.
+                        // Вместо этого мы подсветим и ключ, и его значение одним действием, если они на одной строке.
+                        const simpleRegex = /"(tooltip|text|roomName|name)"(\s*:\s*)("((?:\\.|[^"\\])*)")/;
+                        if (stream.match(simpleRegex)) {
+                            // Вернем массив стилей для каждого токена
+                            return "custom-key-value"; // Один класс для всей группы
+                        }
+
+                        // Если не нашли, пропускаем до следующего потенциального токена
+                        stream.next();
+                        return null;
+                    }
+                });
+                
+                // Более надежный подход с состоянием
+                const customOverlay = {
+                    startState: function() { return { isTarget: false }; },
+                    token: function(stream, state) {
+                        // Ищем ключ
+                        if (stream.match(/"(tooltip|text|roomName|name)"\s*:/, false)) {
+                            if (stream.match(/"(tooltip|text|roomName|name)"/)) {
+                                state.isTarget = true; // следующий токен будет значением
+                                return "custom-key";
+                            }
+                        }
+
+                        if (state.isTarget) {
+                            // Мы нашли ключ, теперь ищем значение
+                            stream.eatWhile(/\s|:/); // Пропускаем пробелы и двоеточие
+                            if (stream.peek() === '"') {
+                                // Нашли начало строки, парсим ее
+                                stream.next(); // съедаем "
+                                let escaped = false;
+                                while (!stream.eol()) {
+                                    let ch = stream.next();
+                                    if (ch === '"' && !escaped) {
+                                        break;
+                                    }
+                                    escaped = !escaped && ch === '\\';
+                                }
+                                state.isTarget = false; // сбрасываем состояние
+                                return "custom-value";
+                            }
+                        }
+                        
+                        // Если ничего не нашли, пропускаем
+                        stream.eatWhile(/[^"]/);
+                        if (!stream.eol()) stream.next();
+                        return null;
+                    }
+                };
+                CodeMirror.defineOverlay("customJsonHighlight", customOverlay);
+
+
                 // --- Функции для работы с версиями ---
                 function getSavedVersions() { return JSON.parse(localStorage.getItem(LS_VERSIONS_KEY) || '{}'); }
                 function saveVersions(versions) { localStorage.setItem(LS_VERSIONS_KEY, JSON.stringify(versions)); }
@@ -2661,7 +2733,8 @@
                     autoCloseBrackets: true,
                     lint: true,
                     foldGutter: true,
-                    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"]
+                    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
+                    addOverlay: "customJsonHighlight" // Применяем наш новый режим
                 };
 
                 // --- Логика основного редактора ---
@@ -2734,9 +2807,12 @@
                 scratchpadCloseBtn.onclick = () => { scratchpadWindow.style.display = 'none'; };
                 
                 sendToScratchpadBtn.onclick = () => {
-                    if (!scratchpadEditor) openScratchpadBtn.click();
+                    if (!scratchpadWindow.style.display || scratchpadWindow.style.display === 'none') openScratchpadBtn.click();
                     const selection = mainEditor.getSelection();
-                    if (selection) scratchpadEditor.setValue(selection);
+                    if (selection) {
+                         scratchpadEditor.setValue(selection);
+                         setTimeout(() => scratchpadEditor.refresh(), 1);
+                    }
                 };
                 
                 getFromScratchpadBtn.onclick = () => {
@@ -2746,11 +2822,13 @@
                 // Логика перетаскивания окна Блокнота
                 let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
                 scratchpadHeader.onmousedown = (e) => {
+                    e = e || window.event;
                     e.preventDefault();
                     pos3 = e.clientX;
                     pos4 = e.clientY;
                     document.onmouseup = () => { document.onmouseup = null; document.onmousemove = null; };
                     document.onmousemove = (e) => {
+                        e = e || window.event;
                         e.preventDefault();
                         pos1 = pos3 - e.clientX;
                         pos2 = pos4 - e.clientY;
@@ -2794,6 +2872,5 @@
 
 </html>
 
-</html>
 
 
