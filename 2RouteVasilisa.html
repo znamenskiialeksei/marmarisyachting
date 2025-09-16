@@ -20,6 +20,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/fold/foldcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/fold/foldgutter.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/fold/brace-fold.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/mode/overlay.min.js"></script>
 
 
     <style>
@@ -779,7 +780,12 @@
             border-radius: 4px;
         }
         .CodeMirror-lint-marker-error {
-             background-image: none;
+            background-image: none;
+        }
+
+        /* Новый стиль для подсветки специальных ключей */
+        .cm-s-material-darker .cm-custom-key {
+            color: #98c379 !important; /* Приятный зеленый цвет */
         }
 
         .admin-modal-bottom-panel {
@@ -798,12 +804,12 @@
         }
 
         .admin-modal-buttons button {
-             padding: 10px 20px;
-             border: none;
-             border-radius: 5px;
-             cursor: pointer;
-             font-weight: bold;
-             transition: background-color 0.2s;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
         }
 
         .btn-primary { background-color: #007bff; color: white; }
@@ -871,8 +877,8 @@
         }
         
         #scratchpad-window .CodeMirror {
-             flex-grow: 1; /* Растягивает редактор */
-             height: 100%;
+            flex-grow: 1; /* Растягивает редактор */
+            height: 100%;
         }
 
         /* --- СТИЛИ ДЛЯ НИЖНЕЙ ПАНЕЛИ УПРАВЛЕНИЯ --- */
@@ -2607,7 +2613,27 @@
                 }
             });
             
-             // --- УЛУЧШЕННАЯ ЛОГИКА КОНСТРУКТОРА ДЛЯ АДМИНА ---
+             // --- Custom CodeMirror Mode for Highlighting ---
+            CodeMirror.defineMode("custom-json", function(config) {
+                return CodeMirror.overlayMode(
+                    CodeMirror.getMode(config, { name: "javascript", json: true }),
+                    {
+                        token: function(stream, state) {
+                            // Regex to find our specific keys, ensuring they are followed by a colon
+                            const regex = /\"(tooltip|text|roomName|name)\"(?=\s*:)/;
+                            if (stream.match(regex)) {
+                                // If we find a match, we return our custom CSS class name
+                                return "custom-key";
+                            }
+                            // If no match, we skip to the next potential match or the end of the line
+                            while (stream.next() != null && !stream.match(regex, false)) {}
+                            return null; // Return null for parts that shouldn't be specially styled by this overlay
+                        }
+                    }
+                );
+            });
+
+            // --- УЛУЧШЕННАЯ ЛОГИКА КОНСТРУКТОРА ДЛЯ АДМИНА ---
             function setupAdminConstructor() {
                 if (!isAdmin) return;
 
@@ -2655,7 +2681,7 @@
 
                 // --- Инициализация редакторов ---
                 const editorOptions = {
-                    mode: { name: "javascript", json: true },
+                    mode: "custom-json", // Используем новый режим
                     theme: "material-darker",
                     lineNumbers: true,
                     autoCloseBrackets: true,
@@ -2793,6 +2819,7 @@
 </body>
 
 </html>
+
 
 
 
