@@ -879,8 +879,12 @@
         .cm-s-material-darker .cm-custom-key,
         .cm-s-material-darker .cm-custom-value {
             color: #81C784; /* Зеленый цвет */
-            font-weight: bold;
         }
+        
+        .cm-s-material-darker .cm-custom-key {
+             font-weight: bold;
+        }
+
 
         /* --- СТИЛИ ДЛЯ НИЖНЕЙ ПАНЕЛИ УПРАВЛЕНИЯ --- */
         .controls {
@@ -2479,10 +2483,16 @@
             }
 
             function updateButtonsAndIndicator() {
-                if (!isFeedMode) {
-                    prevBtn.parentElement.style.display = isCoverActive ? 'none' : 'flex';
-                    pageIndicator.textContent = isCoverActive ? `0 / ${publishedPages.length}` : `${currentPage} / ${publishedPages.length}`;
+                if (isFeedMode) return;
+                
+                // ИСПРАВЛЕНИЕ: Целевой элемент теперь - весь контейнер кнопок
+                const buttonsContainer = document.querySelector('.controls-buttons');
+                if (buttonsContainer) {
+                     buttonsContainer.style.display = isCoverActive ? 'none' : 'flex';
                 }
+                
+                pageIndicator.style.display = isCoverActive ? 'none' : 'inline';
+                pageIndicator.textContent = isCoverActive ? '' : `${currentPage} / ${publishedPages.length}`;
             }
 
             function getPageStartTime(pageNumber) {
@@ -2645,65 +2655,42 @@
                 const sendToScratchpadBtn = document.getElementById('send-to-scratchpad-btn');
                 const getFromScratchpadBtn = document.getElementById('get-from-scratchpad-btn');
                 
-                // --- Новый режим-наложение для CodeMirror для кастомной подсветки ---
-                CodeMirror.defineOverlay("customJsonHighlight", {
-                    token: function(stream) {
-                        // Регулярное выражение для поиска ключей и их строковых значений
-                        const regex = /"(tooltip|text|roomName|name)"(\s*:\s*)(".*?")/g;
-                        if (stream.match(regex, true)) {
-                           // Этот блок кода не будет работать как надо, так как stream.match потребляет весь матч.
-                           // Вместо этого, мы будем использовать более простую логику.
-                        }
-
-                        // Простая логика: ищем ключ и если нашли, возвращаем стиль.
-                        // Подсветка значения требует более сложного state-машины, которую мы здесь опускаем для надежности.
-                        // Вместо этого мы подсветим и ключ, и его значение одним действием, если они на одной строке.
-                        const simpleRegex = /"(tooltip|text|roomName|name)"(\s*:\s*)("((?:\\.|[^"\\])*)")/;
-                        if (stream.match(simpleRegex)) {
-                            // Вернем массив стилей для каждого токена
-                            return "custom-key-value"; // Один класс для всей группы
-                        }
-
-                        // Если не нашли, пропускаем до следующего потенциального токена
-                        stream.next();
-                        return null;
-                    }
-                });
-                
-                // Более надежный подход с состоянием
+                // --- ИСПРАВЛЕНИЕ: Новый режим-наложение для CodeMirror для кастомной подсветки ---
                 const customOverlay = {
-                    startState: function() { return { isTarget: false }; },
-                    token: function(stream, state) {
-                        // Ищем ключ
+                    token: function(stream) {
+                        // Регулярное выражение для поиска ключей. Lookahead (?!") гарантирует, что это целый ключ.
                         if (stream.match(/"(tooltip|text|roomName|name)"\s*:/, false)) {
+                            // Если нашли ключ, подсвечиваем его и ищем значение
                             if (stream.match(/"(tooltip|text|roomName|name)"/)) {
-                                state.isTarget = true; // следующий токен будет значением
+                                // Это наш ключ
+                                stream.eatSpace();
+                                stream.eat(":");
+                                stream.eatSpace();
+
+                                if (stream.peek() === '"') {
+                                    // Это строковое значение, подсвечиваем его тоже
+                                    stream.next(); // съедаем "
+                                    let escaped = false;
+                                    stream.eatWhile(function(ch) {
+                                        if (ch === '"' && !escaped) {
+                                            return false;
+                                        }
+                                        escaped = !escaped && ch === '\\';
+                                        return true;
+                                    });
+                                    stream.next(); // съедаем "
+                                    return "custom-value"; // Класс для "ключ: значение"
+                                }
+                                // Если значение не строка, просто подсвечиваем ключ
                                 return "custom-key";
                             }
                         }
-
-                        if (state.isTarget) {
-                            // Мы нашли ключ, теперь ищем значение
-                            stream.eatWhile(/\s|:/); // Пропускаем пробелы и двоеточие
-                            if (stream.peek() === '"') {
-                                // Нашли начало строки, парсим ее
-                                stream.next(); // съедаем "
-                                let escaped = false;
-                                while (!stream.eol()) {
-                                    let ch = stream.next();
-                                    if (ch === '"' && !escaped) {
-                                        break;
-                                    }
-                                    escaped = !escaped && ch === '\\';
-                                }
-                                state.isTarget = false; // сбрасываем состояние
-                                return "custom-value";
-                            }
-                        }
                         
-                        // Если ничего не нашли, пропускаем
+                        // Если ничего не нашли, пропускаем до следующего интересного символа
                         stream.eatWhile(/[^"]/);
-                        if (!stream.eol()) stream.next();
+                        if (!stream.eol()) {
+                            stream.next();
+                        }
                         return null;
                     }
                 };
@@ -2871,6 +2858,7 @@
 </body>
 
 </html>
+
 
 
 
