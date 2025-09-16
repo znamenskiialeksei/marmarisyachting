@@ -6,6 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Маршрут 2. Дневной яхтенный тур с обедом на яхте.</title>
     <script src='https://meet.jit.si/external_api.js'></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/lint.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/material-darker.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/fold/foldgutter.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/lint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/json-lint.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsonlint@1.6.3/lib/jsonlint.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/fold/foldcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/fold/foldgutter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/fold/brace-fold.min.js"></script>
+
+
     <style>
         /* Начало блока для встраивания CSS-стилей прямо в HTML-документ */
         /* --- ОБЩИЕ СТИЛИ ДЛЯ BODY И ОСНОВНЫХ КОНТЕЙНЕРОВ --- */
@@ -715,35 +731,68 @@
 
         .admin-modal-content {
             background-color: #f8f9fa;
+            color: #212529;
             padding: 20px;
             border-radius: 8px;
-            width: 90%;
-            max-width: 1000px;
-            height: 90vh;
+            width: 95%;
+            max-width: 1200px;
+            height: 95vh;
             display: flex;
             flex-direction: column;
             box-shadow: 0 5px 20px rgba(0,0,0,0.4);
         }
 
-        #config-textarea {
-            width: 100%;
-            flex-grow: 1;
+        .admin-modal-content h3 {
+            margin-top: 0;
+        }
+        
+        .admin-modal-top-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 15px;
-            font-family: monospace;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 10px;
-            box-sizing: border-box;
-            resize: vertical;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        .admin-modal-buttons {
+        .admin-version-control {
             display: flex;
-            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-version-control select,
+        .admin-version-control button {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Стили для редактора CodeMirror */
+        .CodeMirror {
+            border: 1px solid #ccc;
+            height: auto;
+            flex-grow: 1;
+            font-size: 14px;
+        }
+        .CodeMirror-lint-marker-error {
+             background-image: none; /* Можно добавить свою иконку */
+        }
+
+        .admin-modal-bottom-panel {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            flex-wrap: wrap;
             gap: 10px;
         }
         
+        .admin-modal-bottom-panel .left-buttons,
+        .admin-modal-bottom-panel .right-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
         .admin-modal-buttons button {
              padding: 10px 20px;
              border: none;
@@ -753,29 +802,19 @@
              transition: background-color 0.2s;
         }
 
-        #save-config-btn {
-            background-color: #28a745;
-            color: white;
-        }
-        #save-config-btn:hover {
-            background-color: #218838;
-        }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-primary:hover { background-color: #0069d9; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-success:hover { background-color: #218838; }
+        .btn-warning { background-color: #ffc107; color: #212529; }
+        .btn-warning:hover { background-color: #e0a800; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn-secondary:hover { background-color: #5a6268; }
+        .btn-info { background-color: #17a2b8; color: white; }
+        .btn-info:hover { background-color: #138496; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        .btn-danger:hover { background-color: #c82333; }
 
-        #copy-config-btn {
-            background-color: #ffc107;
-            color: #212529;
-        }
-        #copy-config-btn:hover {
-            background-color: #e0a800;
-        }
-
-        #close-config-btn {
-            background-color: #6c757d;
-            color: white;
-        }
-        #close-config-btn:hover {
-            background-color: #5a6268;
-        }
 
         /* --- СТИЛИ ДЛЯ НИЖНЕЙ ПАНЕЛИ УПРАВЛЕНИЯ --- */
         .controls {
@@ -1415,13 +1454,27 @@
         <button id="edit-config-btn" style="display: none;">⚙️ Редактор Конфигурации</button>
         <div id="admin-config-modal" class="modal">
             <div class="admin-modal-content">
-                <h3>Редактор Конфигурации</h3>
-                <p>Отредактируйте JSON ниже. Для тестирования используйте "Сохранить и Перезагрузить". После завершения скопируйте код и вставьте его в HTML-файл.</p>
+                <div class="admin-modal-top-panel">
+                    <div class="admin-version-control">
+                        <select id="versions-dropdown"></select>
+                        <button id="load-version-btn" class="btn-info">Загрузить выбранное</button>
+                        <button id="delete-version-btn" class="btn-danger">Удалить выбранное</button>
+                    </div>
+                     <div class="admin-modal-buttons">
+                        <button id="undo-btn" class="btn-secondary">Отменить</button>
+                        <button id="redo-btn" class="btn-secondary">Вернуть</button>
+                    </div>
+                </div>
                 <textarea id="config-textarea"></textarea>
-                <div class="admin-modal-buttons">
-                    <button id="close-config-btn">Закрыть</button>
-                    <button id="copy-config-btn">Копировать код</button>
-                    <button id="save-config-btn">Сохранить и Перезагрузить</button>
+                 <div class="admin-modal-bottom-panel">
+                    <div class="left-buttons">
+                        <button id="close-config-btn" class="btn-secondary">Закрыть</button>
+                    </div>
+                    <div class="right-buttons">
+                        <button id="save-as-btn" class="btn-primary">Сохранить как...</button>
+                        <button id="copy-config-btn" class="btn-warning">Копировать код</button>
+                        <button id="save-config-btn" class="btn-success">Сохранить и Перезагрузить</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1431,7 +1484,7 @@
         /* Начало блока JavaScript */
 
         // Определяем, является ли пользователь админом, ДО всех остальных операций
-        const isAdmin = new URLSearchParams(window.location.search).get('admin') === 'true';
+        const isAdmin = new URLSearchParams(window.location.search).get('admin') === 'true0901';
 
         document.addEventListener('DOMContentLoaded', function() {
 
@@ -1787,7 +1840,7 @@
             // Теперь создаем изменяемую переменную CONFIG
             let CONFIG = defaultConfig;
 
-            // Если это админ, проверяем наличие сохраненной конфигурации
+            // Если это админ, проверяем наличие сохраненной конфигурации для быстрого теста
             if (isAdmin) {
                 const savedConfigJSON = localStorage.getItem('customConfig');
                 if (savedConfigJSON) {
@@ -2483,35 +2536,78 @@
                 }
             });
             
-             // --- ЛОГИКА КОНСТРУКТОРА ДЛЯ АДМИНА ---
+             // --- УЛУЧШЕННАЯ ЛОГИКА КОНСТРУКТОРА ДЛЯ АДМИНА ---
             function setupAdminConstructor() {
                 if (!isAdmin) return;
 
                 const editBtn = document.getElementById('edit-config-btn');
                 const modal = document.getElementById('admin-config-modal');
                 const textarea = document.getElementById('config-textarea');
-                const saveBtn = document.getElementById('save-config-btn');
+                
+                const saveForTestBtn = document.getElementById('save-config-btn');
                 const copyBtn = document.getElementById('copy-config-btn');
                 const closeBtn = document.getElementById('close-config-btn');
+                const undoBtn = document.getElementById('undo-btn');
+                const redoBtn = document.getElementById('redo-btn');
+                
+                const versionsDropdown = document.getElementById('versions-dropdown');
+                const loadVersionBtn = document.getElementById('load-version-btn');
+                const saveAsBtn = document.getElementById('save-as-btn');
+                const deleteVersionBtn = document.getElementById('delete-version-btn');
+                
+                let editor; // Переменная для хранения экземпляра CodeMirror
+
+                const LS_VERSIONS_KEY = 'configVersions';
+
+                function getSavedVersions() {
+                    return JSON.parse(localStorage.getItem(LS_VERSIONS_KEY) || '{}');
+                }
+
+                function saveVersions(versions) {
+                    localStorage.setItem(LS_VERSIONS_KEY, JSON.stringify(versions));
+                }
+                
+                function populateVersionsDropdown() {
+                    const versions = getSavedVersions();
+                    versionsDropdown.innerHTML = '<option value="">-- Выберите версию для загрузки --</option>';
+                    for (const id in versions) {
+                        const option = document.createElement('option');
+                        option.value = id;
+                        option.textContent = `${versions[id].name} (${new Date(parseInt(id)).toLocaleString()})`;
+                        option.title = versions[id].comments;
+                        versionsDropdown.appendChild(option);
+                    }
+                }
 
                 editBtn.style.display = 'block';
 
                 editBtn.addEventListener('click', () => {
-                    // Форматируем JSON для удобочитаемости
-                    textarea.value = JSON.stringify(CONFIG, null, 2);
                     modal.style.display = 'flex';
+                    if (!editor) {
+                        editor = CodeMirror.fromTextArea(textarea, {
+                            mode: {name: "javascript", json: true},
+                            theme: "material-darker",
+                            lineNumbers: true,
+                            autoCloseBrackets: true,
+                            lint: true,
+                            foldGutter: true,
+                            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"]
+                        });
+                    }
+                    editor.setValue(JSON.stringify(CONFIG, null, 2));
+                    populateVersionsDropdown();
+                    setTimeout(() => editor.refresh(), 1);
                 });
 
                 closeBtn.addEventListener('click', () => {
                     modal.style.display = 'none';
                 });
 
-                saveBtn.addEventListener('click', () => {
+                saveForTestBtn.addEventListener('click', () => {
                     try {
-                        // Проверяем, что введенный текст - валидный JSON
-                        JSON.parse(textarea.value);
-                        // Сохраняем в localStorage
-                        localStorage.setItem('customConfig', textarea.value);
+                        const code = editor.getValue();
+                        JSON.parse(code);
+                        localStorage.setItem('customConfig', code);
                         alert('Конфигурация временно сохранена! Страница будет перезагружена.');
                         window.location.reload();
                     } catch (e) {
@@ -2520,9 +2616,59 @@
                 });
                 
                 copyBtn.addEventListener('click', () => {
-                    textarea.select();
-                    document.execCommand('copy');
-                    alert('Код конфигурации скопирован в буфер обмена. Теперь вы можете вставить его в ваш HTML-файл.');
+                    navigator.clipboard.writeText(editor.getValue()).then(() => {
+                        alert('Код конфигурации скопирован в буфер обмена. Теперь вы можете вставить его в ваш HTML-файл.');
+                    });
+                });
+
+                undoBtn.addEventListener('click', () => editor.undo());
+                redoBtn.addEventListener('click', () => editor.redo());
+
+                saveAsBtn.addEventListener('click', () => {
+                    const name = prompt("Введите название для этой версии:", "Новая конфигурация");
+                    if (!name) return;
+                    const comments = prompt("Добавьте комментарий (необязательно):");
+                    
+                    const versions = getSavedVersions();
+                    const newId = Date.now();
+                    versions[newId] = {
+                        name: name,
+                        comments: comments || "",
+                        code: editor.getValue()
+                    };
+                    saveVersions(versions);
+                    populateVersionsDropdown();
+                    versionsDropdown.value = newId;
+                    alert(`Версия "${name}" сохранена.`);
+                });
+                
+                loadVersionBtn.addEventListener('click', () => {
+                    const selectedId = versionsDropdown.value;
+                    if (!selectedId) {
+                        alert("Пожалуйста, выберите версию из списка.");
+                        return;
+                    }
+                    const versions = getSavedVersions();
+                    if(versions[selectedId]) {
+                        editor.setValue(versions[selectedId].code);
+                        alert(`Версия "${versions[selectedId].name}" загружена в редактор.`);
+                    }
+                });
+
+                deleteVersionBtn.addEventListener('click', () => {
+                    const selectedId = versionsDropdown.value;
+                     if (!selectedId) {
+                        alert("Пожалуйста, выберите версию для удаления.");
+                        return;
+                    }
+                    const versions = getSavedVersions();
+                    const versionName = versions[selectedId].name;
+                    if (confirm(`Вы уверены, что хотите удалить версию "${versionName}"?`)) {
+                        delete versions[selectedId];
+                        saveVersions(versions);
+                        populateVersionsDropdown();
+                        alert(`Версия "${versionName}" удалена.`);
+                    }
                 });
             }
 
@@ -2557,3 +2703,4 @@
 </body>
 
 </html>
+
