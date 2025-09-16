@@ -685,6 +685,97 @@
             margin-bottom: 5px;
             /* Отступ между элементами */
         }
+        
+        /* --- НОВЫЕ СТИЛИ ДЛЯ КОНСТРУКТОРА АДМИНИСТРАТОРА --- */
+        #edit-config-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10001;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 18px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        #edit-config-btn:hover {
+            transform: scale(1.05);
+            background-color: #0056b3;
+        }
+
+        #admin-config-modal {
+            display: none;
+            z-index: 10002;
+        }
+
+        .admin-modal-content {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 1000px;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+        }
+
+        #config-textarea {
+            width: 100%;
+            flex-grow: 1;
+            margin-bottom: 15px;
+            font-family: monospace;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+
+        .admin-modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .admin-modal-buttons button {
+             padding: 10px 20px;
+             border: none;
+             border-radius: 5px;
+             cursor: pointer;
+             font-weight: bold;
+             transition: background-color 0.2s;
+        }
+
+        #save-config-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        #save-config-btn:hover {
+            background-color: #218838;
+        }
+
+        #copy-config-btn {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        #copy-config-btn:hover {
+            background-color: #e0a800;
+        }
+
+        #close-config-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+        #close-config-btn:hover {
+            background-color: #5a6268;
+        }
 
         /* --- СТИЛИ ДЛЯ НИЖНЕЙ ПАНЕЛИ УПРАВЛЕНИЯ --- */
         .controls {
@@ -1319,14 +1410,37 @@
         </div>
     </div>
     <audio id="narrationAudio" preload="auto"></audio>
+
+    <div id="admin-constructor-ui">
+        <button id="edit-config-btn" style="display: none;">⚙️ Редактор Конфигурации</button>
+        <div id="admin-config-modal" class="modal">
+            <div class="admin-modal-content">
+                <h3>Редактор Конфигурации</h3>
+                <p>Отредактируйте JSON ниже. Для тестирования используйте "Сохранить и Перезагрузить". После завершения скопируйте код и вставьте его в HTML-файл.</p>
+                <textarea id="config-textarea"></textarea>
+                <div class="admin-modal-buttons">
+                    <button id="close-config-btn">Закрыть</button>
+                    <button id="copy-config-btn">Копировать код</button>
+                    <button id="save-config-btn">Сохранить и Перезагрузить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script>
         /* Начало блока JavaScript */
+
+        // Определяем, является ли пользователь админом, ДО всех остальных операций
+        const isAdmin = new URLSearchParams(window.location.search).get('admin') === 'true';
+
         document.addEventListener('DOMContentLoaded', function() {
 
             // ====================================================================================================
             // --- ГЛАВНЫЙ ОБЪЕКТ КОНФИГУРАЦИИ (CONFIG) ---
             // ====================================================================================================
-            const CONFIG = {
+            
+            // Сначала определяем конфигурацию по умолчанию
+            const defaultConfig = {
                 // --- Глобальные настройки режимов ---
                 isContinuousPlayback: false,
                 mobileFeedMode: true,
@@ -1511,7 +1625,7 @@
                         buttonText: 'Видеообзор',
                         buttonColor: '#00BCD4',
                         url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0',
-                        headerText: 'Кумлюбюк',
+                        headerText: 'Кумлубюк',
                         footerText: ''
                     }],
                 }, {
@@ -1667,716 +1781,778 @@
                         headerText: 'Дополнительная информация'
                     }]
                 },
-            ]
-        };
+                ]
+            };
 
-        // ====================================================================================================
-        // --- ЛОГИКА СКРИПТА ---
-        // ====================================================================================================
+            // Теперь создаем изменяемую переменную CONFIG
+            let CONFIG = defaultConfig;
 
-        const isMobile = window.innerWidth < 768;
-        const isFeedMode = (isMobile && CONFIG.mobileFeedMode) || (!isMobile && CONFIG.feedModeForDesktop);
-        if (isFeedMode) {
-            document.body.classList.add('feed-mode');
-        }
-
-        const isAdmin = new URLSearchParams(window.location.search).get('admin') === 'true';
-        const adminErrors = [];
-        const publishedPages = CONFIG.pages.filter(p => p.published);
-
-        const coverView = document.getElementById('cover-view');
-        const bookView = document.getElementById('book-view');
-        const audioPlayer = document.getElementById('narrationAudio');
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const prevBtn = document.getElementById('prevBtn');
-        const pageIndicator = document.getElementById('pageIndicator');
-        const conferenceBtn = document.getElementById('conferenceBtn');
-        
-        let currentPage = 1;
-        let isPlaying = false;
-        let isCoverActive = true;
-        let isNarratorModeActive = false;
-        let tooltipTimeout = null;
-        let jitsiApi = null;
-        
-        if (CONFIG.pulsingEffect && CONFIG.pulsingEffect.enabled) {
-            const effect = CONFIG.pulsingEffect;
-            const totalDuration = effect.fadeInDuration + effect.visibleDuration + effect.fadeOutDuration + effect.hiddenDuration;
-            const fadeInEnd = (effect.fadeInDuration / totalDuration) * 100;
-            const visibleEnd = ((effect.fadeInDuration + effect.visibleDuration) / totalDuration) * 100;
-            const fadeOutEnd = ((effect.fadeInDuration + effect.visibleDuration + effect.fadeOutDuration) / totalDuration) * 100;
-            const styleSheet = document.createElement("style");
-            styleSheet.innerText = `@keyframes pulseAnimation { 0% { opacity: 0; } ${fadeInEnd}% { opacity: 1; } ${visibleEnd}% { opacity: 1; } ${fadeOutEnd}% { opacity: 0; } 100% { opacity: 0; } }`;
-            document.head.appendChild(styleSheet);
-            document.documentElement.style.setProperty('--pulse-total-duration', `${totalDuration}s`);
-        }
-
-        function createDropdownButton(config, parentElement) {
-            if (!config || !config.visible) return;
-            const menuBtn = document.createElement('button');
-            menuBtn.className = 'cover-button route-selector-btn';
-            menuBtn.style.top = config.top;
-            menuBtn.style.left = config.left;
-            menuBtn.innerHTML = config.icon;
-            menuBtn.addEventListener('mouseenter', (e) => showTooltip(e.currentTarget, config.tooltip));
-            menuBtn.addEventListener('mouseleave', hideTooltip);
-            if ((CONFIG.pulsingEffect?.enabled && config.pulsing !== false) || config.pulsing === true) {
-                menuBtn.classList.add('pulsing');
-            }
-            const dropdown = document.createElement('div');
-            dropdown.className = 'route-dropdown-menu';
-            config.routes.forEach(route => {
-                const link = document.createElement('a');
-                link.textContent = route.name;
-                if (route.action === 'openBooking') {
-                    link.href = '#';
-                    link.onclick = (e) => {
-                        e.preventDefault();
-                        openBookingModal();
-                        dropdown.classList.remove('visible');
-                    };
-                } else {
-                    link.href = route.url;
-                    if (route.target) {
-                        link.target = route.target;
-                        link.rel = 'noopener noreferrer';
+            // Если это админ, проверяем наличие сохраненной конфигурации
+            if (isAdmin) {
+                const savedConfigJSON = localStorage.getItem('customConfig');
+                if (savedConfigJSON) {
+                    try {
+                        const savedConfig = JSON.parse(savedConfigJSON);
+                        CONFIG = savedConfig;
+                        console.log('Загружена кастомная конфигурация из localStorage.');
+                    } catch (e) {
+                        console.error('Ошибка парсинга кастомной конфигурации:', e);
+                        alert('Не удалось загрузить сохраненную конфигурацию. Загружена конфигурация по умолчанию.');
                     }
                 }
-                dropdown.appendChild(link);
-            });
-            parentElement.appendChild(menuBtn);
-            document.body.appendChild(dropdown);
-            menuBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const rect = menuBtn.getBoundingClientRect();
+            }
+
+
+            // ====================================================================================================
+            // --- ЛОГИКА СКРИПТА ---
+            // ====================================================================================================
+
+            const isMobile = window.innerWidth < 768;
+            const isFeedMode = (isMobile && CONFIG.mobileFeedMode) || (!isMobile && CONFIG.feedModeForDesktop);
+            if (isFeedMode) {
+                document.body.classList.add('feed-mode');
+            }
+
+            const adminErrors = [];
+            const publishedPages = CONFIG.pages.filter(p => p.published);
+
+            const coverView = document.getElementById('cover-view');
+            const bookView = document.getElementById('book-view');
+            const audioPlayer = document.getElementById('narrationAudio');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const prevBtn = document.getElementById('prevBtn');
+            const pageIndicator = document.getElementById('pageIndicator');
+            const conferenceBtn = document.getElementById('conferenceBtn');
+            
+            let currentPage = 1;
+            let isPlaying = false;
+            let isCoverActive = true;
+            let isNarratorModeActive = false;
+            let tooltipTimeout = null;
+            let jitsiApi = null;
+            
+            if (CONFIG.pulsingEffect && CONFIG.pulsingEffect.enabled) {
+                const effect = CONFIG.pulsingEffect;
+                const totalDuration = effect.fadeInDuration + effect.visibleDuration + effect.fadeOutDuration + effect.hiddenDuration;
+                const fadeInEnd = (effect.fadeInDuration / totalDuration) * 100;
+                const visibleEnd = ((effect.fadeInDuration + effect.visibleDuration) / totalDuration) * 100;
+                const fadeOutEnd = ((effect.fadeInDuration + effect.visibleDuration + effect.fadeOutDuration) / totalDuration) * 100;
+                const styleSheet = document.createElement("style");
+                styleSheet.innerText = `@keyframes pulseAnimation { 0% { opacity: 0; } ${fadeInEnd}% { opacity: 1; } ${visibleEnd}% { opacity: 1; } ${fadeOutEnd}% { opacity: 0; } 100% { opacity: 0; } }`;
+                document.head.appendChild(styleSheet);
+                document.documentElement.style.setProperty('--pulse-total-duration', `${totalDuration}s`);
+            }
+
+            function createDropdownButton(config, parentElement) {
+                if (!config || !config.visible) return;
+                const menuBtn = document.createElement('button');
+                menuBtn.className = 'cover-button route-selector-btn';
+                menuBtn.style.top = config.top;
+                menuBtn.style.left = config.left;
+                menuBtn.innerHTML = config.icon;
+                menuBtn.addEventListener('mouseenter', (e) => showTooltip(e.currentTarget, config.tooltip));
+                menuBtn.addEventListener('mouseleave', hideTooltip);
+                if ((CONFIG.pulsingEffect?.enabled && config.pulsing !== false) || config.pulsing === true) {
+                    menuBtn.classList.add('pulsing');
+                }
+                const dropdown = document.createElement('div');
+                dropdown.className = 'route-dropdown-menu';
+                config.routes.forEach(route => {
+                    const link = document.createElement('a');
+                    link.textContent = route.name;
+                    if (route.action === 'openBooking') {
+                        link.href = '#';
+                        link.onclick = (e) => {
+                            e.preventDefault();
+                            openBookingModal();
+                            dropdown.classList.remove('visible');
+                        };
+                    } else {
+                        link.href = route.url;
+                        if (route.target) {
+                            link.target = route.target;
+                            link.rel = 'noopener noreferrer';
+                        }
+                    }
+                    dropdown.appendChild(link);
+                });
+                parentElement.appendChild(menuBtn);
+                document.body.appendChild(dropdown);
+                menuBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const rect = menuBtn.getBoundingClientRect();
+                    const offset = 5;
+                    const centerPullFactor = 0.25;
+                    const buttonCenterX = rect.left + rect.width / 2;
+                    const screenCenterX = window.innerWidth / 2;
+                    const newLeft = buttonCenterX + (screenCenterX - buttonCenterX) * centerPullFactor;
+                    if (rect.top < window.innerHeight / 2) {
+                        dropdown.style.top = `${rect.bottom + offset}px`;
+                        dropdown.style.transform = 'translate(-50%, 0)';
+                        dropdown.style.transformOrigin = 'top center';
+                    } else {
+                        dropdown.style.top = `${rect.top - offset}px`;
+                        dropdown.style.transform = 'translate(-50%, -100%)';
+                        dropdown.style.transformOrigin = 'bottom center';
+                    }
+                    dropdown.style.left = `${newLeft}px`;
+                    document.querySelectorAll('.route-dropdown-menu.visible').forEach(menu => {
+                        if (menu !== dropdown) menu.classList.remove('visible');
+                    });
+                    dropdown.classList.toggle('visible');
+                });
+                document.addEventListener('click', (e) => {
+                    if (!dropdown.contains(e.target) && !menuBtn.contains(e.target)) {
+                        dropdown.classList.remove('visible');
+                    }
+                });
+            }
+            const tooltipBox = document.getElementById('tooltip-box');
+
+            function showTooltip(element, text) {
+                if (!text) return;
+                clearTimeout(tooltipTimeout);
+                tooltipBox.textContent = text;
+                const rect = element.getBoundingClientRect();
                 const offset = 5;
                 const centerPullFactor = 0.25;
                 const buttonCenterX = rect.left + rect.width / 2;
                 const screenCenterX = window.innerWidth / 2;
                 const newLeft = buttonCenterX + (screenCenterX - buttonCenterX) * centerPullFactor;
                 if (rect.top < window.innerHeight / 2) {
-                    dropdown.style.top = `${rect.bottom + offset}px`;
-                    dropdown.style.transform = 'translate(-50%, 0)';
-                    dropdown.style.transformOrigin = 'top center';
+                    tooltipBox.style.top = `${rect.bottom + offset}px`;
+                    tooltipBox.style.transform = 'translate(-50%, 0)';
                 } else {
-                    dropdown.style.top = `${rect.top - offset}px`;
-                    dropdown.style.transform = 'translate(-50%, -100%)';
-                    dropdown.style.transformOrigin = 'bottom center';
+                    tooltipBox.style.top = `${rect.top - offset}px`;
+                    tooltipBox.style.transform = 'translate(-50%, -100%)';
                 }
-                dropdown.style.left = `${newLeft}px`;
-                document.querySelectorAll('.route-dropdown-menu.visible').forEach(menu => {
-                    if (menu !== dropdown) menu.classList.remove('visible');
+                tooltipBox.style.left = `${newLeft}px`;
+                tooltipBox.classList.add('visible');
+                if (isMobile) {
+                    tooltipTimeout = setTimeout(hideTooltip, 2000);
+                }
+            }
+
+            function hideTooltip() {
+                clearTimeout(tooltipTimeout);
+                tooltipBox.classList.remove('visible');
+            }
+
+            function setupCover() {
+                document.querySelector('#main-title').textContent = CONFIG.mainTitle;
+                if (CONFIG.audioUrl) audioPlayer.src = CONFIG.audioUrl;
+                else if (isAdmin) adminErrors.push('Не указан URL для основного аудио');
+                if (CONFIG.coverVideoUrl) {
+                    const video = document.createElement('video');
+                    video.id = 'cover-video';
+                    video.src = CONFIG.coverVideoUrl;
+                    video.autoplay = true;
+                    video.loop = true;
+                    video.muted = true;
+                    video.playsInline = true;
+                    video.style.objectFit = CONFIG.coverVideoFitMode || 'cover';
+                    coverView.prepend(video);
+                } else if (isAdmin) {
+                    adminErrors.push('Не указан URL для видео на обложке');
+                }
+                CONFIG.coverTexts.forEach((item) => {
+                    if (item.visible !== false) {
+                        const textBox = document.createElement('div');
+                        textBox.className = 'cover-text-box';
+                        textBox.style.top = item.top;
+                        textBox.style.left = item.left;
+                        const textBg = document.createElement('span');
+                        textBg.className = 'cover-text-bg';
+                        textBg.textContent = item.text;
+                        textBox.appendChild(textBg);
+                        textBox.addEventListener('mouseenter', (e) => showTooltip(e.currentTarget, item.tooltip));
+                        textBox.addEventListener('mouseleave', hideTooltip);
+                        coverView.appendChild(textBox);
+                    }
                 });
-                dropdown.classList.toggle('visible');
-            });
-            document.addEventListener('click', (e) => {
-                if (!dropdown.contains(e.target) && !menuBtn.contains(e.target)) {
-                    dropdown.classList.remove('visible');
-                }
-            });
-        }
-        const tooltipBox = document.getElementById('tooltip-box');
-
-        function showTooltip(element, text) {
-            if (!text) return;
-            clearTimeout(tooltipTimeout);
-            tooltipBox.textContent = text;
-            const rect = element.getBoundingClientRect();
-            const offset = 5;
-            const centerPullFactor = 0.25;
-            const buttonCenterX = rect.left + rect.width / 2;
-            const screenCenterX = window.innerWidth / 2;
-            const newLeft = buttonCenterX + (screenCenterX - buttonCenterX) * centerPullFactor;
-            if (rect.top < window.innerHeight / 2) {
-                tooltipBox.style.top = `${rect.bottom + offset}px`;
-                tooltipBox.style.transform = 'translate(-50%, 0)';
-            } else {
-                tooltipBox.style.top = `${rect.top - offset}px`;
-                tooltipBox.style.transform = 'translate(-50%, -100%)';
-            }
-            tooltipBox.style.left = `${newLeft}px`;
-            tooltipBox.classList.add('visible');
-            if (isMobile) {
-                tooltipTimeout = setTimeout(hideTooltip, 2000);
-            }
-        }
-
-        function hideTooltip() {
-            clearTimeout(tooltipTimeout);
-            tooltipBox.classList.remove('visible');
-        }
-
-        function setupCover() {
-            document.querySelector('#main-title').textContent = CONFIG.mainTitle;
-            if (CONFIG.audioUrl) audioPlayer.src = CONFIG.audioUrl;
-            else if (isAdmin) adminErrors.push('Не указан URL для основного аудио');
-            if (CONFIG.coverVideoUrl) {
-                const video = document.createElement('video');
-                video.id = 'cover-video';
-                video.src = CONFIG.coverVideoUrl;
-                video.autoplay = true;
-                video.loop = true;
-                video.muted = true;
-                video.playsInline = true;
-                video.style.objectFit = CONFIG.coverVideoFitMode || 'cover';
-                coverView.prepend(video);
-            } else if (isAdmin) {
-                adminErrors.push('Не указан URL для видео на обложке');
-            }
-            CONFIG.coverTexts.forEach((item) => {
-                if (item.visible !== false) {
-                    const textBox = document.createElement('div');
-                    textBox.className = 'cover-text-box';
-                    textBox.style.top = item.top;
-                    textBox.style.left = item.left;
-                    const textBg = document.createElement('span');
-                    textBg.className = 'cover-text-bg';
-                    textBg.textContent = item.text;
-                    textBox.appendChild(textBg);
-                    textBox.addEventListener('mouseenter', (e) => showTooltip(e.currentTarget, item.tooltip));
-                    textBox.addEventListener('mouseleave', hideTooltip);
-                    coverView.appendChild(textBox);
-                }
-            });
-            if (CONFIG.contactButtons) {
-                CONFIG.contactButtons.forEach(btnData => {
-                    if (btnData.visible && btnData.url) {
-                        const contactBtn = document.createElement('a');
-                        contactBtn.href = btnData.url;
-                        contactBtn.className = 'cover-button';
-                        contactBtn.target = '_blank';
-                        contactBtn.rel = 'noopener noreferrer';
-                        contactBtn.style.top = btnData.top;
-                        contactBtn.style.left = btnData.left;
-                        contactBtn.innerHTML = btnData.icon;
-                        contactBtn.addEventListener('mouseenter', (e) => showTooltip(e.currentTarget, btnData.tooltip));
-                        contactBtn.addEventListener('mouseleave', hideTooltip);
-                        if ((CONFIG.pulsingEffect?.enabled && btnData.pulsing !== false) || btnData.pulsing === true) {
-                            contactBtn.classList.add('pulsing');
+                if (CONFIG.contactButtons) {
+                    CONFIG.contactButtons.forEach(btnData => {
+                        if (btnData.visible && btnData.url) {
+                            const contactBtn = document.createElement('a');
+                            contactBtn.href = btnData.url;
+                            contactBtn.className = 'cover-button';
+                            contactBtn.target = '_blank';
+                            contactBtn.rel = 'noopener noreferrer';
+                            contactBtn.style.top = btnData.top;
+                            contactBtn.style.left = btnData.left;
+                            contactBtn.innerHTML = btnData.icon;
+                            contactBtn.addEventListener('mouseenter', (e) => showTooltip(e.currentTarget, btnData.tooltip));
+                            contactBtn.addEventListener('mouseleave', hideTooltip);
+                            if ((CONFIG.pulsingEffect?.enabled && btnData.pulsing !== false) || btnData.pulsing === true) {
+                                contactBtn.classList.add('pulsing');
+                            }
+                            coverView.appendChild(contactBtn);
                         }
-                        coverView.appendChild(contactBtn);
-                    }
-                });
-            }
-            if (CONFIG.routeSelector) {
-                createDropdownButton(CONFIG.routeSelector, coverView);
-            }
-        }
-
-        function setupBookPages() {
-            const pageViewer = document.querySelector('.page-viewer');
-            pageViewer.innerHTML = '';
-            publishedPages.forEach((pageData, index) => {
-                const pageNum = index + 1;
-                const page = document.createElement('div');
-                page.className = 'page';
-                page.dataset.pageNumber = pageNum;
-                if (pageNum === 1) page.classList.add('active');
-                const buttonsContainer = document.createElement('div');
-                buttonsContainer.className = 'page-buttons-container';
-                const allMedia = [];
-                if (pageData.mainVideo && pageData.mainVideo.url) {
-                    const mainVideoButtonConfig = { ...pageData.mainVideo,
-                        type: pageData.mainVideo.type || 'video',
-                        buttonText: pageData.mainVideo.buttonText || 'Показать видео'
-                    };
-                    allMedia.push(mainVideoButtonConfig);
+                    });
                 }
-                if (pageData.extraMedia) {
-                    allMedia.push(...pageData.extraMedia);
+                if (CONFIG.routeSelector) {
+                    createDropdownButton(CONFIG.routeSelector, coverView);
                 }
-                allMedia.forEach((media) => {
-                    const hasUrl = (media.type === 'carousel' && media.images && media.images.length > 0) || (media.url && media.url.trim() !== '') || (media.type === 'blokiframe' && media.iframeCode && media.iframeCode.trim() !== '');
-                    if (hasUrl) {
-                        const btn = document.createElement('button');
-                        const btnClass = (media.type === 'iframe' || media.type === 'blokiframe') ? 'iframe-btn' : `${media.type}-btn`;
-                        btn.className = `page-btn ${btnClass}`;
-                        btn.textContent = media.buttonText;
-                        if (media.buttonColor) btn.style.backgroundColor = media.buttonColor;
-                        if (media.buttonTextColor) btn.style.color = media.buttonTextColor;
-                        btn.onclick = () => openMediaModal(media);
-                        buttonsContainer.appendChild(btn);
-                    } else if (isAdmin) {
-                        const errorMsg = `Стр. ${pageNum}, кнопка "${media.buttonText}": URL или данные отсутствуют`;
-                        adminErrors.push(errorMsg);
-                        const errorBtn = document.createElement('button');
-                        errorBtn.className = 'page-btn admin-error-btn';
-                        errorBtn.textContent = 'ОШИБКА URL';
-                        errorBtn.title = errorMsg;
-                        buttonsContainer.appendChild(errorBtn);
-                    }
-                });
-                const textContent = document.createElement('p');
-                textContent.innerHTML = pageData.text || '';
+            }
 
-                if (isFeedMode && pageData.collapsible) {
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = pageData.text;
-                    const h2 = tempDiv.querySelector('h2');
-                    const title = h2 ? h2.innerHTML : 'Развернуть';
-                    if (h2) h2.remove();
-                    textContent.innerHTML = tempDiv.innerHTML;
-                    const details = document.createElement('details');
-                    details.open = !pageData.collapsedOnLoad;
-                    if (pageData.customHeight && pageData.customHeight !== 'auto') {
-                        page.style.height = details.open ? pageData.customHeight : 'auto';
+            function setupBookPages() {
+                const pageViewer = document.querySelector('.page-viewer');
+                pageViewer.innerHTML = '';
+                publishedPages.forEach((pageData, index) => {
+                    const pageNum = index + 1;
+                    const page = document.createElement('div');
+                    page.className = 'page';
+                    page.dataset.pageNumber = pageNum;
+                    if (pageNum === 1) page.classList.add('active');
+                    const buttonsContainer = document.createElement('div');
+                    buttonsContainer.className = 'page-buttons-container';
+                    const allMedia = [];
+                    if (pageData.mainVideo && pageData.mainVideo.url) {
+                        const mainVideoButtonConfig = { ...pageData.mainVideo,
+                            type: pageData.mainVideo.type || 'video',
+                            buttonText: pageData.mainVideo.buttonText || 'Показать видео'
+                        };
+                        allMedia.push(mainVideoButtonConfig);
                     }
-                    details.addEventListener('toggle', () => {
+                    if (pageData.extraMedia) {
+                        allMedia.push(...pageData.extraMedia);
+                    }
+                    allMedia.forEach((media) => {
+                        const hasUrl = (media.type === 'carousel' && media.images && media.images.length > 0) || (media.url && media.url.trim() !== '') || (media.type === 'blokiframe' && media.iframeCode && media.iframeCode.trim() !== '');
+                        if (hasUrl) {
+                            const btn = document.createElement('button');
+                            const btnClass = (media.type === 'iframe' || media.type === 'blokiframe') ? 'iframe-btn' : `${media.type}-btn`;
+                            btn.className = `page-btn ${btnClass}`;
+                            btn.textContent = media.buttonText;
+                            if (media.buttonColor) btn.style.backgroundColor = media.buttonColor;
+                            if (media.buttonTextColor) btn.style.color = media.buttonTextColor;
+                            btn.onclick = () => openMediaModal(media);
+                            buttonsContainer.appendChild(btn);
+                        } else if (isAdmin) {
+                            const errorMsg = `Стр. ${pageNum}, кнопка "${media.buttonText}": URL или данные отсутствуют`;
+                            adminErrors.push(errorMsg);
+                            const errorBtn = document.createElement('button');
+                            errorBtn.className = 'page-btn admin-error-btn';
+                            errorBtn.textContent = 'ОШИБКА URL';
+                            errorBtn.title = errorMsg;
+                            buttonsContainer.appendChild(errorBtn);
+                        }
+                    });
+                    const textContent = document.createElement('p');
+                    textContent.innerHTML = pageData.text || '';
+
+                    if (isFeedMode && pageData.collapsible) {
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = pageData.text;
+                        const h2 = tempDiv.querySelector('h2');
+                        const title = h2 ? h2.innerHTML : 'Развернуть';
+                        if (h2) h2.remove();
+                        textContent.innerHTML = tempDiv.innerHTML;
+                        const details = document.createElement('details');
+                        details.open = !pageData.collapsedOnLoad;
                         if (pageData.customHeight && pageData.customHeight !== 'auto') {
                             page.style.height = details.open ? pageData.customHeight : 'auto';
                         }
-                        if (details.open) {
-                            const pageNumToSync = parseInt(page.dataset.pageNumber, 10);
-                            currentPage = pageNumToSync;
-                            const wasPlaying = isPlaying;
-                            audioPlayer.currentTime = getPageStartTime(pageNumToSync);
-                            if (wasPlaying) {
-                                audioPlayer.play();
+                        details.addEventListener('toggle', () => {
+                            if (pageData.customHeight && pageData.customHeight !== 'auto') {
+                                page.style.height = details.open ? pageData.customHeight : 'auto';
                             }
+                            if (details.open) {
+                                const pageNumToSync = parseInt(page.dataset.pageNumber, 10);
+                                currentPage = pageNumToSync;
+                                const wasPlaying = isPlaying;
+                                audioPlayer.currentTime = getPageStartTime(pageNumToSync);
+                                if (wasPlaying) {
+                                    audioPlayer.play();
+                                }
+                            }
+                        });
+                        const summary = document.createElement('summary');
+                        summary.innerHTML = title;
+                        details.appendChild(summary);
+                        details.appendChild(buttonsContainer);
+                        details.appendChild(textContent);
+                        page.appendChild(details);
+                    } else {
+                        if (pageData.customHeight) {
+                            page.style.height = pageData.customHeight;
                         }
-                    });
-                    const summary = document.createElement('summary');
-                    summary.innerHTML = title;
-                    details.appendChild(summary);
-                    details.appendChild(buttonsContainer);
-                    details.appendChild(textContent);
-                    page.appendChild(details);
-                } else {
-                    if (pageData.customHeight) {
-                        page.style.height = pageData.customHeight;
+                        page.appendChild(buttonsContainer);
+                        page.appendChild(textContent);
                     }
-                    page.appendChild(buttonsContainer);
-                    page.appendChild(textContent);
-                }
-                pageViewer.appendChild(page);
-                if (pageData.customDropdowns && Array.isArray(pageData.customDropdowns)) {
-                    pageData.customDropdowns.forEach(dropdownConfig => {
-                        createDropdownButton(dropdownConfig, page);
-                    });
-                }
-            });
-        }
-
-        function updateAdminPanel() {
-            if (isAdmin && adminErrors.length > 0) {
-                let panel = document.getElementById('admin-panel');
-                if (!panel) {
-                    panel = document.createElement('div');
-                    panel.id = 'admin-panel';
-                    document.body.appendChild(panel);
-                }
-                let errorList = '<h4>Обнаружены ошибки конфигурации:</h4><ul>';
-                adminErrors.forEach(err => {
-                    errorList += `<li>${err}</li>`;
+                    pageViewer.appendChild(page);
+                    if (pageData.customDropdowns && Array.isArray(pageData.customDropdowns)) {
+                        pageData.customDropdowns.forEach(dropdownConfig => {
+                            createDropdownButton(dropdownConfig, page);
+                        });
+                    }
                 });
-                errorList += '</ul>';
-                panel.innerHTML = errorList;
             }
-        }
 
-        const mediaModal = document.getElementById('mediaModal');
-        const modalPhoto = document.getElementById('modalPhoto');
-        const modalVideo = document.getElementById('modalVideo');
-        const modalAudio = document.getElementById('modalAudio');
-        const modalText = document.getElementById('modalText');
-        const modalCarousel = document.getElementById('modalCarousel');
-        const modalIframe = document.getElementById('modalIframe');
-        const carouselPrevBtn = modalCarousel.querySelector('.prev');
-        const carouselNextBtn = modalCarousel.querySelector('.next');
-        let currentCarouselImages = [];
-        let currentCarouselIndex = 0;
-
-        function openConferenceModal() {
-            if (jitsiApi) return;
-
-            // --- БЛОК УВЕДОМЛЕНИЯ ---
-            if (CONFIG.notificationScriptUrl && CONFIG.notificationScriptUrl.startsWith('https')) {
-                const payload = {
-                    siteUrl: window.location.href,
-                    roomName: CONFIG.videoConference.roomName || 'Unknown Room'
-                };
-                fetch(CONFIG.notificationScriptUrl, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(payload)
-                }).catch(error => console.error('Ошибка отправки уведомления:', error));
-            }
-            // --- КОНЕЦ БЛОКА УВЕДОМЛЕНИЯ ---
-
-            const jitsiContainer = document.getElementById('jitsi-container');
-            [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => el.style.display = 'none');
-            jitsiContainer.style.display = 'block';
-
-            mediaModal.querySelector('.modal-header').textContent = 'Присоединение к видеоконференции...';
-            mediaModal.querySelector('.modal-footer').textContent = 'Вы можете включить/выключить камеру и микрофон внизу экрана.';
-            mediaModal.style.display = 'flex';
-
-            setTimeout(() => {
-                const options = {
-                    roomName: CONFIG.videoConference.roomName || 'MarmarisYachtVasilisaTestRoom',
-                    parentNode: jitsiContainer,
-                    configOverwrite: {
-                        startWithVideoMuted: true,
-                        startWithAudioMuted: false,
-                        prejoinPageEnabled: true
-                    },
-                    interfaceConfigOverwrite: {
-                        TOOLBAR_BUTTONS: [
-                            'microphone', 'camera', 'desktop', 'hangup', 'chat', 'raisehand', 'tileview'
-                        ],
+            function updateAdminPanel() {
+                if (isAdmin && adminErrors.length > 0) {
+                    let panel = document.getElementById('admin-panel');
+                    if (!panel) {
+                        panel = document.createElement('div');
+                        panel.id = 'admin-panel';
+                        document.body.appendChild(panel);
                     }
-                };
-
-                try {
-                    jitsiApi = new JitsiMeetExternalAPI("meet.jit.si", options);
-                    jitsiApi.addEventListener('readyToClose', () => {
-                        closeModal(mediaModal);
+                    let errorList = '<h4>Обнаружены ошибки конфигурации:</h4><ul>';
+                    adminErrors.forEach(err => {
+                        errorList += `<li>${err}</li>`;
                     });
-                } catch (error) {
-                    console.error("Не удалось запустить Jitsi API:", error);
-                    jitsiContainer.innerHTML = "Ошибка при запуске видеоконференции. Попробуйте обновить страницу.";
-                }
-            }, 100);
-        }
-
-        function openMediaModal(media) {
-            [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => {
-                el.style.display = 'none';
-                if (el.tagName === 'VIDEO' || el.tagName === 'AUDIO') {
-                    el.src = '';
-                    el.pause();
-                } else if (el.tagName === 'IMG' || el.tagName === 'IFRAME') {
-                    el.src = 'about:blank';
-                }
-            });
-            mediaModal.querySelector('.modal-header').textContent = media.headerText || '';
-            mediaModal.querySelector('.modal-footer').textContent = '';
-
-            if (media.type === 'carousel' && media.images && media.images.length > 0) {
-                currentCarouselImages = media.images;
-                currentCarouselIndex = 0;
-
-                function showCarouselSlide(index) {
-                    const wrapper = document.getElementById('carouselIframeWrapper');
-                    const iframe = document.getElementById('carouselIframe');
-                    const slideData = currentCarouselImages[index];
-                    if (!slideData || !slideData.url || !slideData.width || !slideData.height) {
-                        iframe.src = 'about:blank';
-                        return;
-                    }
-                    const containerWidth = wrapper.clientWidth;
-                    const containerHeight = wrapper.clientHeight;
-                    iframe.width = slideData.width;
-                    iframe.height = slideData.height;
-                    const scaleX = containerWidth / slideData.width;
-                    const scaleY = containerHeight / slideData.height;
-                    const scale = Math.min(scaleX, scaleY);
-                    iframe.style.transform = `scale(${scale})`;
-                    iframe.src = slideData.url;
-                    mediaModal.querySelector('.modal-footer').textContent = slideData.caption || '';
-                    carouselPrevBtn.style.visibility = (index === 0) ? 'hidden' : 'visible';
-                    carouselNextBtn.style.visibility = (index === currentCarouselImages.length - 1) ? 'hidden' : 'visible';
-                }
-                carouselPrevBtn.onclick = () => {
-                    if (currentCarouselIndex > 0) {
-                        currentCarouselIndex--;
-                        showCarouselSlide(currentCarouselIndex);
-                    }
-                };
-                carouselNextBtn.onclick = () => {
-                    if (currentCarouselIndex < currentCarouselImages.length - 1) {
-                        currentCarouselIndex++;
-                        showCarouselSlide(currentCarouselIndex);
-                    }
-                };
-                modalCarousel.style.display = 'flex';
-                setTimeout(() => {
-                    showCarouselSlide(0);
-                }, 50);
-            } else {
-                mediaModal.querySelector('.modal-footer').textContent = media.footerText || '';
-                let contentElement;
-                if (media.type === 'iframe') {
-                    if (media.width && media.height) {
-                        modalIframe.style.aspectRatio = `${media.width} / ${media.height}`;
-                        modalIframe.style.width = 'auto';
-                        modalIframe.style.height = 'auto';
-                    } else {
-                        modalIframe.style.aspectRatio = '16 / 9';
-                        modalIframe.style.width = '90%';
-                        modalIframe.style.height = '80%';
-                    }
-                    modalIframe.src = media.url;
-                    modalIframe.style.display = 'block';
-                } else if (media.type === 'blokiframe') {
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = media.iframeCode.trim();
-                    const tempIframe = tempDiv.firstChild;
-                    if (tempIframe && tempIframe.tagName === 'IFRAME' && tempIframe.src) {
-                        modalIframe.style.aspectRatio = '16 / 9';
-                        modalIframe.style.width = '90%';
-                        modalIframe.style.height = 'auto';
-                        modalIframe.src = tempIframe.src;
-                        modalIframe.style.display = 'block';
-                    } else if (isAdmin) {
-                        alert('Ошибка в коде для blokiframe: ' + media.iframeCode);
-                    }
-                } else if (media.type === 'photo') {
-                    contentElement = modalPhoto;
-                } else if (media.type === 'video') {
-                    if (media.url.includes('youtu.be') || media.url.includes('youtube.com')) {
-                        const videoId = media.url.split('v=')[1] || media.url.split('/').pop().split('?')[0];
-                        const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-                        modalIframe.style.aspectRatio = '16 / 9';
-                        modalIframe.style.width = '90%';
-                        modalIframe.style.height = 'auto';
-                        modalIframe.src = embedUrl;
-                        modalIframe.style.display = 'block';
-                    } else {
-                        contentElement = modalVideo;
-                    }
-                } else if (media.type === 'audio') {
-                    contentElement = modalAudio;
-                } else if (media.type === 'text') {
-                    contentElement = modalText;
-                }
-                if (contentElement) {
-                    if (media.type === 'text') {
-                        contentElement.innerHTML = '<em>Загрузка...</em>';
-                        fetch(media.url).then(res => res.text()).then(text => contentElement.innerHTML = text).catch(err => contentElement.innerHTML = '<strong>Ошибка загрузки.</strong>');
-                    } else {
-                        contentElement.src = media.url;
-                    }
-                    contentElement.style.display = 'block';
-                    if ((media.type === 'video' || media.type === 'audio')) {
-                        contentElement.play();
-                    }
+                    errorList += '</ul>';
+                    panel.innerHTML = errorList;
                 }
             }
-            mediaModal.style.display = 'flex';
-        }
-        const bookingModal = document.getElementById('bookingModal');
-        const bookingFrame = document.getElementById('bookingFrame');
 
-        function closeModal(modal) {
-            modal.style.display = 'none';
-            if (modal.id === 'mediaModal') {
-                if (jitsiApi) {
-                    jitsiApi.dispose();
-                    jitsiApi = null;
+            const mediaModal = document.getElementById('mediaModal');
+            const modalPhoto = document.getElementById('modalPhoto');
+            const modalVideo = document.getElementById('modalVideo');
+            const modalAudio = document.getElementById('modalAudio');
+            const modalText = document.getElementById('modalText');
+            const modalCarousel = document.getElementById('modalCarousel');
+            const modalIframe = document.getElementById('modalIframe');
+            const carouselPrevBtn = modalCarousel.querySelector('.prev');
+            const carouselNextBtn = modalCarousel.querySelector('.next');
+            let currentCarouselImages = [];
+            let currentCarouselIndex = 0;
+
+            function openConferenceModal() {
+                if (jitsiApi) return;
+
+                // --- БЛОК УВЕДОМЛЕНИЯ ---
+                if (CONFIG.notificationScriptUrl && CONFIG.notificationScriptUrl.startsWith('https')) {
+                    const payload = {
+                        siteUrl: window.location.href,
+                        roomName: CONFIG.videoConference.roomName || 'Unknown Room'
+                    };
+                    fetch(CONFIG.notificationScriptUrl, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify(payload)
+                    }).catch(error => console.error('Ошибка отправки уведомления:', error));
                 }
+                // --- КОНЕЦ БЛОКА УВЕДОМЛЕНИЯ ---
+
                 const jitsiContainer = document.getElementById('jitsi-container');
-                if(jitsiContainer) {
-                    jitsiContainer.style.display = 'none';
-                    jitsiContainer.innerHTML = '';
-                }
+                [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => el.style.display = 'none');
+                jitsiContainer.style.display = 'block';
+
+                mediaModal.querySelector('.modal-header').textContent = 'Присоединение к видеоконференции...';
+                mediaModal.querySelector('.modal-footer').textContent = 'Вы можете включить/выключить камеру и микрофон внизу экрана.';
+                mediaModal.style.display = 'flex';
+
+                setTimeout(() => {
+                    const options = {
+                        roomName: CONFIG.videoConference.roomName || 'MarmarisYachtVasilisaTestRoom',
+                        parentNode: jitsiContainer,
+                        configOverwrite: {
+                            startWithVideoMuted: true,
+                            startWithAudioMuted: false,
+                            prejoinPageEnabled: true
+                        },
+                        interfaceConfigOverwrite: {
+                            TOOLBAR_BUTTONS: [
+                                'microphone', 'camera', 'desktop', 'hangup', 'chat', 'raisehand', 'tileview'
+                            ],
+                        }
+                    };
+
+                    try {
+                        jitsiApi = new JitsiMeetExternalAPI("meet.jit.si", options);
+                        jitsiApi.addEventListener('readyToClose', () => {
+                            closeModal(mediaModal);
+                        });
+                    } catch (error) {
+                        console.error("Не удалось запустить Jitsi API:", error);
+                        jitsiContainer.innerHTML = "Ошибка при запуске видеоконференции. Попробуйте обновить страницу.";
+                    }
+                }, 100);
+            }
+
+            function openMediaModal(media) {
                 [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => {
                     el.style.display = 'none';
                     if (el.tagName === 'VIDEO' || el.tagName === 'AUDIO') {
-                        el.pause();
                         el.src = '';
+                        el.pause();
                     } else if (el.tagName === 'IMG' || el.tagName === 'IFRAME') {
                         el.src = 'about:blank';
                     }
                 });
-            }
-            if (modal.id === 'bookingModal') {
-                bookingFrame.src = '';
-            }
-        }
-        mediaModal.querySelector('.modal-close').onclick = () => closeModal(mediaModal);
-        bookingModal.querySelector('.modal-close').onclick = () => closeModal(bookingModal);
+                mediaModal.querySelector('.modal-header').textContent = media.headerText || '';
+                mediaModal.querySelector('.modal-footer').textContent = '';
 
-        function openBookingModal() {
-            if (!CONFIG.bookingUrl && isAdmin) {
-                alert('URL формы бронирования не указан в CONFIG');
-                return;
-            }
-            document.getElementById('iframe-wrapper').style.height = '90vh';
-            bookingFrame.src = CONFIG.bookingUrl;
-            bookingModal.style.display = 'flex';
-        }
-        document.getElementById('bookingBtn').onclick = openBookingModal;
-        window.addEventListener('message', function(event) {
-            if (event.data && event.data.type === 'formHeight') {
-                const wrapper = document.getElementById('iframe-wrapper');
-                const padding = parseInt(getComputedStyle(wrapper).paddingTop) * 2;
-                wrapper.style.height = (event.data.height + padding + 5) + 'px';
-            }
-        });
+                if (media.type === 'carousel' && media.images && media.images.length > 0) {
+                    currentCarouselImages = media.images;
+                    currentCarouselIndex = 0;
 
-        function showPage(pageNumber) {
-            if (pageNumber < 1 || pageNumber > publishedPages.length) return;
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelector(`.page[data-page-number="${pageNumber}"]`).classList.add('active');
-            currentPage = pageNumber;
-            updateButtonsAndIndicator();
-        }
-
-        function updateButtonsAndIndicator() {
-            if (!isFeedMode) {
-                prevBtn.parentElement.style.display = isCoverActive ? 'none' : 'flex';
-                pageIndicator.textContent = isCoverActive ? `0 / ${publishedPages.length}` : `${currentPage} / ${publishedPages.length}`;
-            }
-        }
-
-        function getPageStartTime(pageNumber) {
-            if (pageNumber <= 1) return 0;
-            return publishedPages[pageNumber - 2].narrationEndTime;
-        }
-
-        function scrollToPage(pageNum) {
-            const targetPage = document.querySelector(`.page[data-page-number="${pageNum}"]`);
-            if (targetPage) {
-                targetPage.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        }
-
-        playPauseBtn.addEventListener('click', () => {
-            if (isFeedMode && isCoverActive) {
-                isNarratorModeActive = true;
-                isCoverActive = false;
-                scrollToPage(1);
-                const firstPage = document.querySelector('.page[data-page-number="1"] details');
-                if (firstPage && !firstPage.open) {
-                    firstPage.open = true;
-                }
-                audioPlayer.currentTime = 0;
-                audioPlayer.play();
-            } else if (!isFeedMode && isCoverActive) {
-                coverView.style.display = 'none';
-                bookView.style.display = 'flex';
-                isCoverActive = false;
-                showPage(1);
-                audioPlayer.currentTime = 0;
-                audioPlayer.play();
-            } else {
-                if (isPlaying) {
-                    audioPlayer.pause();
-                    if (isFeedMode) isNarratorModeActive = false;
+                    function showCarouselSlide(index) {
+                        const wrapper = document.getElementById('carouselIframeWrapper');
+                        const iframe = document.getElementById('carouselIframe');
+                        const slideData = currentCarouselImages[index];
+                        if (!slideData || !slideData.url || !slideData.width || !slideData.height) {
+                            iframe.src = 'about:blank';
+                            return;
+                        }
+                        const containerWidth = wrapper.clientWidth;
+                        const containerHeight = wrapper.clientHeight;
+                        iframe.width = slideData.width;
+                        iframe.height = slideData.height;
+                        const scaleX = containerWidth / slideData.width;
+                        const scaleY = containerHeight / slideData.height;
+                        const scale = Math.min(scaleX, scaleY);
+                        iframe.style.transform = `scale(${scale})`;
+                        iframe.src = slideData.url;
+                        mediaModal.querySelector('.modal-footer').textContent = slideData.caption || '';
+                        carouselPrevBtn.style.visibility = (index === 0) ? 'hidden' : 'visible';
+                        carouselNextBtn.style.visibility = (index === currentCarouselImages.length - 1) ? 'hidden' : 'visible';
+                    }
+                    carouselPrevBtn.onclick = () => {
+                        if (currentCarouselIndex > 0) {
+                            currentCarouselIndex--;
+                            showCarouselSlide(currentCarouselIndex);
+                        }
+                    };
+                    carouselNextBtn.onclick = () => {
+                        if (currentCarouselIndex < currentCarouselImages.length - 1) {
+                            currentCarouselIndex++;
+                            showCarouselSlide(currentCarouselIndex);
+                        }
+                    };
+                    modalCarousel.style.display = 'flex';
+                    setTimeout(() => {
+                        showCarouselSlide(0);
+                    }, 50);
                 } else {
-                    audioPlayer.play();
-                    if (isFeedMode) isNarratorModeActive = true;
+                    mediaModal.querySelector('.modal-footer').textContent = media.footerText || '';
+                    let contentElement;
+                    if (media.type === 'iframe') {
+                        if (media.width && media.height) {
+                            modalIframe.style.aspectRatio = `${media.width} / ${media.height}`;
+                            modalIframe.style.width = 'auto';
+                            modalIframe.style.height = 'auto';
+                        } else {
+                            modalIframe.style.aspectRatio = '16 / 9';
+                            modalIframe.style.width = '90%';
+                            modalIframe.style.height = '80%';
+                        }
+                        modalIframe.src = media.url;
+                        modalIframe.style.display = 'block';
+                    } else if (media.type === 'blokiframe') {
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = media.iframeCode.trim();
+                        const tempIframe = tempDiv.firstChild;
+                        if (tempIframe && tempIframe.tagName === 'IFRAME' && tempIframe.src) {
+                            modalIframe.style.aspectRatio = '16 / 9';
+                            modalIframe.style.width = '90%';
+                            modalIframe.style.height = 'auto';
+                            modalIframe.src = tempIframe.src;
+                            modalIframe.style.display = 'block';
+                        } else if (isAdmin) {
+                            alert('Ошибка в коде для blokiframe: ' + media.iframeCode);
+                        }
+                    } else if (media.type === 'photo') {
+                        contentElement = modalPhoto;
+                    } else if (media.type === 'video') {
+                        if (media.url.includes('youtu.be') || media.url.includes('youtube.com')) {
+                            const videoId = media.url.split('v=')[1] || media.url.split('/').pop().split('?')[0];
+                            const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                            modalIframe.style.aspectRatio = '16 / 9';
+                            modalIframe.style.width = '90%';
+                            modalIframe.style.height = 'auto';
+                            modalIframe.src = embedUrl;
+                            modalIframe.style.display = 'block';
+                        } else {
+                            contentElement = modalVideo;
+                        }
+                    } else if (media.type === 'audio') {
+                        contentElement = modalAudio;
+                    } else if (media.type === 'text') {
+                        contentElement = modalText;
+                    }
+                    if (contentElement) {
+                        if (media.type === 'text') {
+                            contentElement.innerHTML = '<em>Загрузка...</em>';
+                            fetch(media.url).then(res => res.text()).then(text => contentElement.innerHTML = text).catch(err => contentElement.innerHTML = '<strong>Ошибка загрузки.</strong>');
+                        } else {
+                            contentElement.src = media.url;
+                        }
+                        contentElement.style.display = 'block';
+                        if ((media.type === 'video' || media.type === 'audio')) {
+                            contentElement.play();
+                        }
+                    }
+                }
+                mediaModal.style.display = 'flex';
+            }
+            const bookingModal = document.getElementById('bookingModal');
+            const bookingFrame = document.getElementById('bookingFrame');
+
+            function closeModal(modal) {
+                modal.style.display = 'none';
+                if (modal.id === 'mediaModal') {
+                    if (jitsiApi) {
+                        jitsiApi.dispose();
+                        jitsiApi = null;
+                    }
+                    const jitsiContainer = document.getElementById('jitsi-container');
+                    if(jitsiContainer) {
+                        jitsiContainer.style.display = 'none';
+                        jitsiContainer.innerHTML = '';
+                    }
+                    [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => {
+                        el.style.display = 'none';
+                        if (el.tagName === 'VIDEO' || el.tagName === 'AUDIO') {
+                            el.pause();
+                            el.src = '';
+                        } else if (el.tagName === 'IMG' || el.tagName === 'IFRAME') {
+                            el.src = 'about:blank';
+                        }
+                    });
+                }
+                if (modal.id === 'bookingModal') {
+                    bookingFrame.src = '';
                 }
             }
-        });
-        audioPlayer.onplaying = () => {
-            isPlaying = true;
-            playPauseBtn.textContent = '❚❚';
-        };
-        audioPlayer.onpause = () => {
-            isPlaying = false;
-            playPauseBtn.textContent = '▶';
-        };
-        audioPlayer.onended = () => {
-            isPlaying = false;
-            playPauseBtn.textContent = '▶';
-            if (isFeedMode) {
-                isNarratorModeActive = false;
-                const lastPage = document.querySelector(`.page[data-page-number="${currentPage}"] details`);
-                if (lastPage) lastPage.open = false;
-                document.getElementById('cover-view').scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-                isCoverActive = true;
-                currentPage = 1;
-            } else {
-                showPage(1);
-            }
-        };
+            mediaModal.querySelector('.modal-close').onclick = () => closeModal(mediaModal);
+            bookingModal.querySelector('.modal-close').onclick = () => closeModal(bookingModal);
 
-        nextBtn.addEventListener('click', () => {
-            if (!isFeedMode) {
-                if (isCoverActive) {
+            function openBookingModal() {
+                if (!CONFIG.bookingUrl && isAdmin) {
+                    alert('URL формы бронирования не указан в CONFIG');
+                    return;
+                }
+                document.getElementById('iframe-wrapper').style.height = '90vh';
+                bookingFrame.src = CONFIG.bookingUrl;
+                bookingModal.style.display = 'flex';
+            }
+            document.getElementById('bookingBtn').onclick = openBookingModal;
+            window.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'formHeight') {
+                    const wrapper = document.getElementById('iframe-wrapper');
+                    const padding = parseInt(getComputedStyle(wrapper).paddingTop) * 2;
+                    wrapper.style.height = (event.data.height + padding + 5) + 'px';
+                }
+            });
+
+            function showPage(pageNumber) {
+                if (pageNumber < 1 || pageNumber > publishedPages.length) return;
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.querySelector(`.page[data-page-number="${pageNumber}"]`).classList.add('active');
+                currentPage = pageNumber;
+                updateButtonsAndIndicator();
+            }
+
+            function updateButtonsAndIndicator() {
+                if (!isFeedMode) {
+                    prevBtn.parentElement.style.display = isCoverActive ? 'none' : 'flex';
+                    pageIndicator.textContent = isCoverActive ? `0 / ${publishedPages.length}` : `${currentPage} / ${publishedPages.length}`;
+                }
+            }
+
+            function getPageStartTime(pageNumber) {
+                if (pageNumber <= 1) return 0;
+                return publishedPages[pageNumber - 2].narrationEndTime;
+            }
+
+            function scrollToPage(pageNum) {
+                const targetPage = document.querySelector(`.page[data-page-number="${pageNum}"]`);
+                if (targetPage) {
+                    targetPage.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }
+
+            playPauseBtn.addEventListener('click', () => {
+                if (isFeedMode && isCoverActive) {
+                    isNarratorModeActive = true;
+                    isCoverActive = false;
+                    scrollToPage(1);
+                    const firstPage = document.querySelector('.page[data-page-number="1"] details');
+                    if (firstPage && !firstPage.open) {
+                        firstPage.open = true;
+                    }
+                    audioPlayer.currentTime = 0;
+                    audioPlayer.play();
+                } else if (!isFeedMode && isCoverActive) {
                     coverView.style.display = 'none';
                     bookView.style.display = 'flex';
                     isCoverActive = false;
                     showPage(1);
-                } else if (currentPage < publishedPages.length) {
-                    const nextPage = currentPage + 1;
-                    showPage(nextPage);
-                    audioPlayer.currentTime = getPageStartTime(nextPage);
-                }
-            }
-        });
-        prevBtn.addEventListener('click', () => {
-            if (!isFeedMode) {
-                if (isCoverActive) return;
-                if (currentPage > 1) {
-                    const prevPage = currentPage - 1;
-                    showPage(prevPage);
-                    audioPlayer.currentTime = getPageStartTime(prevPage);
+                    audioPlayer.currentTime = 0;
+                    audioPlayer.play();
                 } else {
-                    bookView.style.display = 'none';
-                    coverView.style.display = 'flex';
-                    isCoverActive = true;
-                    audioPlayer.pause();
-                    updateButtonsAndIndicator();
+                    if (isPlaying) {
+                        audioPlayer.pause();
+                        if (isFeedMode) isNarratorModeActive = false;
+                    } else {
+                        audioPlayer.play();
+                        if (isFeedMode) isNarratorModeActive = true;
+                    }
                 }
-            }
-        });
-
-        audioPlayer.addEventListener('timeupdate', () => {
-            if (isCoverActive) return;
-            const isAutoPilot = (isFeedMode && isNarratorModeActive) || (!isFeedMode && CONFIG.isContinuousPlayback);
-            if (isAutoPilot && isPlaying) {
-                const currentTime = audioPlayer.currentTime;
-                const targetPageData = publishedPages.find((p, index) => {
-                    const startTime = getPageStartTime(index + 1);
-                    return currentTime >= startTime && currentTime < p.narrationEndTime;
-                });
-                if (!targetPageData) return;
-                const newPageNum = publishedPages.indexOf(targetPageData) + 1;
-
+            });
+            audioPlayer.onplaying = () => {
+                isPlaying = true;
+                playPauseBtn.textContent = '❚❚';
+            };
+            audioPlayer.onpause = () => {
+                isPlaying = false;
+                playPauseBtn.textContent = '▶';
+            };
+            audioPlayer.onended = () => {
+                isPlaying = false;
+                playPauseBtn.textContent = '▶';
                 if (isFeedMode) {
-                    if (newPageNum !== currentPage) {
-                        const prevPageDetails = document.querySelector(`.page[data-page-number="${currentPage}"] details`);
-                        if (prevPageDetails && prevPageDetails.open) prevPageDetails.open = false;
-                        const newPageDetails = document.querySelector(`.page[data-page-number="${newPageNum}"] details`);
-                        if (newPageDetails && !newPageDetails.open) newPageDetails.open = true;
-                        scrollToPage(newPageNum);
-                        currentPage = newPageNum;
-                    }
+                    isNarratorModeActive = false;
+                    const lastPage = document.querySelector(`.page[data-page-number="${currentPage}"] details`);
+                    if (lastPage) lastPage.open = false;
+                    document.getElementById('cover-view').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    isCoverActive = true;
+                    currentPage = 1;
                 } else {
-                    if (newPageNum !== currentPage) {
-                        showPage(newPageNum);
+                    showPage(1);
+                }
+            };
+
+            nextBtn.addEventListener('click', () => {
+                if (!isFeedMode) {
+                    if (isCoverActive) {
+                        coverView.style.display = 'none';
+                        bookView.style.display = 'flex';
+                        isCoverActive = false;
+                        showPage(1);
+                    } else if (currentPage < publishedPages.length) {
+                        const nextPage = currentPage + 1;
+                        showPage(nextPage);
+                        audioPlayer.currentTime = getPageStartTime(nextPage);
                     }
                 }
+            });
+            prevBtn.addEventListener('click', () => {
+                if (!isFeedMode) {
+                    if (isCoverActive) return;
+                    if (currentPage > 1) {
+                        const prevPage = currentPage - 1;
+                        showPage(prevPage);
+                        audioPlayer.currentTime = getPageStartTime(prevPage);
+                    } else {
+                        bookView.style.display = 'none';
+                        coverView.style.display = 'flex';
+                        isCoverActive = true;
+                        audioPlayer.pause();
+                        updateButtonsAndIndicator();
+                    }
+                }
+            });
+
+            audioPlayer.addEventListener('timeupdate', () => {
+                if (isCoverActive) return;
+                const isAutoPilot = (isFeedMode && isNarratorModeActive) || (!isFeedMode && CONFIG.isContinuousPlayback);
+                if (isAutoPilot && isPlaying) {
+                    const currentTime = audioPlayer.currentTime;
+                    const targetPageData = publishedPages.find((p, index) => {
+                        const startTime = getPageStartTime(index + 1);
+                        return currentTime >= startTime && currentTime < p.narrationEndTime;
+                    });
+                    if (!targetPageData) return;
+                    const newPageNum = publishedPages.indexOf(targetPageData) + 1;
+
+                    if (isFeedMode) {
+                        if (newPageNum !== currentPage) {
+                            const prevPageDetails = document.querySelector(`.page[data-page-number="${currentPage}"] details`);
+                            if (prevPageDetails && prevPageDetails.open) prevPageDetails.open = false;
+                            const newPageDetails = document.querySelector(`.page[data-page-number="${newPageNum}"] details`);
+                            if (newPageDetails && !newPageDetails.open) newPageDetails.open = true;
+                            scrollToPage(newPageNum);
+                            currentPage = newPageNum;
+                        }
+                    } else {
+                        if (newPageNum !== currentPage) {
+                            showPage(newPageNum);
+                        }
+                    }
+                }
+            });
+            
+             // --- ЛОГИКА КОНСТРУКТОРА ДЛЯ АДМИНА ---
+            function setupAdminConstructor() {
+                if (!isAdmin) return;
+
+                const editBtn = document.getElementById('edit-config-btn');
+                const modal = document.getElementById('admin-config-modal');
+                const textarea = document.getElementById('config-textarea');
+                const saveBtn = document.getElementById('save-config-btn');
+                const copyBtn = document.getElementById('copy-config-btn');
+                const closeBtn = document.getElementById('close-config-btn');
+
+                editBtn.style.display = 'block';
+
+                editBtn.addEventListener('click', () => {
+                    // Форматируем JSON для удобочитаемости
+                    textarea.value = JSON.stringify(CONFIG, null, 2);
+                    modal.style.display = 'flex';
+                });
+
+                closeBtn.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                });
+
+                saveBtn.addEventListener('click', () => {
+                    try {
+                        // Проверяем, что введенный текст - валидный JSON
+                        JSON.parse(textarea.value);
+                        // Сохраняем в localStorage
+                        localStorage.setItem('customConfig', textarea.value);
+                        alert('Конфигурация временно сохранена! Страница будет перезагружена.');
+                        window.location.reload();
+                    } catch (e) {
+                        alert('Ошибка в синтаксисе JSON! Проверьте код и попробуйте снова.\n\n' + e.message);
+                    }
+                });
+                
+                copyBtn.addEventListener('click', () => {
+                    textarea.select();
+                    document.execCommand('copy');
+                    alert('Код конфигурации скопирован в буфер обмена. Теперь вы можете вставить его в ваш HTML-файл.');
+                });
+            }
+
+            // --- ЗАПУСК ПРИЛОЖЕНИЯ ---
+            function setupConferenceButton() {
+                const confConfig = CONFIG.videoConference;
+                const wrapper = document.getElementById('conferenceBtnWrapper');
+                if (confConfig && confConfig.enabled) {
+                    wrapper.style.display = 'flex';
+                    conferenceBtn.title = confConfig.tooltip || 'Видеоконференция';
+                    wrapper.querySelector('.button-label').textContent = confConfig.buttonText || 'эфир';
+                    conferenceBtn.onclick = openConferenceModal;
+                } else {
+                    wrapper.style.display = 'none';
+                }
+            }
+
+            setupCover();
+            setupBookPages();
+            setupConferenceButton();
+            updateAdminPanel();
+            updateButtonsAndIndicator();
+            setupAdminConstructor(); // Запускаем конструктор, если это админ
+
+            if (isFeedMode) {
+                if (prevBtn) prevBtn.parentElement.style.display = 'none';
+                if (nextBtn) nextBtn.parentElement.style.display = 'none';
+                if (pageIndicator) pageIndicator.style.display = 'none';
             }
         });
-
-        // --- ЗАПУСК ПРИЛОЖЕНИЯ ---
-        function setupConferenceButton() {
-            const confConfig = CONFIG.videoConference;
-            const wrapper = document.getElementById('conferenceBtnWrapper');
-            if (confConfig && confConfig.enabled) {
-                wrapper.style.display = 'flex';
-                conferenceBtn.title = confConfig.tooltip || 'Видеоконференция';
-                wrapper.querySelector('.button-label').textContent = confConfig.buttonText || 'эфир';
-                conferenceBtn.onclick = openConferenceModal;
-            } else {
-                wrapper.style.display = 'none';
-            }
-        }
-
-        setupCover();
-        setupBookPages();
-        setupConferenceButton();
-        updateAdminPanel();
-        updateButtonsAndIndicator();
-
-        if (isFeedMode) {
-            if (prevBtn) prevBtn.parentElement.style.display = 'none';
-            if (nextBtn) nextBtn.parentElement.style.display = 'none';
-            if (pageIndicator) pageIndicator.style.display = 'none';
-        }
-    });
     </script>
 </body>
 
