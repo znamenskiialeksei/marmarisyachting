@@ -334,8 +334,8 @@
         /* --- СТИЛИ ДЛЯ СТРАНИЦ КОНТЕНТА ("КНИГИ") --- */
         .page {
             /* Основной контейнер для одной страницы */
-            position: absolute;
-            /* Абсолютное позиционирование внутри .page-viewer, страницы накладываются друг на друга */
+            position: relative;
+            /* Страницы располагаются относительно .page-viewer */
             width: 100%;
             /* На всю ширину родителя */
             height: 100%;
@@ -358,8 +358,6 @@
             /* Плавный переход при смене страниц */
             background: white;
             /* Белый фон страницы */
-            /* `position: relative` ниже был бы избыточен, т.к. уже стоит `absolute`, но оставлен как в оригинале */
-            position: relative;
         }
 
         .page.active {
@@ -780,7 +778,7 @@
             border-radius: 4px;
         }
         .CodeMirror-lint-marker-error {
-             background-image: none;
+            background-image: none;
         }
 
         .admin-modal-bottom-panel {
@@ -799,13 +797,13 @@
         }
 
         .admin-modal-buttons button {
-             padding: 10px 20px;
-             border: none;
-             border-radius: 5px;
-             cursor: pointer;
-             font-weight: bold;
-             transition: background-color 0.2s;
-         }
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
 
         .btn-primary { background-color: #007bff; color: white; }
         .btn-primary:hover { background-color: #0069d9; }
@@ -872,8 +870,8 @@
         }
         
         #scratchpad-window .CodeMirror {
-             flex-grow: 1; /* Растягивает редактор */
-             height: 100%;
+            flex-grow: 1; /* Растягивает редактор */
+            height: 100%;
         }
 
         /* --- СТИЛИ ДЛЯ НИЖНЕЙ ПАНЕЛИ УПРАВЛЕНИЯ --- */
@@ -1569,7 +1567,7 @@
         /* Начало блока JavaScript */
 
         // Определяем, является ли пользователь админом, ДО всех остальных операций
-        const isAdmin = new URLSearchParams(window.location.search).get('admin') === 'true09011';
+        const isAdmin = new URLSearchParams(window.location.search).get('admin') === 'true0901';
 
         /*--CONFIG_START--*/
         // Используйте этот объект для всей конфигурации.
@@ -1645,7 +1643,7 @@
 
             // Настройки эффекта "пульсации" для кнопок на обложке.
             pulsingEffect: {
-                enabled: true,       // true - включить эффект.
+                enabled: true,      // true - включить эффект.
                 fadeInDuration: 0.5, // Длительность появления (в секундах).
                 visibleDuration: 4.0,// Длительность в видимом состоянии.
                 fadeOutDuration: 0.5,// Длительность исчезновения.
@@ -2029,6 +2027,14 @@
             // ====================================================================================================
             // --- ГЛАВНЫЙ ОБЪЕКТ КОНФИГУРАЦИИ (CONFIG) ---
             // ====================================================================================================
+            
+            // --- ИЗМЕНЕНИЕ #1: Очистка кэша при выходе из режима администратора ---
+            // Если пользователь НЕ админ, очищаем кастомную конфигурацию из localStorage,
+            // чтобы он гарантированно увидел версию по умолчанию.
+            if (!isAdmin && localStorage.getItem('customConfig')) {
+                localStorage.removeItem('customConfig');
+                console.log('Выход из режима администратора. Кастомная конфигурация очищена.');
+            }
             
             let defaultConfigString;
             let CONFIG;
@@ -2845,21 +2851,28 @@
                 editBtn.style.display = 'block';
                 editBtn.addEventListener('click', () => {
                     modal.style.display = 'flex';
+                    
+                    // --- ИЗМЕНЕНИЕ #2: Всегда загружать актуальный код в редактор ---
+                    // Получаем самую свежую версию из localStorage или используем код по умолчанию.
+                    const currentConfigInStorage = localStorage.getItem('customConfig');
+                    const editorContent = currentConfigInStorage ? currentConfigInStorage : defaultConfigString;
+
                     if (!mainEditor) {
                         mainEditor = CodeMirror.fromTextArea(mainTextarea, editorOptions);
                         
-                        // Добавляем обработчик события 'change' для автоматической перерисовки подсветки
                         mainEditor.on('change', function(cm) {
                             if (cm.state.highlightTimeout) clearTimeout(cm.state.highlightTimeout);
-                            // Используем небольшую задержку, чтобы не перегружать браузер при быстрой печати
                             cm.state.highlightTimeout = setTimeout(() => highlightSpecificValues(cm), 300);
                         });
                     }
-                    mainEditor.setValue(effectiveConfigString); // Загружаем строку с комментариями
+                    
+                    // Устанавливаем актуальное содержимое в редактор
+                    mainEditor.setValue(editorContent); 
+                    
                     populateVersionsDropdown();
                     setTimeout(() => {
                         mainEditor.refresh();
-                        highlightSpecificValues(mainEditor); // Применяем подсветку при открытии
+                        highlightSpecificValues(mainEditor);
                     }, 1);
                 });
 
@@ -2867,7 +2880,6 @@
                 saveForTestBtn.onclick = () => {
                     try {
                         const codeToTest = mainEditor.getValue();
-                        // Проверка синтаксиса перед сохранением
                         new Function('return ' + codeToTest); 
                         localStorage.setItem('customConfig', codeToTest);
                         alert('Конфигурация временно сохранена! Страница будет перезагружена.');
@@ -2914,7 +2926,6 @@
                     }
                 };
                 
-                // --- НОВАЯ КНОПКА: ФОРМАТИРОВАНИЕ КОДА ---
                 formatCodeBtn.onclick = () => {
                     if (typeof js_beautify === 'undefined') {
                         alert('Библиотека для форматирования не загружена.');
@@ -3004,6 +3015,7 @@
 </body>
 
 </html>
+
 
 
 
