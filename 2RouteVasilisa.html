@@ -755,14 +755,16 @@
             gap: 15px;
         }
 
-        .admin-version-control {
+        .admin-version-control, .admin-tools {
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .admin-version-control select,
-        .admin-version-control button {
+        .admin-version-control button,
+        .admin-tools button {
             padding: 8px 12px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -774,9 +776,10 @@
             height: auto;
             flex-grow: 1;
             font-size: 14px;
+            border-radius: 4px;
         }
         .CodeMirror-lint-marker-error {
-             background-image: none; /* Можно добавить свою иконку */
+             background-image: none;
         }
 
         .admin-modal-bottom-panel {
@@ -791,6 +794,7 @@
         .admin-modal-bottom-panel .right-buttons {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .admin-modal-buttons button {
@@ -815,6 +819,61 @@
         .btn-danger { background-color: #dc3545; color: white; }
         .btn-danger:hover { background-color: #c82333; }
 
+        /* Стили для плавающего окна-блокнота */
+        #scratchpad-window {
+            display: none;
+            position: fixed;
+            z-index: 10003;
+            background-color: #f1f1f1;
+            border: 1px solid #d3d3d3;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            width: 600px;
+            height: 400px;
+            top: 20%;
+            left: 20%;
+            resize: both; /* Позволяет изменять размер */
+            overflow: hidden; /* Скрывает содержимое, выходящее за рамки */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #scratchpad-header {
+            padding: 10px;
+            cursor: move;
+            z-index: 10;
+            background-color: #2196F3;
+            color: white;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        #scratchpad-header-title {
+            font-weight: bold;
+        }
+
+        #scratchpad-close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #scratchpad-editor-container {
+            padding: 5px;
+            flex-grow: 1;
+            display: flex; /* Для корректной работы CodeMirror */
+        }
+        
+        #scratchpad-window .CodeMirror {
+             flex-grow: 1; /* Растягивает редактор */
+             height: 100%;
+        }
 
         /* --- СТИЛИ ДЛЯ НИЖНЕЙ ПАНЕЛИ УПРАВЛЕНИЯ --- */
         .controls {
@@ -1456,13 +1515,16 @@
             <div class="admin-modal-content">
                 <div class="admin-modal-top-panel">
                     <div class="admin-version-control">
-                        <select id="versions-dropdown"></select>
-                        <button id="load-version-btn" class="btn-info">Загрузить выбранное</button>
-                        <button id="delete-version-btn" class="btn-danger">Удалить выбранное</button>
+                        <select id="versions-dropdown" title="Сохраненные версии конфигурации"></select>
+                        <button id="load-version-btn" class="btn-info" title="Загрузить выбранную версию в редактор">Загрузить</button>
+                        <button id="delete-version-btn" class="btn-danger" title="Удалить выбранную версию">Удалить</button>
                     </div>
-                     <div class="admin-modal-buttons">
-                        <button id="undo-btn" class="btn-secondary">Отменить</button>
-                        <button id="redo-btn" class="btn-secondary">Вернуть</button>
+                     <div class="admin-tools">
+                        <button id="send-to-scratchpad-btn" class="btn-secondary" title="Отправить выделенный код в Блокнот">Отправить в Блокнот</button>
+                        <button id="get-from-scratchpad-btn" class="btn-secondary" title="Вставить код из Блокнота вместо выделенного">Вставить из Блокнота</button>
+                        <button id="open-scratchpad-btn" class="btn-secondary">Блокнот для кода</button>
+                        <button id="undo-btn" class="btn-secondary" title="Отменить последнее действие (Ctrl+Z)">Отменить</button>
+                        <button id="redo-btn" class="btn-secondary" title="Вернуть отмененное действие (Ctrl+Y)">Вернуть</button>
                     </div>
                 </div>
                 <textarea id="config-textarea"></textarea>
@@ -1471,11 +1533,20 @@
                         <button id="close-config-btn" class="btn-secondary">Закрыть</button>
                     </div>
                     <div class="right-buttons">
-                        <button id="save-as-btn" class="btn-primary">Сохранить как...</button>
-                        <button id="copy-config-btn" class="btn-warning">Копировать код</button>
-                        <button id="save-config-btn" class="btn-success">Сохранить и Перезагрузить</button>
+                        <button id="save-as-btn" class="btn-primary" title="Сохранить текущий код как новую именованную версию">Сохранить как...</button>
+                        <button id="copy-config-btn" class="btn-warning" title="Скопировать весь код для вставки в HTML-файл">Копировать код</button>
+                        <button id="save-config-btn" class="btn-success" title="Применить изменения для теста (сохраняет в браузере до следующего изменения)">Сохранить и Перезагрузить</button>
                     </div>
                 </div>
+            </div>
+        </div>
+         <div id="scratchpad-window" style="display: none;">
+            <div id="scratchpad-header">
+                <span id="scratchpad-header-title">Блокнот для кода</span>
+                <button id="scratchpad-close-btn">&times;</button>
+            </div>
+            <div id="scratchpad-editor-container">
+                <textarea id="scratchpad-textarea"></textarea>
             </div>
         </div>
     </div>
@@ -2540,136 +2611,155 @@
             function setupAdminConstructor() {
                 if (!isAdmin) return;
 
+                let mainEditor, scratchpadEditor;
+                const LS_VERSIONS_KEY = 'configVersions';
+                const LS_SCRATCHPAD_KEY = 'scratchpadContent';
+
+                // --- Элементы основного редактора ---
                 const editBtn = document.getElementById('edit-config-btn');
                 const modal = document.getElementById('admin-config-modal');
-                const textarea = document.getElementById('config-textarea');
-                
+                const mainTextarea = document.getElementById('config-textarea');
                 const saveForTestBtn = document.getElementById('save-config-btn');
                 const copyBtn = document.getElementById('copy-config-btn');
                 const closeBtn = document.getElementById('close-config-btn');
                 const undoBtn = document.getElementById('undo-btn');
                 const redoBtn = document.getElementById('redo-btn');
-                
                 const versionsDropdown = document.getElementById('versions-dropdown');
                 const loadVersionBtn = document.getElementById('load-version-btn');
                 const saveAsBtn = document.getElementById('save-as-btn');
                 const deleteVersionBtn = document.getElementById('delete-version-btn');
+
+                // --- Элементы Блокнота ---
+                const openScratchpadBtn = document.getElementById('open-scratchpad-btn');
+                const scratchpadWindow = document.getElementById('scratchpad-window');
+                const scratchpadHeader = document.getElementById('scratchpad-header');
+                const scratchpadCloseBtn = document.getElementById('scratchpad-close-btn');
+                const scratchpadTextarea = document.getElementById('scratchpad-textarea');
+                const sendToScratchpadBtn = document.getElementById('send-to-scratchpad-btn');
+                const getFromScratchpadBtn = document.getElementById('get-from-scratchpad-btn');
                 
-                let editor; // Переменная для хранения экземпляра CodeMirror
-
-                const LS_VERSIONS_KEY = 'configVersions';
-
-                function getSavedVersions() {
-                    return JSON.parse(localStorage.getItem(LS_VERSIONS_KEY) || '{}');
-                }
-
-                function saveVersions(versions) {
-                    localStorage.setItem(LS_VERSIONS_KEY, JSON.stringify(versions));
-                }
-                
+                // --- Функции для работы с версиями ---
+                function getSavedVersions() { return JSON.parse(localStorage.getItem(LS_VERSIONS_KEY) || '{}'); }
+                function saveVersions(versions) { localStorage.setItem(LS_VERSIONS_KEY, JSON.stringify(versions)); }
                 function populateVersionsDropdown() {
                     const versions = getSavedVersions();
-                    versionsDropdown.innerHTML = '<option value="">-- Выберите версию для загрузки --</option>';
-                    for (const id in versions) {
+                    versionsDropdown.innerHTML = '<option value="">-- Выберите версию --</option>';
+                    Object.keys(versions).sort((a,b) => b-a).forEach(id => {
                         const option = document.createElement('option');
                         option.value = id;
                         option.textContent = `${versions[id].name} (${new Date(parseInt(id)).toLocaleString()})`;
                         option.title = versions[id].comments;
                         versionsDropdown.appendChild(option);
-                    }
+                    });
                 }
 
-                editBtn.style.display = 'block';
+                // --- Инициализация редакторов ---
+                const editorOptions = {
+                    mode: { name: "javascript", json: true },
+                    theme: "material-darker",
+                    lineNumbers: true,
+                    autoCloseBrackets: true,
+                    lint: true,
+                    foldGutter: true,
+                    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"]
+                };
 
+                // --- Логика основного редактора ---
+                editBtn.style.display = 'block';
                 editBtn.addEventListener('click', () => {
                     modal.style.display = 'flex';
-                    if (!editor) {
-                        editor = CodeMirror.fromTextArea(textarea, {
-                            mode: {name: "javascript", json: true},
-                            theme: "material-darker",
-                            lineNumbers: true,
-                            autoCloseBrackets: true,
-                            lint: true,
-                            foldGutter: true,
-                            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"]
-                        });
+                    if (!mainEditor) {
+                        mainEditor = CodeMirror.fromTextArea(mainTextarea, editorOptions);
                     }
-                    editor.setValue(JSON.stringify(CONFIG, null, 2));
+                    mainEditor.setValue(JSON.stringify(CONFIG, null, 2));
                     populateVersionsDropdown();
-                    setTimeout(() => editor.refresh(), 1);
+                    setTimeout(() => mainEditor.refresh(), 1);
                 });
 
-                closeBtn.addEventListener('click', () => {
-                    modal.style.display = 'none';
-                });
-
-                saveForTestBtn.addEventListener('click', () => {
+                closeBtn.onclick = () => { modal.style.display = 'none'; };
+                saveForTestBtn.onclick = () => {
                     try {
-                        const code = editor.getValue();
-                        JSON.parse(code);
-                        localStorage.setItem('customConfig', code);
+                        localStorage.setItem('customConfig', mainEditor.getValue());
                         alert('Конфигурация временно сохранена! Страница будет перезагружена.');
                         window.location.reload();
-                    } catch (e) {
-                        alert('Ошибка в синтаксисе JSON! Проверьте код и попробуйте снова.\n\n' + e.message);
-                    }
-                });
-                
-                copyBtn.addEventListener('click', () => {
-                    navigator.clipboard.writeText(editor.getValue()).then(() => {
-                        alert('Код конфигурации скопирован в буфер обмена. Теперь вы можете вставить его в ваш HTML-файл.');
-                    });
-                });
+                    } catch (e) { alert('Ошибка в синтаксисе JSON!'); }
+                };
+                copyBtn.onclick = () => navigator.clipboard.writeText(mainEditor.getValue()).then(() => alert('Код скопирован.'));
+                undoBtn.onclick = () => mainEditor.undo();
+                redoBtn.onclick = () => mainEditor.redo();
 
-                undoBtn.addEventListener('click', () => editor.undo());
-                redoBtn.addEventListener('click', () => editor.redo());
-
-                saveAsBtn.addEventListener('click', () => {
-                    const name = prompt("Введите название для этой версии:", "Новая конфигурация");
+                saveAsBtn.onclick = () => {
+                    const name = prompt("Название версии:", "Новая конфигурация");
                     if (!name) return;
-                    const comments = prompt("Добавьте комментарий (необязательно):");
-                    
+                    const comments = prompt("Комментарий (необязательно):");
                     const versions = getSavedVersions();
                     const newId = Date.now();
-                    versions[newId] = {
-                        name: name,
-                        comments: comments || "",
-                        code: editor.getValue()
-                    };
+                    versions[newId] = { name, comments: comments || "", code: mainEditor.getValue() };
                     saveVersions(versions);
                     populateVersionsDropdown();
                     versionsDropdown.value = newId;
-                    alert(`Версия "${name}" сохранена.`);
-                });
-                
-                loadVersionBtn.addEventListener('click', () => {
-                    const selectedId = versionsDropdown.value;
-                    if (!selectedId) {
-                        alert("Пожалуйста, выберите версию из списка.");
-                        return;
-                    }
-                    const versions = getSavedVersions();
-                    if(versions[selectedId]) {
-                        editor.setValue(versions[selectedId].code);
-                        alert(`Версия "${versions[selectedId].name}" загружена в редактор.`);
-                    }
-                });
+                };
 
-                deleteVersionBtn.addEventListener('click', () => {
-                    const selectedId = versionsDropdown.value;
-                     if (!selectedId) {
-                        alert("Пожалуйста, выберите версию для удаления.");
-                        return;
-                    }
+                loadVersionBtn.onclick = () => {
+                    const id = versionsDropdown.value;
+                    if (!id) return;
                     const versions = getSavedVersions();
-                    const versionName = versions[selectedId].name;
-                    if (confirm(`Вы уверены, что хотите удалить версию "${versionName}"?`)) {
-                        delete versions[selectedId];
+                    if (versions[id]) mainEditor.setValue(versions[id].code);
+                };
+
+                deleteVersionBtn.onclick = () => {
+                    const id = versionsDropdown.value;
+                    if (!id) return;
+                    const versions = getSavedVersions();
+                    if (versions[id] && confirm(`Удалить версию "${versions[id].name}"?`)) {
+                        delete versions[id];
                         saveVersions(versions);
                         populateVersionsDropdown();
-                        alert(`Версия "${versionName}" удалена.`);
                     }
-                });
+                };
+
+                // --- Логика Блокнота ---
+                openScratchpadBtn.onclick = () => {
+                    scratchpadWindow.style.display = 'flex';
+                    if (!scratchpadEditor) {
+                        scratchpadEditor = CodeMirror.fromTextArea(scratchpadTextarea, editorOptions);
+                        scratchpadEditor.setValue(localStorage.getItem(LS_SCRATCHPAD_KEY) || "// Это ваш блокнот для фрагментов кода");
+                        scratchpadEditor.on("change", () => {
+                            localStorage.setItem(LS_SCRATCHPAD_KEY, scratchpadEditor.getValue());
+                        });
+                    }
+                     setTimeout(() => scratchpadEditor.refresh(), 1);
+                };
+
+                scratchpadCloseBtn.onclick = () => { scratchpadWindow.style.display = 'none'; };
+                
+                sendToScratchpadBtn.onclick = () => {
+                    if (!scratchpadEditor) openScratchpadBtn.click();
+                    const selection = mainEditor.getSelection();
+                    if (selection) scratchpadEditor.setValue(selection);
+                };
+                
+                getFromScratchpadBtn.onclick = () => {
+                    if (scratchpadEditor) mainEditor.replaceSelection(scratchpadEditor.getValue());
+                };
+                
+                // Логика перетаскивания окна Блокнота
+                let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+                scratchpadHeader.onmousedown = (e) => {
+                    e.preventDefault();
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    document.onmouseup = () => { document.onmouseup = null; document.onmousemove = null; };
+                    document.onmousemove = (e) => {
+                        e.preventDefault();
+                        pos1 = pos3 - e.clientX;
+                        pos2 = pos4 - e.clientY;
+                        pos3 = e.clientX;
+                        pos4 = e.clientY;
+                        scratchpadWindow.style.top = (scratchpadWindow.offsetTop - pos2) + "px";
+                        scratchpadWindow.style.left = (scratchpadWindow.offsetLeft - pos1) + "px";
+                    };
+                };
             }
 
             // --- ЗАПУСК ПРИЛОЖЕНИЯ ---
@@ -2703,4 +2793,7 @@
 </body>
 
 </html>
+
+</html>
+
 
