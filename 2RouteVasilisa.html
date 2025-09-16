@@ -1575,51 +1575,89 @@
         // Используйте этот объект для всей конфигурации.
         // Теперь вы можете оставлять здесь комментарии, и они сохранятся!
         const defaultConfig = {
-            // --- Глобальные настройки режимов ---
-            isContinuousPlayback: false, // Автоматическое переключение страниц при прослушивании
-            mobileFeedMode: true, // Включить режим "ленты" на мобильных
-            feedModeForDesktop: true, // Включить режим "ленты" на десктопе
+            //==============================================================//
+            //=================== ГЛОБАЛЬНЫЕ НАСТРОЙКИ =====================//
+            //==============================================================//
 
+            // true: после окончания аудио на последней странице, плеер начнет воспроизведение с первой.
+            // false: воспроизведение остановится после окончания последней страницы.
+            isContinuousPlayback: false,
+
+            // true: на мобильных устройствах страницы будут отображаться в виде вертикальной ленты (как в соцсетях).
+            // false: на мобильных будет режим "книги" с кнопками "вперед/назад".
+            mobileFeedMode: true,
+
+            // true: на компьютерах страницы также будут в виде ленты.
+            // false: на компьютерах будет режим "книги".
+            feedModeForDesktop: true,
+
+            // --- Настройки видеоконференции (Jitsi) ---
             videoConference: {
+                // true: включить кнопку видеосвязи на нижней панели.
                 enabled: true,
+                // Текст под кнопкой видеосвязи.
                 buttonText: 'видеосвязь',
-                roomName: 'Route2-VasilisaConference', // Уникальное имя для Маршрута 2
+                // Уникальное имя комнаты для конференции. Важно, чтобы оно было уникальным для каждого маршрута.
+                roomName: 'Route2-VasilisaConference',
+                // Всплывающая подсказка при наведении на кнопку.
                 tooltip: 'Присоединиться к видео-конференции'
             },
-            
-            // URL скрипта для отправки уведомлений о входе в видеочат
+
+            // URL веб-приложения Google Apps Script для отправки уведомлений о начале видеозвонка.
             notificationScriptUrl: 'https://script.google.com/macros/s/AKfycby6DFzTC1zvZdPQIYHWCFEA8IClHCJZmCfSh3RTIBovCbivkGwHY7VXGGpuILSfptRS/exec',
 
-            // --- Основная информация ---
+            //==============================================================//
+            //=================== ОСНОВНАЯ ИНФОРМАЦИЯ ======================//
+            //==============================================================//
+
+            // Главный заголовок, который отображается в нижней панели управления.
             mainTitle: 'Маршрут 2. Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кумлубюк с обедом на яхте.',
+
+            // Прямая ссылка на основной аудиофайл (MP3), который будет озвучивать все страницы.
             audioUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisyachting/main/2RouteAudioVasilisa.mp3',
+
+            // Ссылка на веб-приложение Google Apps Script для формы бронирования.
             bookingUrl: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route2',
 
-            // --- Настройки обложки ---
+            //==============================================================//
+            //==================== НАСТРОЙКИ ОБЛОЖКИ =======================//
+            //==============================================================//
+
+            // Прямая ссылка на фоновое видео для главной страницы (обложки).
             coverVideoUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4',
+
+            // Режим масштабирования видео. 'cover' - заполнить весь экран, обрезая лишнее. 'contain' - показать видео целиком.
             coverVideoFitMode: 'cover',
 
+            // Массив текстовых блоков, которые будут отображаться поверх видео на обложке.
             coverTexts: [{
+                // Текст для отображения.
                 text: 'Мармарис',
+                // Всплывающая подсказка.
                 tooltip: 'Возможно вы сейчас здесь....',
+                // Позиция от верхнего края (в процентах).
                 top: '5%',
+                // Позиция от левого края (в процентах).
                 left: '45%',
+                // true - показать, false - скрыть.
                 visible: true
             }],
 
+            // Настройки эффекта "пульсации" для кнопок на обложке.
             pulsingEffect: {
-                enabled: true,
-                fadeInDuration: 0.5,
-                visibleDuration: 4.0,
-                fadeOutDuration: 0.5,
-                hiddenDuration: 3.0
+                enabled: true,       // true - включить эффект.
+                fadeInDuration: 0.5, // Длительность появления (в секундах).
+                visibleDuration: 4.0,// Длительность в видимом состоянии.
+                fadeOutDuration: 0.5,// Длительность исчезновения.
+                hiddenDuration: 3.0  // Пауза перед следующим появлением.
             },
 
+            // Кнопки для быстрой связи (мессенджеры) на обложке.
             contactButtons: [{
-                visible: true,
-                pulsing: true,
-                url: 'https://wa.me/905366140347?text=Здравствуйте!%20Интересует%20бронирование.',
-                icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#25D366"/><text x="12" y="16" font-size="10" text-anchor="middle" fill="white">WA</text></svg>',
+                visible: true,      // true - показать кнопку.
+                pulsing: true,      // true - применить эффект пульсации.
+                url: 'https://wa.me/905366140347?text=Здравствуйте!%20Интересует%20бронирование.', // Ссылка для перехода.
+                icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#25D366"/><text x="12" y="16" font-size="10" text-anchor="middle" fill="white">WA</text></svg>', // Иконка в формате SVG.
                 tooltip: 'Написать в WhatsApp',
                 top: '90%',
                 left: '15%'
@@ -1633,6 +1671,7 @@
                 left: '85%'
             }],
 
+            // Кнопка-меню для выбора других маршрутов.
             routeSelector: {
                 visible: true,
                 pulsing: false,
@@ -1640,6 +1679,7 @@
                 tooltip: 'Другие маршруты',
                 top: '90%',
                 left: '50%',
+                // Список ссылок в выпадающем меню.
                 routes: [{
                     name: 'Маршрут 1: Дневной тур Кумлубюк',
                     url: 'https://www.marmarisyachting.ru/Yacht-Vasilisa-Catalog/Route1'
@@ -1650,271 +1690,335 @@
                     name: 'Маршрут 3: Дневной тур Чифтлик',
                     url: 'https://www.marmarisyachting.ru/Yacht-Vasilisa-Catalog/Route3'
                 }, {
+                    // Специальное действие для открытия модального окна бронирования.
                     name: 'Бронировать тур',
                     action: 'openBooking'
                 }, {
                     name: 'Календарь доступности',
                     url: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=calendar',
-                    target: '_blank'
+                    target: '_blank' // '_blank' открывает ссылку в новой вкладке.
                 }, {
                     name: 'Недельная аренда виллы',
                     url: 'https://www.marmarisyachting.ru/Villa-Turaman'
                 }]
             },
 
-            pages: [{
-                published: true,
-                text: `<h2> О маршруте. </h2><p>Название: Маршрут 2. Дневной яхтенный тур под парусом Мармарис-Кумлубюк с обедом на яхте. Продолжительность: 1 день. Время: 9:30 – 18:15. Аудитория: от 1 до 6 гостей, включая детей от 6 лет. Стоимость: 1000 долларов США (стандартный обед)/1300 долларов США (обед-гриль). Особенности: Эксклюзивный однодневный круиз, сочетающий панорамные виды побережья, долгий отдых с купанием в живописной бухте Кумлубюк и изысканный обед, приготовленный для вас прямо на борту яхты.</p>`,
-                narrationEndTime: 40,
-                collapsible: false,
-                customHeight: 'auto',
-                customDropdowns: [{
-                    visible: true,
-                    pulsing: true,
-                    icon: '<svg viewBox="0 0 90 40"><rect x="0.5" y="0.5" width="89" height="39" rx="8" fill="#4CAF50" stroke="#FFFFFF" stroke-width="1"/><text x="45" y="25" font-size="14" font-family="Arial, sans-serif" fill="white" font-weight="bold" text-anchor="middle">Связаться</text></svg>',
-                    tooltip: 'Напишите нам',
-                    top: '94%',
-                    left: '60%',
-                    routes: [{
-                        name: 'Написать в WhatsApp',
-                        url: 'https://wa.me/905366140347',
-                        target: '_blank'
-                    }, {
-                        name: 'Написать в Telegram',
-                        url: 'https://t.me/marmarisyachtingru',
-                        target: '_blank'
+            //==============================================================//
+            //======================= СТРАНИЦЫ КНИГИ =======================//
+            //==============================================================//
+            // Это массив, где каждый объект {} - это отдельная страница.
+            pages: [
+                
+                //==============================================================//
+                //======================= СТРАНИЦА 1 ===========================//
+                //==============================================================//
+                {
+                    // true - страница будет показана, false - страница будет скрыта из маршрута.
+                    published: true,
+
+                    // Основной текстовый контент страницы. Можно использовать HTML-теги для форматирования (<h2>, <p>, <strong> и т.д.).
+                    text: `<h2> О маршруте. </h2><p>Название: Маршрут 2. Дневной яхтенный тур под парусом Мармарис-Кумлубюк с обедом на яхте. Продолжительность: 1 день. Время: 9:30 – 18:15. Аудитория: от 1 до 6 гостей, включая детей от 6 лет. Стоимость: 1000 долларов США (стандартный обед)/1300 долларов США (обед-гриль). Особенности: Эксклюзивный однодневный круиз, сочетающий панорамные виды побережья, долгий отдых с купанием в живописной бухте Кумлубюк и изысканный обед, приготовленный для вас прямо на борту яхты.</p>`,
+                    
+                    // Временная метка (в секундах) в основном аудиофайле, когда диктор заканчивает читать текст этой страницы.
+                    // Плеер автоматически переключится на следующую страницу по достижении этой метки.
+                    narrationEndTime: 40,
+
+                    // true: в режиме "ленты" эта страница будет сворачиваемым блоком (аккордеоном).
+                    // false: страница всегда будет полностью развернута.
+                    collapsible: false,
+
+                    // "auto" - высота страницы подстроится под контент.
+                    // Можно задать фиксированную высоту, например, '600px'.
+                    customHeight: 'auto',
+
+                    // Массив кастомных выпадающих меню, которые можно разместить прямо на этой странице.
+                    customDropdowns: [{
+                        visible: true,
+                        pulsing: true,
+                        icon: '<svg viewBox="0 0 90 40"><rect x="0.5" y="0.5" width="89" height="39" rx="8" fill="#4CAF50" stroke="#FFFFFF" stroke-width="1"/><text x="45" y="25" font-size="14" font-family="Arial, sans-serif" fill="white" font-weight="bold" text-anchor="middle">Связаться</text></svg>',
+                        tooltip: 'Напишите нам',
+                        top: '94%',
+                        left: '60%',
+                        routes: [{
+                            name: 'Написать в WhatsApp',
+                            url: 'https://wa.me/905366140347',
+                            target: '_blank'
+                        }, {
+                            name: 'Написать в Telegram',
+                            url: 'https://t.me/marmarisyachtingru',
+                            target: '_blank'
+                        }]
                     }]
-                }]
-            }, {
-                published: true,
-                collapsedOnLoad: true,
-                collapsible: true,
-                customHeight: 'auto',
-                text: `<h2> Парусный день в Кумлубюк: Гастрономический круиз на яхте.</h2><p>Посвятите день абсолютному наслаждению: это эксклюзивный дневной тур, где живописные пейзажи Эгейского моря сочетаются с изысканным обедом, приготовленным специально для вас прямо на борту яхты. Идеальный сценарий для особого случая или просто идеального дня в море. Приглашаем вас на борт комфортабельной парусной яхты для путешествия к знаменитому пляжу Кумлубюк. Вас ждет неспешный круиз вдоль панорамных берегов, почти шесть часов отдыха в уединенной бухте с купанием и водными развлечениями, и кульминация дня — гастрономический обед в открытом море. Этот тур создан для небольшой компании от 1 до 6 человек. Мы стремимся подарить вам истинное удовольствие от яхтинга, поэтому при благоприятных погодных условиях мы обязательно совершим переход под парусами. А для самых ярких фотографий белоснежный парус будет поднят в любом случае.</p>`,
-                narrationEndTime: 101,
-            }, {
-                published: true,
-                collapsible: true,
-                collapsedOnLoad: true,
-                customHeight: 'auto',
-                text: `<h2> Программа путешествия: </h2><p>9:30 – Отправление и панорамный круиз Наше путешествие начнется из гавани Мармарис Яхт Марина. Следующие 90 минут мы посвятим неспешному переходу вдоль живописного побережья, наслаждаясь видами на Adakoy Marina, уединенные Козий и Вороний острова и знаменитый пляж Турунч. 11:00 – Отдых и обед в бухте Кумлубюк Мы бросим якорь в кристально чистых водах респектабельной бухты Кумлубюк почти на шесть часов. Это ваше время для полного расслабления: купайтесь, загорайте на палубе, исследуйте бухту на каяке или сап-борде. А мы позаботимся о вашем комфорте и гастрономических впечатлениях. Гастрономический опыт на борту. В течение дня мы будем рады предложить вам наш фирменный сервис: 11:30 — Приветственный чай, кофе и восточные сладости. 13:00 — Тарелка сочных сезонных фруктов для освежения. 14:30 — Комплексный обед (включен в стоимость 1000$): Салат "Чабан": Свежий микс из томатов черри, огурцов, перца и лука под заправкой из оливкового масла. Карбонара по-флотски: Классические спагетти Barilla №5 с пикантной говяжьей бастурмой, сливками, яйцом и настоящим сыром Parmigiano Reggiano. После обеда — чай, кофе и сладости. Обед-гриль (общая стоимость тура 1300$): Хотите сделать этот день еще более особенным? Выберите опцию с роскошным меню, приготовленным на гриле прямо на яхте: Сочные куриные крылья в соусе барбекю (300 гр.). Ароматный картофель в мундире на гриле (200 гр.). Шампиньоны на гриле (50 гр.). Свежий салат "Чабан" (150 гр.). 16:45 – Возвращение в Мармарис. Насладившись отдыхом, мы начинаем обратный 90-минутный переход в марину. Это прекрасное время, чтобы расслабиться на палубе и проводить солнце, окрашивающее береговую линию в золотые тона. 18:15 – Прибытие в Мармарис Яхт Марина.</p>`,
-                narrationEndTime: 240,
-            }, {
-                published: true,
-                collapsible: true,
-                collapsedOnLoad: true,
-                customHeight: 'auto',
-                text: `<h2> Важные детали и сервисы. </h2><p>Важные детали и сервисы. В стоимость тура включено: Аренда парусной яхты с капитаном. Комплексный обед или обед-гриль на борту (в зависимости от выбранного варианта). Чай, кофе, питьевая вода в течение всего дня. Фруктовая тарелка и сладости к чаю. Пользование надувным каяком, сап-бордом, надувной "ватрушкой" и масками для плавания. Подарите себе день идеального отдыха, где каждая деталь продумана для вашего удовольствия!</p>`,
-                narrationEndTime: 272,
-            }, {
-                published: true,
-                collapsible: true,
-                collapsedOnLoad: true,
-                customHeight: '550px',
-                text: `<h2>Фото и Видео о маршруте.</h2><p>К данной странице мы рекомендуем вам вернуться после завершения прослушивания и подробно ознакомиться с представленными фотографиями и видео о маршруте.</p>`,
-                narrationEndTime: 284,
-                mainVideo: {
-                    type: 'iframe',
-                    buttonText: 'Видео о Марине',
-                    buttonColor: '#FF5722',
-                    buttonTextColor: '#FFFFFF',
-                    url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQSe6WT-_Nt4QYem_P3qEx_3Abn7W0p9009H02uPVTxShdI',
-                    headerText: 'Видео: Выход из Мармарис Яхт Марины',
-                    footerText: ''
                 },
-                extraMedia: [{
-                    type: 'carousel',
-                    buttonText: 'Галерея',
-                    buttonColor: '#E91E63',
-                    buttonTextColor: '#FFFFFF',
-                    headerText: 'Фотографии',
-                    images: [{
-                        url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview',
-                        caption: 'BAVARIA C45 - Фото 1',
-                        width: 1513,
-                        height: 951
-                    }, {
-                        url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview',
-                        caption: 'BAVARIA C45 - Фото 2',
-                        width: 1513,
-                        height: 951
-                    }, {
-                        url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview',
-                        caption: 'BAVARIA C45 - Фото 3',
-                        width: 1513,
-                        height: 951
-                    }, {
-                        url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview',
-                        caption: 'BAVARIA C45 - Фото 4',
-                        width: 1513,
-                        height: 951
-                    }, {
-                        url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview',
-                        caption: 'BAVARIA C45 - Фото 5',
-                        width: 1513,
-                        height: 951
-                    }]
-                }, {
-                    type: 'iframe',
-                    buttonText: 'Видеообзор',
-                    buttonColor: '#00BCD4',
-                    url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0',
-                    headerText: 'Кумлубюк',
-                    footerText: ''
-                }],
-            }, {
-                published: true,
-                collapsible: true,
-                collapsedOnLoad: true,
-                customHeight: 'auto',
-                text: `<h2> О яхте Bavaria C45. </h2><p>Яхта произведена. ..</p>`,
-                narrationEndTime: 439,
-                mainVideo: {
-                    type: 'video',
-                    buttonText: 'Обзор Яхты',
-                    buttonColor: '#8BC34A',
-                    buttonTextColor: '#212121',
-                    url: 'https://www.youtube.com/embed/Dp2g78eqw18',
-                    headerText: 'Видео: Bavaria C45 - яхта для вашего путешествия',
-                    footerText: 'BAVARIA C45 на площади более 60 м² организовано уютное пространство для путешествий.'
+
+                //==============================================================//
+                //======================= СТРАНИЦА 2 ===========================//
+                //==============================================================//
+                {
+                    published: true,
+
+                    // true: в режиме "ленты" этот блок будет изначально свернут при загрузке страницы.
+                    collapsedOnLoad: true,
+                    collapsible: true,
+                    customHeight: 'auto',
+                    text: `<h2> Парусный день в Кумлубюк: Гастрономический круиз на яхте.</h2><p>Посвятите день абсолютному наслаждению: это эксклюзивный дневной тур, где живописные пейзажи Эгейского моря сочетаются с изысканным обедом, приготовленным специально для вас прямо на борту яхты. Идеальный сценарий для особого случая или просто идеального дня в море. Приглашаем вас на борт комфортабельной парусной яхты для путешествия к знаменитому пляжу Кумлубюк. Вас ждет неспешный круиз вдоль панорамных берегов, почти шесть часов отдыха в уединенной бухте с купанием и водными развлечениями, и кульминация дня — гастрономический обед в открытом море. Этот тур создан для небольшой компании от 1 до 6 человек. Мы стремимся подарить вам истинное удовольствие от яхтинга, поэтому при благоприятных погодных условиях мы обязательно совершим переход под парусами. А для самых ярких фотографий белоснежный парус будет поднят в любом случае.</p>`,
+                    narrationEndTime: 101,
                 },
-                extraMedia: [{
-                    type: 'carousel',
-                    buttonText: 'Фото Яхты',
-                    headerText: 'Фотографии BAVARIA C45',
-                    images: [{
-                        url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQTt0pbjcDOaQ4EzOYUnlLjFAcFIzWiG_6RGa8MxNqsnAE8?action=embedview',
-                        caption: 'BAVARIA C45- Фото 1',
-                        width: 931,
-                        height: 616
+
+                //==============================================================//
+                //======================= СТРАНИЦА 3 ===========================//
+                //==============================================================//
+                {
+                    published: true,
+                    collapsible: true,
+                    collapsedOnLoad: true,
+                    customHeight: 'auto',
+                    text: `<h2> Программа путешествия: </h2><p>9:30 – Отправление и панорамный круиз Наше путешествие начнется из гавани Мармарис Яхт Марина. Следующие 90 минут мы посвятим неспешному переходу вдоль живописного побережья, наслаждаясь видами на Adakoy Marina, уединенные Козий и Вороний острова и знаменитый пляж Турунч. 11:00 – Отдых и обед в бухте Кумлубюк Мы бросим якорь в кристально чистых водах респектабельной бухты Кумлубюк почти на шесть часов. Это ваше время для полного расслабления: купайтесь, загорайте на палубе, исследуйте бухту на каяке или сап-борде. А мы позаботимся о вашем комфорте и гастрономических впечатлениях. Гастрономический опыт на борту. В течение дня мы будем рады предложить вам наш фирменный сервис: 11:30 — Приветственный чай, кофе и восточные сладости. 13:00 — Тарелка сочных сезонных фруктов для освежения. 14:30 — Комплексный обед (включен в стоимость 1000$): Салат "Чабан": Свежий микс из томатов черри, огурцов, перца и лука под заправкой из оливкового масла. Карбонара по-флотски: Классические спагетти Barilla №5 с пикантной говяжьей бастурмой, сливками, яйцом и настоящим сыром Parmigiano Reggiano. После обеда — чай, кофе и сладости. Обед-гриль (общая стоимость тура 1300$): Хотите сделать этот день еще более особенным? Выберите опцию с роскошным меню, приготовленным на гриле прямо на яхте: Сочные куриные крылья в соусе барбекю (300 гр.). Ароматный картофель в мундире на гриле (200 гр.). Шампиньоны на гриле (50 гр.). Свежий салат "Чабан" (150 гр.). 16:45 – Возвращение в Мармарис. Насладившись отдыхом, мы начинаем обратный 90-минутный переход в марину. Это прекрасное время, чтобы расслабиться на палубе и проводить солнце, окрашивающее береговую линию в золотые тона. 18:15 – Прибытие в Мармарис Яхт Марина.</p>`,
+                    narrationEndTime: 240,
+                },
+
+                //==============================================================//
+                //======================= СТРАНИЦА 4 ===========================//
+                //==============================================================//
+                {
+                    published: true,
+                    collapsible: true,
+                    collapsedOnLoad: true,
+                    customHeight: 'auto',
+                    text: `<h2> Важные детали и сервисы. </h2><p>Важные детали и сервисы. В стоимость тура включено: Аренда парусной яхты с капитаном. Комплексный обед или обед-гриль на борту (в зависимости от выбранного варианта). Чай, кофе, питьевая вода в течение всего дня. Фруктовая тарелка и сладости к чаю. Пользование надувным каяком, сап-бордом, надувной "ватрушкой" и масками для плавания. Подарите себе день идеального отдыха, где каждая деталь продумана для вашего удовольствия!</p>`,
+                    narrationEndTime: 272,
+                },
+
+                //==============================================================//
+                //======================= СТРАНИЦА 5 ===========================//
+                //==============================================================//
+                {
+                    published: true,
+                    collapsible: true,
+                    collapsedOnLoad: true,
+                    customHeight: '550px',
+                    text: `<h2>Фото и Видео о маршруте.</h2><p>К данной странице мы рекомендуем вам вернуться после завершения прослушивания и подробно ознакомиться с представленными фотографиями и видео о маршруте.</p>`,
+                    narrationEndTime: 284,
+
+                    // Главное видео для этой страницы. Создаст большую кнопку.
+                    mainVideo: {
+                        type: 'iframe', // Тип контента: 'video', 'iframe', 'photo', 'audio', 'carousel', 'text', 'blokiframe'
+                        buttonText: 'Видео о Марине', // Текст на кнопке
+                        buttonColor: '#FF5722',      // Цвет фона кнопки (HEX)
+                        buttonTextColor: '#FFFFFF',  // Цвет текста на кнопке (HEX)
+                        url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQSe6WT-_Nt4QYem_P3qEx_3Abn7W0p9009H02uPVTxShdI', // Ссылка на контент
+                        headerText: 'Видео: Выход из Мармарис Яхт Марины', // Заголовок в модальном окне
+                        footerText: '' // Подпись в модальном окне
+                    },
+
+                    // Массив дополнительных медиа-кнопок для этой страницы.
+                    extraMedia: [{
+                        type: 'carousel',
+                        buttonText: 'Галерея',
+                        buttonColor: '#E91E63',
+                        buttonTextColor: '#FFFFFF',
+                        headerText: 'Фотографии',
+                        // Для карусели нужен массив 'images'.
+                        images: [{
+                            url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview',
+                            caption: 'BAVARIA C45 - Фото 1',
+                            width: 1513, // Исходная ширина изображения
+                            height: 951 // Исходная высота изображения
+                        }, {
+                            url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview',
+                            caption: 'BAVARIA C45 - Фото 2',
+                            width: 1513,
+                            height: 951
+                        }, {
+                            url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview',
+                            caption: 'BAVARIA C45 - Фото 3',
+                            width: 1513,
+                            height: 951
+                        }, {
+                            url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview',
+                            caption: 'BAVARIA C45 - Фото 4',
+                            width: 1513,
+                            height: 951
+                        }, {
+                            url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?action=embedview',
+                            caption: 'BAVARIA C45 - Фото 5',
+                            width: 1513,
+                            height: 951
+                        }]
                     }, {
-                        url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQSyu_NPfwz-Q7vkjqlgRWihAQq3NPmk8Zii_vvq84r6MCY?action=embedview',
-                        caption: 'BAVARIA C45 - Фото 2',
-                        width: 1155,
-                        height: 707
+                        type: 'iframe',
+                        buttonText: 'Видеообзор',
+                        buttonColor: '#00BCD4',
+                        url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0',
+                        headerText: 'Кумлубюк',
+                        footerText: ''
+                    }],
+                },
+
+                //==============================================================//
+                //======================= СТРАНИЦА 6 ===========================//
+                //==============================================================//
+                {
+                    published: true,
+                    collapsible: true,
+                    collapsedOnLoad: true,
+                    customHeight: 'auto',
+                    text: `<h2> О яхте Bavaria C45. </h2><p>Яхта произведена. ..</p>`,
+                    narrationEndTime: 439,
+                    mainVideo: {
+                        type: 'video',
+                        buttonText: 'Обзор Яхты',
+                        buttonColor: '#8BC34A',
+                        buttonTextColor: '#212121',
+                        url: 'https://www.youtube.com/embed/Dp2g78eqw18',
+                        headerText: 'Видео: Bavaria C45 - яхта для вашего путешествия',
+                        footerText: 'BAVARIA C45 на площади более 60 м² организовано уютное пространство для путешествий.'
+                    },
+                    extraMedia: [{
+                        type: 'carousel',
+                        buttonText: 'Фото Яхты',
+                        headerText: 'Фотографии BAVARIA C45',
+                        images: [{
+                            url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQTt0pbjcDOaQ4EzOYUnlLjFAcFIzWiG_6RGa8MxNqsnAE8?action=embedview',
+                            caption: 'BAVARIA C45- Фото 1',
+                            width: 931,
+                            height: 616
+                        }, {
+                            url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQSyu_NPfwz-Q7vkjqlgRWihAQq3NPmk8Zii_vvq84r6MCY?action=embedview',
+                            caption: 'BAVARIA C45 - Фото 2',
+                            width: 1155,
+                            height: 707
+                        }, {
+                            url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQSb6bzlT7ajSY3Vab9F66BoARTPNHSaB2JzYE_nQOKkzrI?action=embedview',
+                            caption: 'BAVARIA C45 - Фото 3',
+                            width: 930,
+                            height: 608
+                        }, {
+                            url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQRlrsLTzjuKSqCYH3WZKC9YAQVRQHT_n24533Iaa3eBS9I?action=embedview',
+                            caption: 'BAVARIA C45 - Фото 4',
+                            width: 1056,
+                            height: 836
+                        }, {
+                            url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQST2enSQDURTKzus8inBLBFAXMJKUZCryc5LEUuQlwl9bo?action=embedview',
+                            caption: 'BAVARIA C45 - Фото 5',
+                            width: 1132,
+                            height: 685
+                        }]
                     }, {
-                        url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQSb6bzlT7ajSY3Vab9F66BoARTPNHSaB2JzYE_nQOKkzrI?action=embedview',
-                        caption: 'BAVARIA C45 - Фото 3',
-                        width: 930,
-                        height: 608
+                        // Тип 'blokiframe' позволяет вставить готовый HTML-код для iframe.
+                        type: 'blokiframe',
+                        buttonText: 'Видео с Google Drive',
+                        buttonColor: '#26A69A',
+                        iframeCode: '<iframe src="https://drive.google.com/file/d/11TDsKfDIg_GD27Lml0Pow-4fsUrIV3LO/preview" width="640" height="480" allow="autoplay"></iframe>',
+                        headerText: 'Пример видео с Google Drive',
+                        footerText: ''
                     }, {
-                        url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQRlrsLTzjuKSqCYH3WZKC9YAQVRQHT_n24533Iaa3eBS9I?action=embedview',
-                        caption: 'BAVARIA C45 - Фото 4',
-                        width: 1056,
-                        height: 836
+                        type: 'iframe',
+                        buttonText: '360° тур по яхте',
+                        url: 'https://360.bavariayachts.com/2021/tours/index_en.html?nav_id=5491-135719',
+                        headerText: '360° тур по яхте',
+                        footerText: ''
                     }, {
-                        url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQST2enSQDURTKzus8inBLBFAXMJKUZCryc5LEUuQlwl9bo?action=embedview',
-                        caption: 'BAVARIA C45 - Фото 5',
-                        width: 1132,
-                        height: 685
+                        type: 'iframe',
+                        buttonText: 'Видеообзор яхты',
+                        url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0',
+                        headerText: 'Видеообзор яхты',
+                        footerText: ''
+                    }],
+                },
+                
+                //==============================================================//
+                //================= СТРАНИЦА-ШАБЛОН (СКРЫТА) ===================//
+                //==============================================================//
+                {
+                    // Эта страница не будет показана пользователям, так как published: false.
+                    // Она служит как пример и шпаргалка по всем возможностям форматирования.
+                    published: false,
+                    collapsible: true,
+                    collapsedOnLoad: false,
+                    narrationEndTime: 510,
+                    text: `
+                        <h2>Шаблон страницы: Все возможности</h2>
+                        <p>Эта страница - ваш конструктор. Здесь показано, как использовать все доступные элементы форматирования и встраивания медиа. <strong>Жирный текст</strong>, <em>курсив</em>, <code>моноширинный текст для кода</code>, <a href="#" onclick="event.preventDefault()">ссылки</a> и многое другое доступно с помощью стандартных HTML-тегов.</p>
+                        
+                        <hr> <h3>1. Встраивание одиночных изображений</h3>
+                        <p>Вы можете вставить изображение и управлять его размером и обтеканием текста. Вот пример изображения среднего размера, выровненного по центру (по умолчанию):</p>
+                        <img src="https://raw.githubusercontent.com/znamenskiialeksei/my-audiobook-foto/main/%D1%801.png" alt="Пример изображения" class="embedded-media size-medium">
+                        
+                        <p>
+                            <img src="https://raw.githubusercontent.com/znamenskiialeksei/my-audiobook-foto/main/%D1%802.png" alt="Маленькое изображение слева" class="embedded-media size-small align-left">
+                            А так выглядит текст, который <strong>обтекает маленькое изображение слева</strong>. Для этого к тегу <code>&lt;img&gt;</code> нужно добавить классы <code>embedded-media</code>, <code>size-small</code> и <code>align-left</code>. Это очень удобно для иллюстрации небольших деталей прямо по ходу повествования, не прерывая основной мысли. Текст будет продолжаться справа от картинки, пока не заполнит все свободное пространство по высоте.
+                        </p>
+                        <p>Этот новый параграф начнется уже после того, как закончится обтекание предыдущего изображения, благодаря специальному CSS-правилу.</p>
+
+                        <hr>
+                        
+                        <h3>2. Встраивание видео</h3>
+                        <p>Можно вставлять видео как по прямой ссылке на файл .mp4, так и через iframe с видеохостингов (YouTube, Vimeo, Google Drive).</p>
+                        
+                        <h4>Видео с прямой ссылкой (.mp4):</h4>
+                        <video controls src="https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4" class="embedded-media size-large"></video>
+                        
+                        <h4>Вертикальное видео (Reels/Shorts) с YouTube:</h4>
+                        <p>Для вертикальных видео используйте дополнительный класс <code>reels-style</code>.</p>
+                        <iframe src="https://www.youtube.com/embed/v8K4k2-fLdA" class="embedded-media reels-style" allowfullscreen></iframe>
+                        
+                        <h4>Видео с Google Drive (через iframe):</h4>
+                        <p>Можно вставлять видео через iframe с видеохостингов.</p>
+                        <iframe src="https://drive.google.com/file/d/11TDsKfDIg_GD27Lml0Pow-4fsUrIV3LO/preview" width="240" height="180" allow="autoplay"></iframe>
+                        
+                        <hr>
+
+                        <h3>3. Встраивание галереи (Inline-карусель)</h3>
+                        <p>Вы можете добавить галерею с горизонтальной прокруткой прямо в текст. Для этого создайте блок <code>&lt;div class="inline-carousel-container"&gt;</code> и поместите в него теги <code>&lt;img class="inline-carousel-img"&gt;</code>.</p>
+                        <div class="inline-carousel-container">
+                            <img src="https://raw.githubusercontent.com/znamenskiialeksei/my-audiobook-foto/main/%D1%801.png" alt="Фото 1" class="inline-carousel-img">
+                            <img src="https://raw.githubusercontent.com/znamenskiialeksei/my-audiobook-foto/main/%D1%802.png" alt="Фото 2" class="inline-carousel-img">
+                            <img src="https://raw.githubusercontent.com/znamenskiialeksei/my-audiobook-foto/main/%D1%803.png" alt="Фото 3" class="inline-carousel-img">
+                            <img src="https://raw.githubusercontent.com/znamenskiialeksei/my-audiobook-foto/main/%D1%804.png" alt="Фото 4" class="inline-carousel-img">
+                            <img src="https://raw.githubusercontent.com/znamenskiialeksei/my-audiobook-foto/main/%D1%805.png" alt="Фото 5" class="inline-carousel-img">
+                        </div>
+
+                        <hr>
+
+                        <h3>4. Встраивание аудио</h3>
+                        <p>Вы можете добавить аудиоплеер прямо в текст. Используйте класс <code>embedded-audio</code>.</p>
+                        <audio controls src="https://raw.githubusercontent.com/znamenskiialeksei/my-audiobook/main/%D0%A2%D0%B5%D0%BA%D1%81%D1%82%20%D0%9F%D0%BB%D0%B0%D1%81%D1%82%D0%B8%D0%BB%D0%B8%D0%BD%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%8F%D1%85%D1%82%D0%B0%20%D0%BC%D0%BD%D0%BE%D0%B3%D0%BE%D0%BB%D0%BE%D1%81%D1%8B%D0%B924.mp3" class="embedded-audio"></audio>
+                        <p>Это позволяет вставлять фоновую музыку, звуковые эффекты или дополнительные аудио-комментарии.</p>
+                        `,
+                    extraMedia: [{
+                        type: 'carousel',
+                        buttonText: 'Модальная галерея',
+                        headerText: 'Галерея в модальном окне',
+                        images: [{
+                            url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQTt0pbjcDOaQ4EzOYUnlLjFAcFIzWiG_6RGa8MxNqsnAE8?action=embedview',
+                            caption: 'Фото 1',
+                            width: 931,
+                            height: 616
+                        }, {
+                            url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQSyu_NPfwz-Q7vkjqlgRWihAQq3NPmk8Zii_vvq84r6MCY?action=embedview',
+                            caption: 'Фото 2',
+                            width: 1155,
+                            height: 707
+                        }]
+                    }, {
+                        type: 'video',
+                        buttonText: 'Модальное видео',
+                        url: 'https://www.youtube.com/embed/Dp2g78eqw18',
+                        headerText: 'Видео в модальном окне'
+                    }, {
+                        type: 'iframe',
+                        buttonText: '360-тур (iframe)',
+                        url: 'https://360.bavariayachts.com/2021/tours/index_en.html?nav_id=5491-135719',
+                        headerText: '360° тур по яхте'
+                    }, {
+                        // Тип 'text' позволяет подгрузить текстовый файл по ссылке и показать в модальном окне.
+                        type: 'text',
+                        buttonText: 'Доп. текст',
+                        url: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisyachting/main/README.md',
+                        headerText: 'Дополнительная информация'
                     }]
-                }, {
-                    type: 'blokiframe',
-                    buttonText: 'Видео с Google Drive',
-                    buttonColor: '#26A69A',
-                    iframeCode: '<iframe src="https://drive.google.com/file/d/11TDsKfDIg_GD27Lml0Pow-4fsUrIV3LO/preview" width="640" height="480" allow="autoplay"></iframe>',
-                    headerText: 'Пример видео с Google Drive',
-                    footerText: ''
-                }, {
-                    type: 'iframe',
-                    buttonText: '360° тур по яхте',
-                    url: 'https://360.bavariayachts.com/2021/tours/index_en.html?nav_id=5491-135719',
-                    headerText: '360° тур по яхте',
-                    footerText: ''
-                }, {
-                    type: 'iframe',
-                    buttonText: 'Видеообзор яхты',
-                    url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQRmfHoOiJ0USI41R15PiRxPAS3q42tuZDyBnREAIy_J2-0',
-                    headerText: 'Видеообзор яхты',
-                    footerText: ''
-                }],
-            },
-            {
-                published: false,
-                collapsible: true,
-                collapsedOnLoad: false,
-                narrationEndTime: 510,
-                text: `
-                    <h2>Шаблон страницы: Все возможности</h2>
-                    <p>Эта страница - ваш конструктор. Здесь показано, как использовать все доступные элементы форматирования и встраивания медиа. <strong>Жирный текст</strong>, <em>курсив</em>, <code>моноширинный текст для кода</code>, <a href="#" onclick="event.preventDefault()">ссылки</a> и многое другое доступно с помощью стандартных HTML-тегов.</p>
-                    
-                    <hr> <h3>1. Встраивание одиночных изображений</h3>
-                    <p>Вы можете вставить изображение и управлять его размером и обтеканием текста. Вот пример изображения среднего размера, выровненного по центру (по умолчанию):</p>
-                    <img src="https://raw.githubusercontent.com/znamenskiialeksei/my-audiobook-foto/main/%D1%801.png" alt="Пример изображения" class="embedded-media size-medium">
-                    
-                    <p>
-                        <img src="https://raw.githubusercontent.com/znamenskiialeksei/my-audiobook-foto/main/%D1%802.png" alt="Маленькое изображение слева" class="embedded-media size-small align-left">
-                        А так выглядит текст, который <strong>обтекает маленькое изображение слева</strong>. Для этого к тегу <code>&lt;img&gt;</code> нужно добавить классы <code>embedded-media</code>, <code>size-small</code> и <code>align-left</code>. Это очень удобно для иллюстрации небольших деталей прямо по ходу повествования, не прерывая основной мысли. Текст будет продолжаться справа от картинки, пока не заполнит все свободное пространство по высоте.
-                    </p>
-                    <p>Этот новый параграф начнется уже после того, как закончится обтекание предыдущего изображения, благодаря специальному CSS-правилу.</p>
-
-                    <hr>
-                    
-                    <h3>2. Встраивание видео</h3>
-                    <p>Можно вставлять видео как по прямой ссылке на файл .mp4, так и через iframe с видеохостингов (YouTube, Vimeo, Google Drive).</p>
-                    
-                    <h4>Видео с прямой ссылкой (.mp4):</h4>
-                    <video controls src="https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4" class="embedded-media size-large"></video>
-                    
-                    <h4>Вертикальное видео (Reels/Shorts) с YouTube:</h4>
-                    <p>Для вертикальных видео используйте дополнительный класс <code>reels-style</code>.</p>
-                    <iframe src="https://www.youtube.com/embed/v8K4k2-fLdA" class="embedded-media reels-style" allowfullscreen></iframe>
-                    
-                    <h4>Видео с Google Drive (через iframe):</h4>
-                    <p>Можно вставлять видео через iframe с видеохостингов.</p>
-                    <iframe src="https://drive.google.com/file/d/11TDsKfDIg_GD27Lml0Pow-4fsUrIV3LO/preview" width="240" height="180" allow="autoplay"></iframe>
-                    
-                    <hr>
-
-                    <h3>3. Встраивание галереи (Inline-карусель)</h3>
-                    <p>Вы можете добавить галерею с горизонтальной прокруткой прямо в текст. Для этого создайте блок <code>&lt;div class="inline-carousel-container"&gt;</code> и поместите в него теги <code>&lt;img class="inline-carousel-img"&gt;</code>.</p>
-                    <div class="inline-carousel-container">
-                        <img src="https://raw.githubusercontent.com/znamenskiialeksei/my-audiobook-foto/main/%D1%801.png" alt="Фото 1" class="inline-carousel-img">
-                        <img src="https://raw.githubusercontent.com/znamenskiialeksei/my-audiobook-foto/main/%D1%802.png" alt="Фото 2" class="inline-carousel-img">
-                        <img src="https://raw.githubusercontent.com/znamenskiialeksei/my-audiobook-foto/main/%D1%803.png" alt="Фото 3" class="inline-carousel-img">
-                        <img src="https://raw.githubusercontent.com/znamenskiialeksei/my-audiobook-foto/main/%D1%804.png" alt="Фото 4" class="inline-carousel-img">
-                        <img src="https://raw.githubusercontent.com/znamenskiialeksei/my-audiobook-foto/main/%D1%805.png" alt="Фото 5" class="inline-carousel-img">
-                    </div>
-
-                    <hr>
-
-                    <h3>4. Встраивание аудио</h3>
-                    <p>Вы можете добавить аудиоплеер прямо в текст. Используйте класс <code>embedded-audio</code>.</p>
-                    <audio controls src="https://raw.githubusercontent.com/znamenskiialeksei/my-audiobook/main/%D0%A2%D0%B5%D0%BA%D1%81%D1%82%20%D0%9F%D0%BB%D0%B0%D1%81%D1%82%D0%B8%D0%BB%D0%B8%D0%BD%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%8F%D1%85%D1%82%D0%B0%20%D0%BC%D0%BD%D0%BE%D0%B3%D0%BE%D0%BB%D0%BE%D1%81%D1%8B%D0%B924.mp3" class="embedded-audio"></audio>
-                    <p>Это позволяет вставлять фоновую музыку, звуковые эффекты или дополнительные аудио-комментарии.</p>
-                    `,
-                extraMedia: [{
-                    type: 'carousel',
-                    buttonText: 'Модальная галерея',
-                    headerText: 'Галерея в модальном окне',
-                    images: [{
-                        url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQTt0pbjcDOaQ4EzOYUnlLjFAcFIzWiG_6RGa8MxNqsnAE8?action=embedview',
-                        caption: 'Фото 1',
-                        width: 931,
-                        height: 616
-                    }, {
-                        url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQSyu_NPfwz-Q7vkjqlgRWihAQq3NPmk8Zii_vvq84r6MCY?action=embedview',
-                        caption: 'Фото 2',
-                        width: 1155,
-                        height: 707
-                    }]
-                }, {
-                    type: 'video',
-                    buttonText: 'Модальное видео',
-                    url: 'https://www.youtube.com/embed/Dp2g78eqw18',
-                    headerText: 'Видео в модальном окне'
-                }, {
-                    type: 'iframe',
-                    buttonText: '360-тур (iframe)',
-                    url: 'https://360.bavariayachts.com/2021/tours/index_en.html?nav_id=5491-135719',
-                    headerText: '360° тур по яхте'
-                }, {
-                    type: 'text',
-                    buttonText: 'Доп. текст',
-                    url: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisyachting/main/README.md',
-                    headerText: 'Дополнительная информация'
-                }]
-            },
+                },
             ]
         };
         /*--CONFIG_END--*/
@@ -2900,6 +3004,7 @@
 </body>
 
 </html>
+
 
 
 
